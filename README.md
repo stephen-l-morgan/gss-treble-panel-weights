@@ -18,7 +18,7 @@ The weights initially distributed with the repository are available in four file
 		data/gss-treble-panel-weights-wide.csv
 		data/gss-treble-panel-weights-long.csv
 
-The files can also be downloaded from the associated OSF project page: <https://osf.io/yhdj2/>
+The files can also be downloaded from the associated OSF project page: <https://osf.io/jzkxm/>
 
 ## roadmap-of-code-for-treble-panel-weights.txt
 
