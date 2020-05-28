@@ -2,7 +2,7 @@
 
 ## Overview
 
-##### This repository estimates probabilities of attrition for General Social Survey (GSS) respondents who participated in the rolling GSS "treble" panel from 2006 through 2014. It then uses these estimated probabilities to construct six panel weights for use in subsequent analysis.
+#### This repository estimates probabilities of attrition for General Social Survey (GSS) respondents who participated in the rolling GSS "treble" panel from 2006 through 2014. It then uses these estimated probabilities to construct six panel weights for use in subsequent analysis.
 
 A full explanation of the weights is available in: 
 
