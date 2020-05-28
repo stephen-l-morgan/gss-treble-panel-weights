@@ -2,19 +2,23 @@
 
 ## Overview
 
-This repository includes files that estimate probabilities of attrition for GSS base year respondents who participated in the GSS treble panel from 2006 through 2014. It then uses these estimated probabilities to construct six panel weights.  
+This repository includes files that estimate probabilities of attrition for GSS base year respondents who participated in the GSS treble panel from 2006 through 2014. It then uses these estimated probabilities to construct six panel weights.
 
-The weights that are estimated are available in four files in the data folder of the repository:
+A full explain of the weights is available in 
+
+* Morgan, Stephen L. and Jiwon Lee. 2020. “Six Alternative Weights That Adjust for Attrition in the 2006-2014 General Social Survey Panels.” GSS Methodological Report No. 132, National Opinion Research Center, Chicago, Illinois.
+
+The weights initially distributed with the repository are available in four files in the data folder of the repository:
 
 	Stata data files:
 		data/gss-treble-panel-weights-wide.dta
 		data/gss-treble-panel-weights-long.dta
 	
-	Comma-separated value files:
+	Comma-separated values (.csv) files:
 		data/gss-treble-panel-weights-wide.csv
 		data/gss-treble-panel-weights-long.csv
 
-They can also be downloaded from the associated OSF project page: <https://osf.io/yhdj2/>
+The files can also be downloaded from the associated OSF project page: <https://osf.io/yhdj2/>
 
 ## roadmap-of-code-for-treble-panel-weights.txt
 
