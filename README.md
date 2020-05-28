@@ -4,7 +4,7 @@
 
 This repository includes files that estimate probabilities of attrition for GSS base year respondents who participated in the GSS treble panel from 2006 through 2014. It then uses these estimated probabilities to construct six panel weights.
 
-A full explain of the weights is available in 
+A full explanation of the weights is available in 
 
 * Morgan, Stephen L. and Jiwon Lee. 2020. “Six Alternative Weights That Adjust for Attrition in the 2006-2014 General Social Survey Panels.” GSS Methodological Report No. 132, National Opinion Research Center, Chicago, Illinois.
 
