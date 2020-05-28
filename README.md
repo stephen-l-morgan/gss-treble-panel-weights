@@ -18,7 +18,7 @@ They can also be downloaded from the associated OSF project page: <https://osf.i
 
 ## roadmap-of-code-for-treble-panel-weights.txt
 
-The content below is copied from the file, roadmap-of-code-for-treble-panel-weights.txt document, which can be found in the docs folder of the repository.
+The content below is copied from the file, roadmap-of-code-for-treble-panel-weights.txt, which can be found in the docs folder of the repository.
 
 ### Notes
 
