@@ -4,7 +4,7 @@
 
 This repository includes files that estimate probabilities of attrition for GSS base year respondents who participated in the GSS treble panel from 2006 through 2014. It then uses these estimated probabilities to construct six panel weights.  
 
-## The content below is copied from the roadmap.txt document in the docs folder
+## The content below is copied from the file, roadmap-of-code-for-treble-panel-weights.txt document, in the docs folder
 
 ### Notes
 
@@ -78,7 +78,7 @@ Set up the data to export to R for imputation of remaining missing values.
 		data/gss-panel-vars-to-impute.csv 
 
 
-###### The next step needs to be run in R:
+#### The next step needs to be run in R:
 
 
 4.  code/gss-impute-panel-missforest.R, .log
@@ -92,7 +92,7 @@ values for all missing values.
 	Yields:
 		data/gss-panel-vars-imputed-rf.dta
 
-###### BACK to Stata:
+#### BACK to Stata:
 
 5.  append-and-merge-imputed-datasets.do, .log
 
@@ -176,6 +176,8 @@ Create an excel file with sheets that summarizes the estimated probabilities and
 		docs/summary-of-attrition-weights.xlsx
 
 11.	code/person-centered-view-of-weights.do
+
+Looking more closely.
 
 	Takes in:
 		data/gss-panel-allyears-fill-in-and-recoded-panel-merged-wt.dta [created in step 7]
