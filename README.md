@@ -4,7 +4,7 @@
 
 This repository includes files that estimate probabilities of attrition for GSS base year respondents who participated in the GSS treble panel from 2006 through 2014. It then uses these estimated probabilities to construct six panel weights.  
 
-The weights that are estimated are available in four files in the data folder in the repository:
+The weights that are estimated are available in four files in the data folder of the repository:
 
 	Stata data files:
 		data/gss-treble-panel-weights-wide.dta
@@ -14,11 +14,11 @@ The weights that are estimated are available in four files in the data folder in
 		data/gss-treble-panel-weights-wide.csv
 		data/gss-treble-panel-weights-long.csv
 
-They can also be downloaded from the associated OSF project page:
+They can also be downloaded from the associated OSF project page: <https://osf.io/yhdj2/>
 
-<https://osf.io/yhdj2/>
+## roadmap-of-code-for-treble-panel-weights.txt
 
-### The content below is copied from the file, roadmap-of-code-for-treble-panel-weights.txt document, in the docs folder
+The content below is copied from the file, roadmap-of-code-for-treble-panel-weights.txt document, which can be found in the docs folder of the repository.
 
 ### Notes
 
