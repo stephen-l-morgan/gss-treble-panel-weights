@@ -1,0 +1,9 @@
+
+.DS_Store
+
+tmp/*.*
+!tmp/do-not-ignore-this-file.txt
+
+.Rhistory
+
+.DS_Store

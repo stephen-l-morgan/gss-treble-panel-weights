@@ -1,0 +1,1175 @@
+----------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  /Users/smorgan/Documents/GitHub/gss-panel-weights/log/estimate-attrition-probabilities.
+> log
+  log type:  text
+ opened on:  28 Jan 2020, 17:42:12
+
+. 
+. use data/gss-panel-2006-2014-imputed-recoded.dta, clear
+(Written by R.              )
+
+. 
+. ********************************************************************************
+. *** Define macros and tempfiles
+. ********************************************************************************
+. 
+. #delimit ;
+delimiter now ;
+. local vars_for_est
+>         c.age_o1 c.age_o2 c.age_o3
+>         i.sex i.racehisp5 b1.degree c.realinc i.dwelown i.marital i.borncitz
+>         i.region c.wordsum  c.intage i.intsex i.intethn c.intyrs c.lngthinv
+>         c.daysint i.mode i.feeused i.coop i.comprend i.spaneng ;
+
+.  #delimit cr
+delimiter now cr
+.         
+. tempfile mi_est_all mi_est_all_insc
+
+. 
+. ********************************************************************************
+. *** Construct weights from wtssnr for use with panels
+. ********************************************************************************
+. 
+. /* Note:        The first rescaling, (`r(N)'/`r(sum)') rescales wtssnr so that it 
+>                         sums to panel size N, which is needed for 2006 because the panel 
+>                         was a subsample of all cross-sectional cases.  
+>                         
+>                         The second rescaling, (1/3)*(6067/`r(sum)'), scales each of the 
+>                         three panel samples so that they contribute 1/3 of the mass of the 
+>                         pooled weight, which downweights the slightly larger panels in 2008 
+>                         and 2010 proportionately.  */
+.                         
+. gen wtssnr_rs = .
+(102,270 missing values generated)
+
+. gen pool_wt = .
+(102,270 missing values generated)
+
+. 
+. forval i = 2006(2)2010 {
+  2.   gen wtssnr_rs_`i' = .
+  3.   gen pool_wt_`i' = .
+  4.   qui summ wtssnr if samptype==`i' & panelwave==1 & m==1 
+  5.   replace wtssnr_rs_`i' = (`r(N)'/`r(sum)') * wtssnr ///
+>      if samptype==`i' & panelwave==1 & m==1
+  6.   qui summ wtssnr_rs_`i' if samptype==`i' & panelwave==1 & m==1 
+  7.   replace pool_wt_`i' = (1/3)*(6067/`r(sum)')* wtssnr_rs_`i' ///
+>      if samptype==`i' & panelwave==1 & m==1 
+  8.   summ wtssnr wtssnr_rs_`i' pool_wt_`i' ///
+>     if samptype == `i' & panelwave == 1 & m == 1        
+  9.   replace wtssnr_rs = wtssnr_rs_`i' if samptype == `i'
+ 10.   replace pool_wt = pool_wt_`i' if samptype == `i'
+ 11.   drop wtssnr_rs_`i' pool_wt_`i'
+ 12. }
+(102,270 missing values generated)
+(102,270 missing values generated)
+(2,000 real changes made)
+(2,000 real changes made)
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+      wtssnr |      2,000     1.00154    .6451265        .36       6.59
+wtssnr_~2006 |      2,000           1    .6441345   .3594465   6.579867
+pool_wt_2006 |      2,000    1.011167    .6513274   .3634603   6.653342
+(2,000 real changes made)
+(2,000 real changes made)
+(102,270 missing values generated)
+(102,270 missing values generated)
+(2,023 real changes made)
+(2,023 real changes made)
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+      wtssnr |      2,023           1    .6463332   .3194206   6.702612
+wtssnr_~2008 |      2,023           1    .6463332   .3194206   6.702611
+pool_wt_2008 |      2,023    .9996705    .6461202   .3193154   6.700403
+(2,023 real changes made)
+(2,023 real changes made)
+(102,270 missing values generated)
+(102,270 missing values generated)
+(2,044 real changes made)
+(2,044 real changes made)
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+      wtssnr |      2,044           1    .5755635   .3369696   4.733329
+wtssnr_~2010 |      2,044           1    .5755635   .3369696   4.733329
+pool_wt_2010 |      2,044    .9893999    .5694625   .3333977   4.683155
+(2,044 real changes made)
+(2,044 real changes made)
+
+. 
+. * broadcast weights across imputed datasets and then summarize and reorder
+. bys samptype: summ wtssnr wtssnr_rs pool_wt
+
+----------------------------------------------------------------------------------------------------
+-> samptype = 2006
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+      wtssnr |     14,000     1.00154    .6449883        .36       6.59
+   wtssnr_rs |      2,000           1    .6441345   .3594465   6.579867
+     pool_wt |      2,000    1.011167    .6513274   .3634603   6.653342
+
+----------------------------------------------------------------------------------------------------
+-> samptype = 2008
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+      wtssnr |     14,161           1    .6461963   .3194206   6.702612
+   wtssnr_rs |      2,023           1    .6463332   .3194206   6.702611
+     pool_wt |      2,023    .9996705    .6461202   .3193154   6.700403
+
+----------------------------------------------------------------------------------------------------
+-> samptype = 2010
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+      wtssnr |     14,308           1    .5754428   .3369696   4.733329
+   wtssnr_rs |      2,044           1    .5755635   .3369696   4.733329
+     pool_wt |      2,044    .9893999    .5694625   .3333977   4.683155
+
+
+. bysort panelid (wtssnr_rs): replace wtssnr_rs = wtssnr_rs[1] if panelwave == 1
+(36,402 real changes made)
+
+. bysort panelid (pool_wt): replace pool_wt = pool_wt[1] if panelwave == 1
+(36,402 real changes made)
+
+. 
+. summ wtssnr wtssnr_rs pool_wt if m == 1
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+      wtssnr |      6,067    1.000508     .622874   .3194206   6.702612
+   wtssnr_rs |      6,067           1    .6225352   .3194206   6.702611
+     pool_wt |      6,067           1    .6231013   .3193154   6.700403
+
+. summ wtssnr wtssnr_rs pool_wt
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+      wtssnr |     42,469    1.000508      .62283   .3194206   6.702612
+   wtssnr_rs |     42,469           1    .6224912   .3194206   6.702611
+     pool_wt |     42,469           1    .6230573   .3193154   6.700403
+
+. 
+. order wtssnr_rs pool_wt, after(wtssnr)
+
+. sort panelid panelwave m
+
+. 
+. ********************************************************************************
+. *** Estimate attrition models (using mi commands) for multiply imputed data
+. *** Then, save predictions and variances of predictions
+. ********************************************************************************
+. 
+. /*
+> Components of saved variable names
+> 
+>         xb:   linear prediction
+>         pr:   predicted probabilty
+>         var:  variance of prediction
+>         all:  all years pooled
+>         2006: 2006 panel respondents only
+>         2008: 2008 panel respondents only
+>         2010: 2010 panel respondents only
+>         insc: in scope for all waves of panel (i.e., eligible)
+> */
+. 
+. *** Estimate models for all three panels pooled
+. 
+. mi set flong
+
+. 
+. mi estimate, saving(`mi_est_all', replace) post:                             ///
+>         logit attr_w23 `vars_for_est' if panelwave==1 [pw=pool_wt]
+
+Multiple-imputation estimates                   Imputations       =          6
+Logistic regression                             Number of obs     =      6,067
+                                                Average RVI       =     0.0006
+                                                Largest FMI       =     0.0178
+DF adjustment:   Large sample                   DF:     min       =  16,074.52
+                                                        avg       =   1.30e+09
+                                                        max       =   1.69e+10
+Model F test:       Equal FMI                   F(  48, 6.8e+08)  =       6.85
+Within VCE type:       Robust                   Prob > F          =     0.0000
+
+------------------------------------------------------------------------------------------------
+                      attr_w23 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------------------------+----------------------------------------------------------------
+                        age_o1 |   .1367209   .0414689     3.30   0.001     .0554434    .2179985
+                        age_o2 |   .1950412    .035944     5.43   0.000     .1245921    .2654902
+                        age_o3 |    .117717   .0326171     3.61   0.000     .0537886    .1816453
+                               |
+                           sex |
+                       Female  |  -.1289974   .0672386    -1.92   0.055    -.2607827    .0027879
+                               |
+                     racehisp5 |
+                        Black  |  -.1703932   .1073922    -1.59   0.113     -.380878    .0400916
+                     Hispanic  |  -.0684504   .1460187    -0.47   0.639    -.3546418    .2177411
+                        Asian  |  -.0935328   .1993795    -0.47   0.639    -.4843095    .2972439
+                        Other  |   .4714035   .2945663     1.60   0.110    -.1059357    1.048743
+                               |
+                        degree |
+                 Less than HS  |   .2194577   .1047237     2.10   0.036     .0142031    .4247123
+               Junior college  |   .0343651   .1242809     0.28   0.782    -.2092209    .2779511
+                           BA  |    .025951   .0989658     0.26   0.793    -.1680183    .2199204
+                     Graduate  |  -.0881135   .1326138    -0.66   0.506    -.3480317    .1718047
+                               |
+                       realinc |   .0783615   .0429501     1.82   0.068    -.0058194    .1625425
+                               |
+                       dwelown |
+                    Pays rent  |   .1552328   .0913299     1.70   0.089    -.0237839    .3342496
+                        Other  |   .5899357   .3124503     1.89   0.059    -.0224556    1.202327
+                               |
+                       marital |
+                      Widowed  |    .330625   .1426082     2.32   0.020     .0511181    .6101318
+                     Divorced  |   .0087501   .1011042     0.09   0.931    -.1894105    .2069107
+                    Separated  |   .2190846   .2048077     1.07   0.285    -.1823311    .6205003
+                Never married  |   .1715488    .096581     1.78   0.076    -.0177465    .3608441
+                               |
+                      borncitz |
+Born outside but ever-citizen  |   .0576142   .1469123     0.39   0.695    -.2303286     .345557
+                Never-citizen  |   1.118301   .1658797     6.74   0.000     .7931824    1.443419
+                               |
+                        region |
+              Middle Atlantic  |  -.0140065   .1934658    -0.07   0.942    -.3931926    .3651796
+           East North Central  |  -.0661369   .1899962    -0.35   0.728    -.4385227    .3062489
+           West North Central  |  -.0180033   .2214984    -0.08   0.935    -.4521322    .4161256
+               South Atlantic  |   .0984289   .1848609     0.53   0.594    -.2638917    .4607495
+           East South Central  |   .0763393   .2200577     0.35   0.729    -.3549658    .5076445
+           West South Central  |   .0911521   .2037372     0.45   0.655    -.3081655    .4904696
+                     Mountain  |   -.072647   .2096354    -0.35   0.729    -.4835249    .3382309
+                      Pacific  |   .0868964   .1929727     0.45   0.652    -.2913231    .4651159
+                               |
+                       wordsum |  -.1014782    .025037    -4.05   0.000    -.1505498   -.0524065
+                        intage |  -.0048941   .0032118    -1.52   0.128    -.0111892    .0014009
+                               |
+                        intsex |
+                       Female  |  -.1254916   .0898851    -1.40   0.163    -.3016632      .05068
+                               |
+                       intethn |
+                        Black  |   .0353625   .1035258     0.34   0.733    -.1675445    .2382694
+                     Hispanic  |  -.1825062   .1518816    -1.20   0.230    -.4801887    .1151762
+                        Asian  |   .6249286   .2413142     2.59   0.010     .1519614    1.097896
+            Two or more races  |  -.1354748     .20172    -0.67   0.502    -.5308388    .2598892
+                               |
+                        intyrs |  -.0139608   .0094588    -1.48   0.140    -.0324996     .004578
+                      lngthinv |  -.0003741     .00094    -0.40   0.691    -.0022165    .0014682
+                       daysint |   .0011006   .0010439     1.05   0.292    -.0009454    .0031466
+                               |
+                          mode |
+               Over the phone  |   .1425827   .1197694     1.19   0.234    -.0921611    .3773265
+                               |
+                       feeused |
+                 Non-monetary  |   .2846086   .2741574     1.04   0.299    -.2527299    .8219472
+                           No  |   .1981923    .080999     2.45   0.014      .039437    .3569475
+                               |
+                          coop |
+                  Cooperative  |   .2135982   .0921283     2.32   0.020     .0330301    .3941663
+           Restless/impatient  |   .5942751   .1587673     3.74   0.000     .2830969    .9054533
+                      Hostile  |   2.074112   .6457478     3.21   0.001     .8084697    3.339755
+                               |
+                      comprend |
+                         Fair  |   .1375784    .103022     1.34   0.182    -.0643411    .3394979
+                         Poor  |   .1686782    .205237     0.82   0.411    -.2335789    .5709354
+                               |
+                       spaneng |
+                      Spanish  |   .1921547   .2293009     0.84   0.402    -.2572668    .6415763
+                         _cons |  -.7342716   .5320188    -1.38   0.168    -1.777014    .3084703
+------------------------------------------------------------------------------------------------
+
+. mi predictnl xb_all = predict(xb) using `mi_est_all' if panelwave==1,        ///
+>         var(xb_var_all)
+(8543 missing values generated)
+
+. mi predictnl pr_all = predict(p) using `mi_est_all' if panelwave==1,         ///
+>         var(pr_var_all)
+(8543 missing values generated)
+
+.         
+. mi estimate, saving(`mi_est_all_insc', replace) post:                        ///
+>         logit attr_w23 `vars_for_est' if panelwave==1 & outsc_w23==0 [pw=pool_wt]
+
+Multiple-imputation estimates                   Imputations       =          6
+Logistic regression                             Number of obs     =      5,732
+                                                Average RVI       =     0.0005
+                                                Largest FMI       =     0.0146
+DF adjustment:   Large sample                   DF:     min       =  23,880.07
+                                                        avg       =   2.07e+09
+                                                        max       =   5.61e+10
+Model F test:       Equal FMI                   F(  48, 8.0e+08)  =       5.22
+Within VCE type:       Robust                   Prob > F          =     0.0000
+
+------------------------------------------------------------------------------------------------
+                      attr_w23 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------------------------+----------------------------------------------------------------
+                        age_o1 |   .0323313   .0439776     0.74   0.462    -.0538631    .1185258
+                        age_o2 |   .1085947   .0386217     2.81   0.005     .0328976    .1842918
+                        age_o3 |   .0875059   .0349281     2.51   0.012     .0190481    .1559636
+                               |
+                           sex |
+                       Female  |   -.046129   .0703336    -0.66   0.512    -.1839803    .0917224
+                               |
+                     racehisp5 |
+                        Black  |  -.2291228   .1139561    -2.01   0.044    -.4524727   -.0057729
+                     Hispanic  |  -.0792526   .1506157    -0.53   0.599    -.3744539    .2159486
+                        Asian  |  -.1734172   .2040543    -0.85   0.395    -.5733562    .2265218
+                        Other  |   .4119993   .3097214     1.33   0.183    -.1950434    1.019042
+                               |
+                        degree |
+                 Less than HS  |   .2075981   .1111481     1.87   0.062    -.0102482    .4254443
+               Junior college  |   .0449539   .1293538     0.35   0.728    -.2085748    .2984826
+                           BA  |   .0106847   .1033184     0.10   0.918    -.1918156    .2131851
+                     Graduate  |  -.1100541   .1391503    -0.79   0.429    -.3827838    .1626756
+                               |
+                       realinc |   .1095947   .0452092     2.42   0.015     .0209859    .1982034
+                               |
+                       dwelown |
+                    Pays rent  |   .1883761    .095243     1.98   0.048     .0016938    .3750584
+                        Other  |   .6418201   .3228001     1.99   0.047     .0091435    1.274497
+                               |
+                       marital |
+                      Widowed  |   .2134402   .1536086     1.39   0.165    -.0876272    .5145076
+                     Divorced  |  -.0980239   .1080418    -0.91   0.364    -.3097819    .1137341
+                    Separated  |   .2007486   .2079073     0.97   0.334    -.2067422    .6082394
+                Never married  |   .1055983   .1001717     1.05   0.292    -.0907347    .3019313
+                               |
+                      borncitz |
+Born outside but ever-citizen  |  -.0094127    .155734    -0.06   0.952    -.3146458    .2958204
+                Never-citizen  |   1.059157   .1715922     6.17   0.000     .7228428    1.395472
+                               |
+                        region |
+              Middle Atlantic  |   .0072058   .2021125     0.04   0.972    -.3889275    .4033391
+           East North Central  |   -.046889   .1987471    -0.24   0.813    -.4364262    .3426482
+           West North Central  |  -.0176927   .2325952    -0.08   0.939    -.4735709    .4381855
+               South Atlantic  |   .1262945   .1925402     0.66   0.512    -.2510774    .5036665
+           East South Central  |   .1211918   .2281665     0.53   0.595    -.3260063    .5683899
+           West South Central  |   .0970729   .2136169     0.45   0.650    -.3216086    .5157544
+                     Mountain  |  -.0932009    .220873    -0.42   0.673    -.5261041    .3397023
+                      Pacific  |   .1365339   .2005007     0.68   0.496    -.2564402     .529508
+                               |
+                       wordsum |  -.0994947   .0260492    -3.82   0.000    -.1505503    -.048439
+                        intage |  -.0061335   .0033528    -1.83   0.067    -.0127049    .0004379
+                               |
+                        intsex |
+                       Female  |  -.1585819   .0932178    -1.70   0.089    -.3412855    .0241216
+                               |
+                       intethn |
+                        Black  |   .0496924   .1088448     0.46   0.648    -.1636396    .2630244
+                     Hispanic  |  -.1237876   .1561505    -0.79   0.428     -.429837    .1822618
+                        Asian  |   .6315087   .2489898     2.54   0.011     .1434976     1.11952
+            Two or more races  |   -.094146   .2119691    -0.44   0.657    -.5095978    .3213059
+                               |
+                        intyrs |  -.0112505   .0100057    -1.12   0.261    -.0308613    .0083602
+                      lngthinv |  -.0007081   .0009996    -0.71   0.479    -.0026672     .001251
+                       daysint |   .0016887   .0010825     1.56   0.119    -.0004329    .0038104
+                               |
+                          mode |
+               Over the phone  |   .1793525   .1231342     1.46   0.145     -.061986     .420691
+                               |
+                       feeused |
+                 Non-monetary  |   .2549782   .2821293     0.90   0.366    -.2979851    .8079415
+                           No  |   .2187752   .0850707     2.57   0.010     .0520397    .3855107
+                               |
+                          coop |
+                  Cooperative  |   .1832595   .0975994     1.88   0.060    -.0080318    .3745508
+           Restless/impatient  |   .6464332   .1621558     3.99   0.000     .3286136    .9642528
+                      Hostile  |   1.951918    .658043     2.97   0.003     .6621769    3.241658
+                               |
+                      comprend |
+                         Fair  |   .1509204   .1096485     1.38   0.169    -.0639868    .3658277
+                         Poor  |   .1603322   .2178368     0.74   0.462    -.2666201    .5872845
+                               |
+                       spaneng |
+                      Spanish  |   .1419974   .2367233     0.60   0.549    -.3219719    .6059666
+                         _cons |  -1.155748   .5578154    -2.07   0.038    -2.249052    -.062444
+------------------------------------------------------------------------------------------------
+
+. mi predictnl xb_all_insc = predict(xb) using `mi_est_all_insc'               ///
+>     if panelwave==1 & outsc_w23==0, var(xb_var_all_insc)
+(8878 missing values generated)
+
+. mi predictnl pr_all_insc = predict(p) using `mi_est_all_insc'                ///
+>         if panelwave==1 & outsc_w23==0, var(pr_var_all_insc)
+(8878 missing values generated)
+
+. 
+. *** Estimate models for each panel separately
+. 
+. forval i = 2006(2)2010 {
+  2. 
+.         tempfile mi_est_`i' mi_est_`i'_insc
+  3. 
+.         mi estimate, saving(`mi_est_`i'', replace) post:                         ///
+>                 logit attr_w23 `vars_for_est'                                        ///
+>                 if panelwave==1 & samptype == `i' [pw=wtssnr_rs]
+  4.         mi predictnl xb_`i' = predict(xb) using `mi_est_`i''                     ///
+>                 if panelwave==1 & samptype == `i', var(xb_var_`i')
+  5.         mi predictnl pr_`i' = predict(p) using `mi_est_`i''                      ///
+>                 if panelwave==1 & samptype == `i', var(pr_var_`i')
+  6. 
+.         mi estimate, saving(`mi_est_`i'_insc', replace) post:                    ///
+>                 logit attr_w23 `vars_for_est'                                        ///
+>                 if panelwave==1 & samptype == `i' & outsc_w23==0 [pw=wtssnr_rs]
+  7.         mi predictnl xb_`i'_insc = predict(xb) using `mi_est_`i'_insc'           ///
+>                 if panelwave==1 & samptype == `i' & outsc_w23==0,                    ///
+>                 var(xb_var_`i'_insc)
+  8.         mi predictnl pr_`i'_insc = predict(p) using `mi_est_`i'_insc'            ///
+>                 if panelwave==1 & samptype == `i'& outsc_w23==0,                     ///
+>                 var(pr_var_`i'_insc)
+  9. }
+
+Multiple-imputation estimates                   Imputations       =          6
+Logistic regression                             Number of obs     =      2,000
+                                                Average RVI       =     0.0009
+                                                Largest FMI       =     0.0226
+DF adjustment:   Large sample                   DF:     min       =   9,940.63
+                                                        avg       =   4.47e+08
+                                                        max       =   5.82e+09
+Model F test:       Equal FMI                   F(  47, 2.7e+08)  =       3.39
+Within VCE type:       Robust                   Prob > F          =     0.0000
+
+------------------------------------------------------------------------------------------------
+                      attr_w23 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------------------------+----------------------------------------------------------------
+                        age_o1 |   .1506322   .0715192     2.11   0.035     .0104571    .2908073
+                        age_o2 |   .1765767    .061112     2.89   0.004     .0567994    .2963541
+                        age_o3 |   .2285599   .0594581     3.84   0.000     .1120242    .3450956
+                               |
+                           sex |
+                       Female  |  -.1303611   .1199779    -1.09   0.277    -.3655134    .1047912
+                               |
+                     racehisp5 |
+                        Black  |   -.193368   .1971395    -0.98   0.327    -.5797544    .1930184
+                     Hispanic  |  -.1424042   .2629986    -0.54   0.588     -.657872    .3730636
+                        Asian  |  -.2156413   .3484673    -0.62   0.536    -.8986247    .4673421
+                        Other  |  -.1185892   .6047886    -0.20   0.845    -1.303953    1.066775
+                               |
+                        degree |
+                 Less than HS  |   .1760003   .1902534     0.93   0.355    -.1968896    .5488902
+               Junior college  |  -.0334865   .2152131    -0.16   0.876    -.4552964    .3883234
+                           BA  |  -.0452577     .17609    -0.26   0.797    -.3903877    .2998723
+                     Graduate  |  -.3201828    .248875    -1.29   0.198    -.8079692    .1676036
+                               |
+                       realinc |   .1526801   .0826329     1.85   0.065    -.0092774    .3146377
+                               |
+                       dwelown |
+                    Pays rent  |   .3239799   .1582408     2.05   0.041     .0137958    .6341639
+                        Other  |   1.086598   .5527301     1.97   0.049     .0032671    2.169929
+                               |
+                       marital |
+                      Widowed  |   .7474967   .2392554     3.12   0.002     .2785648    1.216429
+                     Divorced  |   .1907195   .1708421     1.12   0.264    -.1441249    .5255638
+                    Separated  |   .6370991   .3497856     1.82   0.069    -.0484681    1.322666
+                Never married  |   .3864761   .1735051     2.23   0.026     .0464123    .7265399
+                               |
+                      borncitz |
+Born outside but ever-citizen  |  -.8149302   .3167369    -2.57   0.010    -1.435723   -.1941373
+                Never-citizen  |   1.041473   .2720042     3.83   0.000     .5083539    1.574591
+                               |
+                        region |
+              Middle Atlantic  |  -.1748778   .3780852    -0.46   0.644    -.9159113    .5661556
+           East North Central  |  -.3150335   .3738483    -0.84   0.399    -1.047763    .4176958
+           West North Central  |  -.1590458   .4155605    -0.38   0.702    -.9735295     .655438
+               South Atlantic  |  -.0283037   .3649964    -0.08   0.938    -.7436835     .687076
+           East South Central  |  -.1927819   .4272631    -0.45   0.652    -1.030202    .6446385
+           West South Central  |   .1086693   .3854139     0.28   0.778    -.6467282    .8640667
+                     Mountain  |   .0173021   .3915515     0.04   0.965    -.7501248     .784729
+                      Pacific  |   .1941447   .3754352     0.52   0.605    -.5416948    .9299843
+                               |
+                       wordsum |  -.1377494   .0500604    -2.75   0.006    -.2358668   -.0396319
+                        intage |   .0004675   .0063346     0.07   0.941    -.0119481    .0128831
+                               |
+                        intsex |
+                       Female  |  -.2192938    .160712    -1.36   0.172    -.5342836     .095696
+                               |
+                       intethn |
+                        Black  |   .0310409   .1977562     0.16   0.875    -.3565541    .4186359
+                     Hispanic  |  -.1186522   .2735094    -0.43   0.664    -.6547217    .4174174
+                        Asian  |   .3973849   .3148076     1.26   0.207    -.2196267    1.014396
+                               |
+                        intyrs |  -.0169312   .0170941    -0.99   0.322    -.0504351    .0165726
+                      lngthinv |  -.0007151   .0019538    -0.37   0.714    -.0045445    .0031143
+                       daysint |    .000245   .0019605     0.12   0.901    -.0035975    .0040875
+                               |
+                          mode |
+               Over the phone  |     .01209   .2512576     0.05   0.962    -.4803658    .5045458
+                               |
+                       feeused |
+                 Non-monetary  |   .3789088   .4030711     0.94   0.347     -.411096    1.168914
+                           No  |   .0735855    .158478     0.46   0.642    -.2370256    .3841967
+                               |
+                          coop |
+                  Cooperative  |   .2330927   .1764154     1.32   0.186    -.1126751    .5788605
+           Restless/impatient  |   .8712077   .2807039     3.10   0.002     .3210382    1.421377
+                      Hostile  |   1.795502   .9665044     1.86   0.063    -.0988115    3.689816
+                               |
+                      comprend |
+                         Fair  |   .0593384    .206344     0.29   0.774    -.3450884    .4637651
+                         Poor  |   -.844284   .3760831    -2.24   0.025    -1.581393   -.1071748
+                               |
+                       spaneng |
+                      Spanish  |   .3594649   .3891828     0.92   0.356    -.4033198     1.12225
+                         _cons |  -1.359611   1.019815    -1.33   0.182    -3.358414    .6391914
+------------------------------------------------------------------------------------------------
+(12610 missing values generated)
+(12610 missing values generated)
+
+Multiple-imputation estimates                   Imputations       =          6
+Logistic regression                             Number of obs     =      1,891
+                                                Average RVI       =     0.0011
+                                                Largest FMI       =     0.0299
+DF adjustment:   Large sample                   DF:     min       =   5,724.99
+                                                        avg       =   4.32e+08
+                                                        max       =   9.53e+09
+Model F test:       Equal FMI                   F(  47, 1.8e+08)  =       2.71
+Within VCE type:       Robust                   Prob > F          =     0.0000
+
+------------------------------------------------------------------------------------------------
+                      attr_w23 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------------------------+----------------------------------------------------------------
+                        age_o1 |  -.0195425   .0769961    -0.25   0.800    -.1704522    .1313671
+                        age_o2 |   .0804211   .0651003     1.24   0.217     -.047173    .2080153
+                        age_o3 |   .1787995   .0635167     2.81   0.005      .054309      .30329
+                               |
+                           sex |
+                       Female  |  -.0271836   .1270222    -0.21   0.831    -.2761425    .2217753
+                               |
+                     racehisp5 |
+                        Black  |  -.2371419   .2071405    -1.14   0.252    -.6431299    .1688462
+                     Hispanic  |  -.1004083   .2710252    -0.37   0.711    -.6316079    .4307913
+                        Asian  |   -.191562   .3677278    -0.52   0.602    -.9122953    .5291713
+                        Other  |  -.0259834   .6551423    -0.04   0.968    -1.310039    1.258072
+                               |
+                        degree |
+                 Less than HS  |   .1852655   .2014137     0.92   0.358    -.2094981    .5800292
+               Junior college  |  -.0072721   .2222418    -0.03   0.974    -.4428581     .428314
+                           BA  |  -.0603383   .1836524    -0.33   0.742    -.4202905     .299614
+                     Graduate  |  -.3242478   .2650844    -1.22   0.221     -.843804    .1953084
+                               |
+                       realinc |   .1813647   .0852088     2.13   0.033     .0143583    .3483711
+                               |
+                       dwelown |
+                    Pays rent  |   .3025064   .1655191     1.83   0.068    -.0219737    .6269865
+                        Other  |   1.186165   .5345706     2.22   0.026     .1384262    2.233905
+                               |
+                       marital |
+                      Widowed  |   .5869675    .262837     2.23   0.026     .0718166    1.102119
+                     Divorced  |   .0359934   .1802121     0.20   0.842    -.3172159    .3892028
+                    Separated  |   .5726048   .3613694     1.58   0.113    -.1356662    1.280876
+                Never married  |   .2818795   .1804285     1.56   0.118    -.0717539    .6355129
+                               |
+                      borncitz |
+Born outside but ever-citizen  |  -.9343399   .3492441    -2.68   0.007    -1.618846    -.249834
+                Never-citizen  |   .9797766   .2875616     3.41   0.001     .4161661    1.543387
+                               |
+                        region |
+              Middle Atlantic  |  -.0695707   .3853571    -0.18   0.857    -.8248567    .6857152
+           East North Central  |  -.2093139   .3803265    -0.55   0.582    -.9547403    .5361124
+           West North Central  |  -.1072889   .4269271    -0.25   0.802    -.9440509     .729473
+               South Atlantic  |   .0696918   .3676011     0.19   0.850    -.6507932    .7901767
+           East South Central  |  -.0223726   .4308799    -0.05   0.959    -.8668818    .8221365
+           West South Central  |   .2130874   .3935361     0.54   0.588    -.5582292     .984404
+                     Mountain  |    .058868   .4020799     0.15   0.884    -.7291941      .84693
+                      Pacific  |   .3032453   .3786056     0.80   0.423     -.438808    1.045299
+                               |
+                       wordsum |  -.1338957   .0525464    -2.55   0.011    -.2368866   -.0309048
+                        intage |   -.002716   .0066323    -0.41   0.682     -.015715    .0102829
+                               |
+                        intsex |
+                       Female  |  -.2806615   .1674378    -1.68   0.094    -.6088335    .0475104
+                               |
+                       intethn |
+                        Black  |   .0608545   .2070965     0.29   0.769    -.3450472    .4667562
+                     Hispanic  |  -.2173039   .2874283    -0.76   0.450    -.7806534    .3460455
+                        Asian  |   .3342379    .332566     1.01   0.315    -.3175796    .9860553
+                               |
+                        intyrs |  -.0158804   .0180795    -0.88   0.380    -.0513156    .0195548
+                      lngthinv |   .0001412    .002076     0.07   0.946    -.0039277      .00421
+                       daysint |   .0012112   .0020398     0.59   0.553    -.0027867    .0052091
+                               |
+                          mode |
+               Over the phone  |  -.0260443   .2598511    -0.10   0.920    -.5353432    .4832545
+                               |
+                       feeused |
+                 Non-monetary  |   .2318633   .4283598     0.54   0.588    -.6077065    1.071433
+                           No  |   .1252335   .1676205     0.75   0.455    -.2032968    .4537638
+                               |
+                          coop |
+                  Cooperative  |     .22886   .1845774     1.24   0.215    -.1329051     .590625
+           Restless/impatient  |   .9975073   .2915155     3.42   0.001     .4261475    1.568867
+                      Hostile  |   1.964247   .9347112     2.10   0.036     .1322465    3.796247
+                               |
+                      comprend |
+                         Fair  |   .1076462   .2175897     0.49   0.621    -.3188219    .5341143
+                         Poor  |  -.8667851   .4171831    -2.08   0.038    -1.684449   -.0491212
+                               |
+                       spaneng |
+                      Spanish  |   .4603408   .4023104     1.14   0.253    -.3281733    1.248855
+                         _cons |  -1.897436   1.053436    -1.80   0.072    -3.962135    .1672619
+------------------------------------------------------------------------------------------------
+(12719 missing values generated)
+(12719 missing values generated)
+
+Multiple-imputation estimates                   Imputations       =          6
+Logistic regression                             Number of obs     =      2,023
+                                                Average RVI       =     0.0003
+                                                Largest FMI       =     0.0111
+DF adjustment:   Large sample                   DF:     min       =  40,624.62
+                                                        avg       =   7.53e+10
+                                                        max       =   2.58e+12
+Model F test:       Equal FMI                   F(  48, 2.3e+09)  =       2.62
+Within VCE type:       Robust                   Prob > F          =     0.0000
+
+------------------------------------------------------------------------------------------------
+                      attr_w23 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------------------------+----------------------------------------------------------------
+                        age_o1 |   .0695812   .0718568     0.97   0.333    -.0712556    .2104179
+                        age_o2 |   .1724114   .0623339     2.77   0.006     .0502391    .2945836
+                        age_o3 |    .088094   .0582479     1.51   0.130    -.0260699    .2022578
+                               |
+                           sex |
+                       Female  |  -.2725362   .1156607    -2.36   0.018     -.499227   -.0458454
+                               |
+                     racehisp5 |
+                        Black  |   .0446693   .1902035     0.23   0.814    -.3281227    .4174613
+                     Hispanic  |   .2798691   .2602816     1.08   0.282    -.2302734    .7900117
+                        Asian  |   .2641336   .3569604     0.74   0.459     -.435496    .9637631
+                        Other  |   1.025973   .4438581     2.31   0.021     .1560276    1.895919
+                               |
+                        degree |
+                 Less than HS  |   .1714478   .1831248     0.94   0.349    -.1874703    .5303658
+               Junior college  |   .0067046   .2139728     0.03   0.975    -.4126744    .4260836
+                           BA  |   .0238454   .1751678     0.14   0.892    -.3194772    .3671679
+                     Graduate  |  -.1156471   .2295465    -0.50   0.614    -.5655499    .3342557
+                               |
+                       realinc |    .138867   .0798437     1.74   0.082    -.0176241    .2953581
+                               |
+                       dwelown |
+                    Pays rent  |   .0230529   .1729152     0.13   0.894    -.3158648    .3619705
+                        Other  |   .8155899   .5009383     1.63   0.103    -.1662311    1.797411
+                               |
+                       marital |
+                      Widowed  |    .326317   .2481348     1.32   0.188    -.1600182    .8126523
+                     Divorced  |  -.0733641   .1817269    -0.40   0.686    -.4295423    .2828141
+                    Separated  |   .1215204   .3370169     0.36   0.718    -.5390206    .7820613
+                Never married  |   .1406923   .1688767     0.83   0.405       -.1903    .4716846
+                               |
+                      borncitz |
+Born outside but ever-citizen  |   .2064379   .2471118     0.84   0.403    -.2778923    .6907682
+                Never-citizen  |   .6384694   .2970109     2.15   0.032     .0563387      1.2206
+                               |
+                        region |
+              Middle Atlantic  |   .0124023   .3175694     0.04   0.969    -.6100223    .6348269
+           East North Central  |  -.1814942   .3109561    -0.58   0.559    -.7909569    .4279685
+           West North Central  |  -.2222172    .376045    -0.59   0.555    -.9592518    .5148174
+               South Atlantic  |  -.0002863   .2963701    -0.00   0.999    -.5811611    .5805884
+           East South Central  |  -.0788626   .3761538    -0.21   0.834    -.8161104    .6583853
+           West South Central  |  -.2262217   .3487342    -0.65   0.517    -.9097282    .4572849
+                     Mountain  |  -.6147842    .361319    -1.70   0.089    -1.322956    .0933881
+                      Pacific  |  -.6585529   .3259572    -2.02   0.043    -1.297417   -.0196886
+                               |
+                       wordsum |  -.0545914   .0438516    -1.24   0.213    -.1405391    .0313563
+                        intage |   -.002468   .0059884    -0.41   0.680    -.0142051     .009269
+                               |
+                        intsex |
+                       Female  |    .245556   .1766067     1.39   0.164    -.1005868    .5916988
+                               |
+                       intethn |
+                        Black  |  -.1098669   .1816492    -0.60   0.545    -.4658927     .246159
+                     Hispanic  |  -.0771608   .2699676    -0.29   0.775    -.6062875    .4519659
+                        Asian  |   1.725256    .854209     2.02   0.043     .0510375    3.399475
+            Two or more races  |  -.0133044   .3816056    -0.03   0.972    -.7612376    .7346287
+                               |
+                        intyrs |  -.0067151   .0139056    -0.48   0.629    -.0339696    .0205393
+                      lngthinv |   -.000012   .0013654    -0.01   0.993    -.0026882    .0026641
+                       daysint |   .0036211   .0019836     1.83   0.068    -.0002668     .007509
+                               |
+                          mode |
+               Over the phone  |   .2427885    .191901     1.27   0.206    -.1333306    .6189075
+                               |
+                       feeused |
+                 Non-monetary  |   .0177769   .5541701     0.03   0.974    -1.068377     1.10393
+                           No  |   .4768076   .1403581     3.40   0.001     .2017107    .7519044
+                               |
+                          coop |
+                  Cooperative  |   .3020251   .1539417     1.96   0.050      .000305    .6037452
+           Restless/impatient  |   .3909955   .2746758     1.42   0.155    -.1473592    .9293503
+                      Hostile  |   2.694108   1.162766     2.32   0.021     .4151285    4.973088
+                               |
+                      comprend |
+                         Fair  |   .1908064   .1847936     1.03   0.302    -.1713824    .5529952
+                         Poor  |   .8193415   .3434927     2.39   0.017     .1461082    1.492575
+                               |
+                       spaneng |
+                      Spanish  |    .324437   .4062988     0.80   0.425    -.4718941    1.120768
+                         _cons |  -2.080309   .9839476    -2.11   0.034    -4.008813   -.1518055
+------------------------------------------------------------------------------------------------
+(12587 missing values generated)
+(12587 missing values generated)
+
+Multiple-imputation estimates                   Imputations       =          6
+Logistic regression                             Number of obs     =      1,918
+                                                Average RVI       =     0.0003
+                                                Largest FMI       =     0.0087
+DF adjustment:   Large sample                   DF:     min       =  66,328.29
+                                                        avg       =   1.08e+10
+                                                        max       =   1.13e+11
+Model F test:       Equal FMI                   F(  48, 2.8e+09)  =       2.25
+Within VCE type:       Robust                   Prob > F          =     0.0000
+
+------------------------------------------------------------------------------------------------
+                      attr_w23 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------------------------+----------------------------------------------------------------
+                        age_o1 |  -.0237708   .0758344    -0.31   0.754    -.1724036     .124862
+                        age_o2 |   .0860541   .0692303     1.24   0.214    -.0496349     .221743
+                        age_o3 |    .058899   .0638608     0.92   0.356    -.0662658    .1840638
+                               |
+                           sex |
+                       Female  |  -.2112975    .120059    -1.76   0.078    -.4466087    .0240137
+                               |
+                     racehisp5 |
+                        Black  |     .03825   .1980253     0.19   0.847    -.3498726    .4263725
+                     Hispanic  |   .2551896   .2676105     0.95   0.340    -.2693173    .7796965
+                        Asian  |   .0589482   .3638542     0.16   0.871    -.6541929    .7720893
+                        Other  |    1.11882   .4577263     2.44   0.015     .2216928    2.015947
+                               |
+                        degree |
+                 Less than HS  |   .1714631   .1966722     0.87   0.383    -.2140072    .5569335
+               Junior college  |  -.0663372   .2235663    -0.30   0.767     -.504519    .3718447
+                           BA  |   .0041107   .1822576     0.02   0.982    -.3531075     .361329
+                     Graduate  |  -.1680028   .2404077    -0.70   0.485    -.6391931    .3031876
+                               |
+                       realinc |    .230892   .0862504     2.68   0.007     .0618441      .39994
+                               |
+                       dwelown |
+                    Pays rent  |   .1082111   .1803773     0.60   0.549    -.2453284    .4617506
+                        Other  |   .7062442   .5314929     1.33   0.184    -.3354627    1.747951
+                               |
+                       marital |
+                      Widowed  |   .3314267   .2705004     1.23   0.220    -.1987444    .8615978
+                     Divorced  |  -.2020956   .1960403    -1.03   0.303    -.5863275    .1821362
+                    Separated  |   .1157646   .3549772     0.33   0.744     -.579978    .8115072
+                Never married  |   .0953253   .1750796     0.54   0.586    -.2478244    .4384751
+                               |
+                      borncitz |
+Born outside but ever-citizen  |   .2824246   .2490063     1.13   0.257    -.2056188     .770468
+                Never-citizen  |   .6223106   .3022044     2.06   0.039      .030001     1.21462
+                               |
+                        region |
+              Middle Atlantic  |     .09151   .3342405     0.27   0.784    -.5635893    .7466094
+           East North Central  |  -.1208766   .3290103    -0.37   0.713    -.7657249    .5239717
+           West North Central  |  -.1712345   .3937768    -0.43   0.664    -.9430228    .6005538
+               South Atlantic  |   .0345911   .3137704     0.11   0.912    -.5803877    .6495698
+           East South Central  |  -.0547691   .3953871    -0.14   0.890    -.8297135    .7201754
+           West South Central  |  -.2693512   .3729958    -0.72   0.470     -1.00041    .4617071
+                     Mountain  |  -.5638658   .3832559    -1.47   0.141    -1.315034    .1873019
+                      Pacific  |  -.6633807   .3451372    -1.92   0.055    -1.339837    .0130758
+                               |
+                       wordsum |    -.06844   .0458184    -1.49   0.135    -.1582425    .0213624
+                        intage |  -.0044265   .0062071    -0.71   0.476    -.0165922    .0077392
+                               |
+                        intsex |
+                       Female  |   .2333916   .1850901     1.26   0.207    -.1293782    .5961614
+                               |
+                       intethn |
+                        Black  |  -.0266263   .1910577    -0.14   0.889    -.4010925    .3478398
+                     Hispanic  |   .0390845   .2788636     0.14   0.889    -.5074781    .5856471
+                        Asian  |   1.861213   .8798364     2.12   0.034     .1367659    3.585661
+            Two or more races  |   .1198842   .3840236     0.31   0.755    -.6327882    .8725566
+                               |
+                        intyrs |  -.0025455   .0143934    -0.18   0.860     -.030756     .025665
+                      lngthinv |  -.0007101   .0014391    -0.49   0.622    -.0035306    .0021105
+                       daysint |   .0041774   .0020599     2.03   0.043     .0001401    .0082147
+                               |
+                          mode |
+               Over the phone  |   .2681696   .1971173     1.36   0.174    -.1181732    .6545123
+                               |
+                       feeused |
+                 Non-monetary  |   .0844711    .587141     0.14   0.886    -1.066304    1.235246
+                           No  |   .4798256   .1471044     3.26   0.001     .1915062     .768145
+                               |
+                          coop |
+                  Cooperative  |    .222592   .1623227     1.37   0.170    -.0955546    .5407386
+           Restless/impatient  |   .4134162   .2808596     1.47   0.141    -.1370586     .963891
+                      Hostile  |   2.459095   1.186607     2.07   0.038     .1333876    4.784803
+                               |
+                      comprend |
+                         Fair  |   .1282198   .1992325     0.64   0.520    -.2622687    .5187084
+                         Poor  |   .8520308   .3607768     2.36   0.018     .1449212     1.55914
+                               |
+                       spaneng |
+                      Spanish  |   .1688701   .4219585     0.40   0.689    -.6581534    .9958935
+                         _cons |  -2.966739   1.064781    -2.79   0.005    -5.053672   -.8798053
+------------------------------------------------------------------------------------------------
+(12692 missing values generated)
+(12692 missing values generated)
+
+Multiple-imputation estimates                   Imputations       =          6
+Logistic regression                             Number of obs     =      2,044
+                                                Average RVI       =     0.0011
+                                                Largest FMI       =     0.0359
+DF adjustment:   Large sample                   DF:     min       =   3,980.79
+                                                        avg       =   5.46e+10
+                                                        max       =   2.58e+12
+Model F test:       Equal FMI                   F(  48, 1.9e+08)  =       3.54
+Within VCE type:       Robust                   Prob > F          =     0.0000
+
+------------------------------------------------------------------------------------------------
+                      attr_w23 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------------------------+----------------------------------------------------------------
+                        age_o1 |   .1889121   .0757463     2.49   0.013     .0404521    .3373722
+                        age_o2 |   .2832158   .0663689     4.27   0.000     .1531351    .4132966
+                        age_o3 |   .0765323   .0570493     1.34   0.180    -.0352823    .1883468
+                               |
+                           sex |
+                       Female  |    .048069   .1164081     0.41   0.680    -.1800867    .2762247
+                               |
+                     racehisp5 |
+                        Black  |   -.549781    .176744    -3.11   0.002     -.896193    -.203369
+                     Hispanic  |  -.3197394   .2408264    -1.33   0.184    -.7917506    .1522718
+                        Asian  |  -.2232145   .3135664    -0.71   0.477    -.8377933    .3913643
+                        Other  |    .589048   .4519664     1.30   0.192    -.2967899    1.474886
+                               |
+                        degree |
+                 Less than HS  |   .3619455   .1777431     2.04   0.042     .0135753    .7103156
+               Junior college  |    .119093    .229338     0.52   0.604    -.3304012    .5685871
+                           BA  |   .0621414   .1675681     0.37   0.711    -.2662859    .3905688
+                     Graduate  |   .1542924   .2170711     0.71   0.477    -.2711592     .579744
+                               |
+                       realinc |  -.0466383   .0675601    -0.69   0.490    -.1790542    .0857775
+                               |
+                       dwelown |
+                    Pays rent  |   .1009484   .1502249     0.67   0.502    -.1935766    .3954733
+                        Other  |  -.5741819   .5386436    -1.07   0.286    -1.629904    .4815404
+                               |
+                       marital |
+                      Widowed  |  -.0422831   .2638971    -0.16   0.873     -.559512    .4749458
+                     Divorced  |  -.1020397   .1798757    -0.57   0.571    -.4545897    .2505103
+                    Separated  |  -.0513957   .3241807    -0.16   0.874    -.6867783    .5839868
+                Never married  |   .0806558   .1709855     0.47   0.637    -.2544699    .4157814
+                               |
+                      borncitz |
+Born outside but ever-citizen  |    .473588   .2305269     2.05   0.040     .0217635    .9254124
+                Never-citizen  |   1.574881   .2985206     5.28   0.000     .9897914    2.159971
+                               |
+                        region |
+              Middle Atlantic  |  -.1099607   .3357362    -0.33   0.743    -.7679916    .5480702
+           East North Central  |   .1846801   .3237105     0.57   0.568    -.4497809    .8191411
+           West North Central  |   .3709259   .3841839     0.97   0.334    -.3820607    1.123912
+               South Atlantic  |   .2623157   .3185307     0.82   0.410    -.3619931    .8866245
+           East South Central  |   .4038421   .3651901     1.11   0.269    -.3119173    1.119602
+           West South Central  |   .2266533   .3526744     0.64   0.520    -.4645759    .9178825
+                     Mountain  |   .2359296   .3608863     0.65   0.513    -.4713946    .9432537
+                      Pacific  |   .4506394   .3291924     1.37   0.171    -.1945659    1.095845
+                               |
+                       wordsum |   -.092855   .0401465    -2.31   0.021    -.1715407   -.0141693
+                        intage |  -.0075191   .0052018    -1.45   0.148    -.0177144    .0026761
+                               |
+                        intsex |
+                       Female  |  -.3169075   .1470312    -2.16   0.031    -.6050834   -.0287316
+                               |
+                       intethn |
+                        Black  |   .3496741   .1812335     1.93   0.054    -.0055415    .7048897
+                     Hispanic  |  -.1572691    .250357    -0.63   0.530    -.6479599    .3334217
+                        Asian  |   1.062563   .5217784     2.04   0.042     .0398965     2.08523
+            Two or more races  |  -.1057472   .2582176    -0.41   0.682    -.6118445    .4003501
+                               |
+                        intyrs |  -.0556002   .0435183    -1.28   0.201    -.1408944    .0296941
+                      lngthinv |  -.0022573   .0019535    -1.16   0.248     -.006086    .0015714
+                       daysint |   .0006951   .0017307     0.40   0.688     -.002697    .0040872
+                               |
+                          mode |
+               Over the phone  |   .2107268   .2040788     1.03   0.302    -.1892604     .610714
+                               |
+                       feeused |
+                 Non-monetary  |   .5060169   .5833628     0.87   0.386    -.6373531    1.649387
+                           No  |   .0160979   .1455183     0.11   0.912    -.2691126    .3013085
+                               |
+                          coop |
+                  Cooperative  |    .120425   .1592931     0.76   0.450    -.1917838    .4326337
+           Restless/impatient  |   .5089266     .27493     1.85   0.064    -.0299263    1.047779
+                      Hostile  |   3.206476   1.107389     2.90   0.004     1.036033    5.376919
+                               |
+                      comprend |
+                         Fair  |   .2371639   .1634869     1.45   0.147    -.0832646    .5575924
+                         Poor  |   .3301446   .3351025     0.99   0.325    -.3266442    .9869334
+                               |
+                       spaneng |
+                      Spanish  |  -.0043798   .4296536    -0.01   0.992    -.8464854    .8377257
+                         _cons |    .775763   .8455608     0.92   0.359    -.8815117    2.433038
+------------------------------------------------------------------------------------------------
+(12566 missing values generated)
+(12566 missing values generated)
+
+Multiple-imputation estimates                   Imputations       =          6
+Logistic regression                             Number of obs     =      1,923
+                                                Average RVI       =     0.0008
+                                                Largest FMI       =     0.0199
+DF adjustment:   Large sample                   DF:     min       =  12,875.58
+                                                        avg       =   2.90e+10
+                                                        max       =   1.34e+12
+Model F test:       Equal FMI                   F(  48, 3.5e+08)  =       3.04
+Within VCE type:       Robust                   Prob > F          =     0.0000
+
+------------------------------------------------------------------------------------------------
+                      attr_w23 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------------------------+----------------------------------------------------------------
+                        age_o1 |   .1282091   .0805519     1.59   0.111    -.0296698     .286088
+                        age_o2 |   .2025208   .0710375     2.85   0.004     .0632899    .3417517
+                        age_o3 |   .0542931   .0612619     0.89   0.375     -.065778    .1743642
+                               |
+                           sex |
+                       Female  |   .1446365   .1231793     1.17   0.240    -.0967905    .3860635
+                               |
+                     racehisp5 |
+                        Black  |  -.7105905   .1912683    -3.72   0.000     -1.08547   -.3357114
+                     Hispanic  |  -.4086664   .2493895    -1.64   0.101    -.8974608    .0801281
+                        Asian  |   -.268412   .3310072    -0.81   0.417    -.9171741    .3803501
+                        Other  |   .2625476   .5106174     0.51   0.607    -.7382441    1.263339
+                               |
+                        degree |
+                 Less than HS  |   .3490754   .1864936     1.87   0.061    -.0164454    .7145962
+               Junior college  |   .2035424   .2375634     0.86   0.392    -.2620733    .6691581
+                           BA  |   .0216939   .1761306     0.12   0.902    -.3235158    .3669037
+                     Graduate  |   .1021867   .2311634     0.44   0.658    -.3508852    .5552585
+                               |
+                       realinc |  -.0335545   .0692899    -0.48   0.628    -.1693607    .1022516
+                               |
+                       dwelown |
+                    Pays rent  |   .1758729   .1576843     1.12   0.265    -.1332116    .4849575
+                        Other  |  -.5018346   .5911313    -0.85   0.396    -1.660431    .6567616
+                               |
+                       marital |
+                      Widowed  |  -.1836907   .2776131    -0.66   0.508    -.7278024    .3604211
+                     Divorced  |  -.1789433   .1920881    -0.93   0.352     -.555429    .1975425
+                    Separated  |  -.0855573   .3373937    -0.25   0.800    -.7468368    .5757223
+                Never married  |   .0575961   .1785673     0.32   0.747    -.2923894    .4075817
+                               |
+                      borncitz |
+Born outside but ever-citizen  |   .3132842   .2529844     1.24   0.216    -.1825561    .8091244
+                Never-citizen  |   1.501311   .3098814     4.84   0.000     .8939543    2.108667
+                               |
+                        region |
+              Middle Atlantic  |  -.2559421   .3491946    -0.73   0.464    -.9403508    .4284667
+           East North Central  |    .070496   .3376685     0.21   0.835     -.591322     .732314
+           West North Central  |   .2507408   .4011027     0.63   0.532     -.535406    1.036888
+               South Atlantic  |   .1965101   .3300279     0.60   0.552    -.4503326    .8433528
+           East South Central  |   .3500485   .3780132     0.93   0.354    -.3908438    1.090941
+           West South Central  |   .1539539   .3681188     0.42   0.676    -.5675456    .8754534
+                     Mountain  |   .0977659   .3809425     0.26   0.797    -.6488676    .8443995
+                      Pacific  |   .4494573   .3394284     1.32   0.185    -.2158101    1.114725
+                               |
+                       wordsum |  -.0780618   .0417448    -1.87   0.061    -.1598801    .0037566
+                        intage |  -.0072099   .0054915    -1.31   0.189    -.0179732    .0035533
+                               |
+                        intsex |
+                       Female  |  -.3768588   .1534405    -2.46   0.014    -.6775967    -.076121
+                               |
+                       intethn |
+                        Black  |   .3605854   .1892039     1.91   0.057    -.0102538    .7314247
+                     Hispanic  |  -.0170371   .2520515    -0.07   0.946     -.511049    .4769749
+                        Asian  |   1.180902   .5304648     2.23   0.026       .14121    2.220594
+            Two or more races  |  -.0626073   .2776355    -0.23   0.822    -.6067629    .4815484
+                               |
+                        intyrs |  -.0730844   .0452344    -1.62   0.106    -.1617423    .0155734
+                      lngthinv |  -.0031356   .0020917    -1.50   0.134    -.0072352    .0009639
+                       daysint |   .0013993   .0018031     0.78   0.438    -.0021348    .0049334
+                               |
+                          mode |
+               Over the phone  |   .3542826   .2091474     1.69   0.090    -.0556387    .7642039
+                               |
+                       feeused |
+                 Non-monetary  |   .6798416   .5629001     1.21   0.227    -.4234223    1.783106
+                           No  |   .0407063   .1528999     0.27   0.790     -.258972    .3403846
+                               |
+                          coop |
+                  Cooperative  |    .099034   .1697814     0.58   0.560    -.2337315    .4317995
+           Restless/impatient  |   .5417464   .2818957     1.92   0.055     -.010759    1.094252
+                      Hostile  |   3.029124   1.128029     2.69   0.007     .8182288     5.24002
+                               |
+                      comprend |
+                         Fair  |   .2790757   .1714007     1.63   0.103    -.0568637    .6150151
+                         Poor  |   .3663367   .3548808     1.03   0.302    -.3292168     1.06189
+                               |
+                       spaneng |
+                      Spanish  |  -.0042198   .4450678    -0.01   0.992    -.8765367    .8680972
+                         _cons |   .5404116   .8744628     0.62   0.537    -1.173508    2.254331
+------------------------------------------------------------------------------------------------
+(12687 missing values generated)
+(12687 missing values generated)
+
+. 
+. ********************************************************************************
+. *** Create predicted probabilities for each panel that are shrunken toward
+. ***   the predicted probabilities from the pooled attrition model
+. ********************************************************************************
+. 
+. forval i = 2006(2)2010 { 
+  2.                 
+.         /* Note: Define precision as the inverse variance of the fitted value xb 
+>                          of each individual, which differs for the pooled model and the 
+>                          panel-specific model.  See note below on an alternative 
+>                          definition of precision. */
+.         
+.           gen pr_shr_`i' =                                                       ///
+>           ((1/xb_var_all)*pr_all + (1/(xb_var_`i')*pr_`i'))                      ///
+>           / (1/xb_var_all + 1/xb_var_`i')                                        ///
+>           if samptype==`i' & panelwave==1
+  3.                 
+.           gen pr_shr_`i'_insc =                                                  ///
+>           ((1/xb_var_all_insc)*pr_all_insc + (1/(xb_var_`i'_insc)*pr_`i'_insc))  ///
+>           / (1/xb_var_all_insc + 1/xb_var_`i'_insc)                              ///
+>           if samptype==`i' & panelwave==1
+  4.                 
+.         summ pr_all pr_`i' pr_shr_`i' pr_all_insc pr_`i'_insc ///
+>                 pr_shr_`i'_insc [aw=wtssnr_rs] if samptype==`i' & panelwave==1
+  5.         
+. }
+(100,270 missing values generated)
+(100,379 missing values generated)
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+      pr_all |   2,000        2000    .3628957    .133486    .142818   .9520279
+     pr_2006 |   2,000        2000    .3464215   .1577118   .0499729   .9401075
+ pr_shr_2006 |   2,000        2000    .3592374   .1358039   .1322348   .9489003
+ pr_all_insc |   1,891  1905.08616    .3333015   .1200314   .1303249   .8829269
+pr_2006_insc |   1,891  1905.08616    .3138594   .1448454   .0396861   .8652723
+-------------+-----------------------------------------------------------------
+pr_shr_200~c |   1,891  1905.08616    .3290199    .122727   .1213093   .8633623
+(100,247 missing values generated)
+(100,352 missing values generated)
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+      pr_all |   2,023        2023    .3504458   .1280484   .1404807   .9283682
+     pr_2008 |   2,023        2023    .3663853   .1344523   .0878717   .9500549
+ pr_shr_2008 |   2,023        2023    .3547696   .1248691   .1455797   .9232415
+ pr_all_insc |   1,918  1939.03129    .3198043   .1138972   .1121957   .8834836
+pr_2008_insc |   1,918  1939.03129    .3389469   .1249193   .0558458   .9313959
+-------------+-----------------------------------------------------------------
+pr_sh~8_insc |   1,918  1939.03129     .325104    .110784   .1200332   .8746343
+(100,226 missing values generated)
+(100,347 missing values generated)
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+      pr_all |   2,044  2043.99999    .3606833   .1323471   .1495904   .9577196
+     pr_2010 |   2,044  2043.99999     .361218   .1613836   .0520254   .9907178
+ pr_shr_2010 |   2,044  2043.99999    .3610007   .1368022    .152108   .9659509
+ pr_all_insc |   1,923  1933.19529    .3244238   .1140948   .1263522   .9042338
+pr_2010_insc |   1,923  1933.19529     .324605   .1473372   .0355898   .9805461
+-------------+-----------------------------------------------------------------
+pr_shr_201~c |   1,923  1933.19529    .3246948   .1189112   .1307832   .9233643
+
+. 
+.   /* Note:  Defining precision instead based on predicted probabilities would be
+>                         distorted a bit by scaling.  The delta method for the s.e. of the 
+>                         predicted probability is the fitted value (xb) muplitplied by 
+>                         p(1-p), where p is solved by putting the fitted value through the 
+>                         logit link. The p(1-p) term has consequences because it differs 
+>                         between the pooled value and the panel-specific values that are 
+>                         then precision weighted.  This could be adjusted for, but then one 
+>                         is just back to using the fitted value xb from the linear 
+>                         prediction.  This is the approach above taken. The alternative 
+>                         would be a version based on this expression (but with an added
+>                         adjustment for difference in p(1-p):
+>         
+>                         gen pr_shr_`i' = ((1/pr_var_all)*pr_all + (1/(pr_var_`i')*pr_`i'))    
+>                                                          / (1/pr_var_all + 1/pr_var_`i')          
+>         */
+.                                                   
+. ********************************************************************************
+. *** Order estimated values and then broadcast across imputed datasets 
+. ********************************************************************************
+. 
+. #delimit ;
+delimiter now ;
+. local pr_vars 
+>  xb_all       xb_var_all       
+>  pr_all       pr_var_all       
+>  xb_all_insc  xb_var_all_insc  
+>  pr_all_insc  pr_var_all_insc 
+>  
+>  xb_2006      xb_var_2006      
+>  pr_2006      pr_var_2006 
+>  pr_shr_2006     
+>  xb_2006_insc xb_var_2006_insc 
+>  pr_2006_insc pr_var_2006_insc 
+>  pr_shr_2006_insc
+>  
+>  xb_2008      xb_var_2008      
+>  pr_2008      pr_var_2008 
+>  pr_shr_2008      
+>  xb_2008_insc xb_var_2008_insc 
+>  pr_2008_insc pr_var_2008_insc 
+>  pr_shr_2008_insc
+>  
+>  xb_2010      xb_var_2010      
+>  pr_2010      pr_var_2010 
+>  pr_shr_2010      
+>  xb_2010_insc xb_var_2010_insc 
+>  pr_2010_insc pr_var_2010_insc 
+>  pr_shr_2010_insc ;
+
+. #delimit cr
+delimiter now cr
+. 
+. foreach var in `pr_vars' {
+  2.         quietly bysort panelid (`var'): replace `var' = `var'[1]
+  3. }
+
+. 
+. order `pr_vars', after(outsc_w23)
+
+. 
+. ********************************************************************************
+. *** Save datasets
+. ********************************************************************************
+. 
+. *** save full dataset, keeping all unimputed and imputed records, as well as
+. ***   predictors of attrition
+. 
+. order panelid panelwave id year samptype m
+
+. sort panelid panelwave m
+
+. compress
+  (0 bytes saved)
+
+. save data/gss-panel-2006-2014-attrition-pr-all-im.dta, replace
+file data/gss-panel-2006-2014-attrition-pr-all-im.dta saved
+
+. 
+. *** save dataset with only one record per respondent
+. 
+. mi unset, asis
+
+. keep if m==1 // Keep the first set of imputation records.  This file would be
+(87,660 observations deleted)
+
+.              //   the same for any other set of imputations because no 
+.                          //   predictor variables are saved in the file.
+. drop m _* m_*
+
+. keep panelid-pr_shr_2010_insc
+
+. sort panelid panelwave
+
+. 
+. save data/gss-panel-2006-2014-attrition-pr.dta, replace
+file data/gss-panel-2006-2014-attrition-pr.dta saved
+
+. 
+. log close
+      name:  <unnamed>
+       log:  /Users/smorgan/Documents/GitHub/gss-panel-weights/log/estimate-attrition-probabilities.
+> log
+  log type:  text
+ closed on:  28 Jan 2020, 17:46:48
+----------------------------------------------------------------------------------------------------

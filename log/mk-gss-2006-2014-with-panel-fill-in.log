@@ -1,0 +1,528 @@
+----------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  /Users/smorgan/Documents/GitHub/gss-panel-weights/log/mk-gss-2006-2014-with-panel-fill-
+> in.log
+  log type:  text
+ opened on:  21 Jan 2020, 14:23:24
+
+. 
+. ********************************************************************************
+. *** Set threshold to keep/drop years of the GSS cross-sectional cumulative file 
+. ********************************************************************************
+. 
+. local year_from 2006
+
+. local year_until 2014
+
+. 
+. ********************************************************************************
+. *** Create temporary data files
+. ********************************************************************************
+. 
+. tempfile gss_cross_section_raw gss_2006_panel gss_2008_panel gss_2010_panel
+
+. 
+. * GSS cumulative cross-section
+. use ../gss-from-norc/GSS7218_R2.dta, clear
+
+. save `gss_cross_section_raw'
+file /var/folders/4s/qpg7f70j5_n6r1nb7h6k43gr0000gn/T//S_84065.000001 saved
+
+. 
+. * GSS 2006-2010 panel 
+. use ../gss-from-norc/GSS_panel06w123_R6a.dta, clear
+
+. rename *, lower
+  (all newnames==oldnames)
+
+. save `gss_2006_panel'
+file /var/folders/4s/qpg7f70j5_n6r1nb7h6k43gr0000gn/T//S_84065.000002 saved
+
+. 
+. * GSS 2008-2012 panel 
+. use ../gss-from-norc/GSS_panel08w123_R6.dta, clear
+( )
+
+. gen samptype = 2008
+
+. rename *, lower
+
+. save `gss_2008_panel'
+file /var/folders/4s/qpg7f70j5_n6r1nb7h6k43gr0000gn/T//S_84065.000003 saved
+
+. 
+. * GSS 2010-2014 panel
+. use ../gss-from-norc/GSS_panel2010w123_R6.dta, clear
+( )
+
+. rename *, lower
+
+. save `gss_2010_panel'
+file /var/folders/4s/qpg7f70j5_n6r1nb7h6k43gr0000gn/T//S_84065.000004 saved
+
+. 
+. ********************************************************************************
+. *** Define macros for lists of variables that will be used in the analysis 
+. ********************************************************************************
+. 
+. *** variable list for cross-sectional data file
+. local vars_to_keep year id dateintv lngthinv mode spaneng ///
+>         feeused coop comprend intage intsex intethn intyrs ///
+>         region size xnorcsiz ///
+>         age sex degree spdeg wordsum marital uscitzn born parborn relig ///
+>         hispanic race eth1 eth2 eth3 ethnic racecen1 racecen2 racecen3 ///      
+>         occ10 spocc10 realinc realrinc dwelown class ///
+>         wrkslf wrkstat spwrkslf spwrksta numemps   ///
+>         reg16 incom16 family16 padeg madeg paocc10 maocc10 pawrkslf mawrkslf 
+
+.          
+. *** variable list for panel data files
+. foreach var of local vars_to_keep {
+  2.                 local vars_to_keep_panel `vars_to_keep_panel' ///
+>                      `var'_1 `var'_2 `var'_3
+  3. }
+
+. 
+. *** add weight variables to lists
+. local vars_to_keep wtss wtssnr `vars_to_keep' 
+
+. local vars_to_keep_panel samptype wtpan12 wtpan123 wtpannr12 wtpannr123 ///
+>         `vars_to_keep_panel'
+
+.         
+. *** set aside a list of 'at the time of interview' variables for later use 
+. ***   to structure the fill-in procedure
+. local int_vars_stubs dateintv lngthinv mode spaneng feeused coop comprend ///
+>         intage intsex intethn intyrs region size xnorcsiz
+
+. 
+. macro list _vars_to_keep _vars_to_keep_panel _int_vars_stubs
+_vars_to_keep:  wtss wtssnr year id dateintv lngthinv mode spaneng feeused coop comprend intage
+                intsex intethn intyrs region size xnorcsiz age sex degree spdeg wordsum marital
+                uscitzn born parborn relig hispanic race eth1 eth2 eth3 ethnic racecen1 racecen2
+                racecen3 occ10 spocc10 realinc realrinc dwelown class wrkslf wrkstat spwrkslf
+                spwrksta numemps reg16 incom16 family16 padeg madeg paocc10 maocc10 pawrkslf
+                mawrkslf
+_vars_to_keep_panel:
+                samptype wtpan12 wtpan123 wtpannr12 wtpannr123 year_1 year_2 year_3 id_1 id_2 id_3
+                dateintv_1 dateintv_2 dateintv_3 lngthinv_1 lngthinv_2 lngthinv_3 mode_1 mode_2
+                mode_3 spaneng_1 spaneng_2 spaneng_3 feeused_1 feeused_2 feeused_3 coop_1 coop_2
+                coop_3 comprend_1 comprend_2 comprend_3 intage_1 intage_2 intage_3 intsex_1 intsex_2
+                intsex_3 intethn_1 intethn_2 intethn_3 intyrs_1 intyrs_2 intyrs_3 region_1 region_2
+                region_3 size_1 size_2 size_3 xnorcsiz_1 xnorcsiz_2 xnorcsiz_3 age_1 age_2 age_3
+                sex_1 sex_2 sex_3 degree_1 degree_2 degree_3 spdeg_1 spdeg_2 spdeg_3 wordsum_1
+                wordsum_2 wordsum_3 marital_1 marital_2 marital_3 uscitzn_1 uscitzn_2 uscitzn_3
+                born_1 born_2 born_3 parborn_1 parborn_2 parborn_3 relig_1 relig_2 relig_3
+                hispanic_1 hispanic_2 hispanic_3 race_1 race_2 race_3 eth1_1 eth1_2 eth1_3 eth2_1
+                eth2_2 eth2_3 eth3_1 eth3_2 eth3_3 ethnic_1 ethnic_2 ethnic_3 racecen1_1 racecen1_2
+                racecen1_3 racecen2_1 racecen2_2 racecen2_3 racecen3_1 racecen3_2 racecen3_3 occ10_1
+                occ10_2 occ10_3 spocc10_1 spocc10_2 spocc10_3 realinc_1 realinc_2 realinc_3
+                realrinc_1 realrinc_2 realrinc_3 dwelown_1 dwelown_2 dwelown_3 class_1 class_2
+                class_3 wrkslf_1 wrkslf_2 wrkslf_3 wrkstat_1 wrkstat_2 wrkstat_3 spwrkslf_1
+                spwrkslf_2 spwrkslf_3 spwrksta_1 spwrksta_2 spwrksta_3 numemps_1 numemps_2 numemps_3
+                reg16_1 reg16_2 reg16_3 incom16_1 incom16_2 incom16_3 family16_1 family16_2
+                family16_3 padeg_1 padeg_2 padeg_3 madeg_1 madeg_2 madeg_3 paocc10_1 paocc10_2
+                paocc10_3 maocc10_1 maocc10_2 maocc10_3 pawrkslf_1 pawrkslf_2 pawrkslf_3 mawrkslf_1
+                mawrkslf_2 mawrkslf_3
+_int_vars_stubs:
+                dateintv lngthinv mode spaneng feeused coop comprend intage intsex intethn intyrs
+                region size xnorcsiz
+
+. 
+. ********************************************************************************
+. *** Select years and prepare cross-sectional data for later merge
+. ********************************************************************************
+. 
+. use `gss_cross_section_raw', clear
+
+. keep `vars_to_keep'
+
+. order `vars_to_keep'
+
+. order year id
+
+. keep if year >= `year_from' & year <= `year_until'
+(51,725 observations deleted)
+
+. /* Note:  Cross-sectional data from 2012 and 2014 are not needed to estimate
+>           models that generate weights.  These years are included nonetheless to
+>                   enable comparisons of follow-up responses to responses from
+>                   fresh sampels and for other analysis purposes. */
+.                   
+. *** create unique id across all years in kept years
+. qui tostring year,  gen(year_str)
+
+. qui tostring id, gen(id_str)
+
+. gen yearid=year_str + id_str
+
+. destring yearid, replace
+yearid: all characters numeric; replaced as long
+
+. drop year_str id_str
+
+. order year id yearid
+
+. sort yearid
+
+. 
+. tempfile gss_cross_section_some_years
+
+. save `gss_cross_section_some_years'
+file /var/folders/4s/qpg7f70j5_n6r1nb7h6k43gr0000gn/T//S_84065.000005 saved
+
+. 
+. ********************************************************************************
+. *** Modify panel data, create unique yearid, and remove all labels
+. ********************************************************************************
+. 
+. use `gss_2006_panel', clear
+
+. keep `vars_to_keep_panel'
+
+. order `vars_to_keep_panel'
+
+. gen year = 2006
+
+. order year
+
+. _strip_labels _all
+
+. foreach var of varlist _all {
+  2.   label var `var' ""
+  3. }
+
+. save `gss_2006_panel', replace
+file /var/folders/4s/qpg7f70j5_n6r1nb7h6k43gr0000gn/T//S_84065.000002 saved
+
+. 
+. use `gss_2008_panel', clear
+( )
+
+. keep `vars_to_keep_panel'
+
+. order `vars_to_keep_panel'
+
+. gen year = 2008
+
+. order year
+
+. _strip_labels _all
+
+. foreach var of varlist _all {
+  2.   label var `var' ""
+  3. }
+
+. save `gss_2008_panel', replace
+file /var/folders/4s/qpg7f70j5_n6r1nb7h6k43gr0000gn/T//S_84065.000003 saved
+
+. 
+. use `gss_2010_panel', clear
+( )
+
+. keep `vars_to_keep_panel'
+
+. order `vars_to_keep_panel'
+
+. gen year = 2010
+
+. order year
+
+. _strip_labels _all
+
+. foreach var of varlist _all {
+  2.   label var `var' ""
+  3. }
+
+. save `gss_2010_panel', replace
+file /var/folders/4s/qpg7f70j5_n6r1nb7h6k43gr0000gn/T//S_84065.000004 saved
+
+. 
+. foreach file in `gss_2006_panel' `gss_2008_panel' `gss_2010_panel' {
+  2.   use `file', clear
+  3.   tempvar year_str id_str
+  4.   rename id_1 id
+  5.   drop id_2 id_3      /* because these ids have a different numbering scheme */
+  6.   qui tostring year, gen(`year_str')  
+  7.   qui tostring id, gen(`id_str')
+  8.   gen yearid=`year_str' + `id_str'
+  9.   destring yearid, replace
+ 10.   order year id yearid
+ 11.   sort yearid
+ 12.   drop __00*
+ 13.   save `file', replace 
+ 14. }
+yearid: all characters numeric; replaced as long
+file /var/folders/4s/qpg7f70j5_n6r1nb7h6k43gr0000gn/T//S_84065.000002 saved
+( )
+yearid: all characters numeric; replaced as long
+file /var/folders/4s/qpg7f70j5_n6r1nb7h6k43gr0000gn/T//S_84065.000003 saved
+( )
+yearid: all characters numeric; replaced as long
+file /var/folders/4s/qpg7f70j5_n6r1nb7h6k43gr0000gn/T//S_84065.000004 saved
+
+. 
+. ********************************************************************************
+. *** Run fill in procedure for panels and then merge with cross-seciton
+. ********************************************************************************
+. 
+. local stubs_for_no_fill_in year id ballot samptype wtss wtssnr wtpan12 wtpan123 ///
+>     wtpannr12 wtpannr123 `int_vars_stubs' 
+
+. local stubs_for_fill_in: list vars_to_keep - stubs_for_no_fill_in
+
+. macro list _stubs_for_no_fill_in _stubs_for_fill_in
+_stubs_for_no_fill_in:
+                year id ballot samptype wtss wtssnr wtpan12 wtpan123 wtpannr12 wtpannr123 dateintv
+                lngthinv mode spaneng feeused coop comprend intage intsex intethn intyrs region size
+                xnorcsiz
+_stubs_for_fill_in:
+                age sex degree spdeg wordsum marital uscitzn born parborn relig hispanic race eth1
+                eth2 eth3 ethnic racecen1 racecen2 racecen3 occ10 spocc10 realinc realrinc dwelown
+                class wrkslf wrkstat spwrkslf spwrksta numemps reg16 incom16 family16 padeg madeg
+                paocc10 maocc10 pawrkslf mawrkslf
+
+. 
+. foreach file in `gss_2006_panel' `gss_2008_panel' `gss_2010_panel' {
+  2. 
+.         use `file', clear
+  3. 
+. foreach stub in `stubs_for_fill_in' {
+  4. 
+.         qui clonevar `stub'_pl = `stub'_1
+  5.         qui replace `stub'_pl = `stub'_2 if `stub'_1 >= . & `stub'_2 < . 
+  6.         qui replace `stub'_pl = `stub'_3 if `stub'_1 >= . & `stub'_2 >= . & ///
+>           `stub'_3 < .
+  7.         qui gen byte `stub'_fl = .
+  8.         qui replace `stub'_fl = 1 if `stub'_1 < . 
+  9.         qui replace `stub'_fl = 2 if `stub'_1 >= . & `stub'_2 < . 
+ 10.         qui replace `stub'_fl = 3 if `stub'_1 >= . & `stub'_2 >= . & `stub'_3 < .
+ 11. 
+.         }
+ 12.         
+.   gen panelsamp = 1     
+ 13.   save `file', replace  
+ 14.   
+.   use `gss_cross_section_some_years', replace
+ 15.   merge 1:1 yearid using `file', nogen update
+ 16.   save `gss_cross_section_some_years', replace
+ 17. 
+. }
+file /var/folders/4s/qpg7f70j5_n6r1nb7h6k43gr0000gn/T//S_84065.000002 saved
+(note: variable year was int, now float to accommodate using data's values)
+
+    Result                           # of obs.
+    -----------------------------------------
+    not matched                        11,089
+        from master                    11,089  
+        from using                          0  
+
+    matched                             2,000
+        not updated                     2,000  
+        missing updated                     0  
+        nonmissing conflict                 0  
+    -----------------------------------------
+file /var/folders/4s/qpg7f70j5_n6r1nb7h6k43gr0000gn/T//S_84065.000005 saved
+( )
+file /var/folders/4s/qpg7f70j5_n6r1nb7h6k43gr0000gn/T//S_84065.000003 saved
+(note: variable samptype was int, now float to accommodate using data's values)
+(note: variable lngthinv_1 was int, now double to accommodate using data's values)
+
+    Result                           # of obs.
+    -----------------------------------------
+    not matched                        11,066
+        from master                    11,066  
+        from using                          0  
+
+    matched                             2,023
+        not updated                         0  
+        missing updated                 2,023  
+        nonmissing conflict                 0  
+    -----------------------------------------
+file /var/folders/4s/qpg7f70j5_n6r1nb7h6k43gr0000gn/T//S_84065.000005 saved
+( )
+file /var/folders/4s/qpg7f70j5_n6r1nb7h6k43gr0000gn/T//S_84065.000004 saved
+
+    Result                           # of obs.
+    -----------------------------------------
+    not matched                        11,045
+        from master                    11,045  
+        from using                          0  
+
+    matched                             2,044
+        not updated                         0  
+        missing updated                 2,044  
+        nonmissing conflict                 0  
+    -----------------------------------------
+file /var/folders/4s/qpg7f70j5_n6r1nb7h6k43gr0000gn/T//S_84065.000005 saved
+
+. 
+. *** adjust age_pl to account for survey-year differences 
+. replace age_pl = age_pl - 2 if age_fl == 2 
+(11 real changes made)
+
+. replace age_pl = age_pl - 4 if age_fl == 3
+(2 real changes made)
+
+. 
+. *** final coding to identify panel samples
+. recode panelsamp . = 0
+(panelsamp: 7022 changes made)
+
+. tab year panelsamp
+
+  gss year |
+  for this |       panelsamp
+respondent |         0          1 |     Total
+-----------+----------------------+----------
+      2006 |     2,510      2,000 |     4,510 
+      2008 |         0      2,023 |     2,023 
+      2010 |         0      2,044 |     2,044 
+      2012 |     1,974          0 |     1,974 
+      2014 |     2,538          0 |     2,538 
+-----------+----------------------+----------
+     Total |     7,022      6,067 |    13,089 
+
+. bys year: tab panelsamp samptype, miss nol
+
+----------------------------------------------------------------------------------------------------
+-> year = 2006
+
+           |       samptype
+ panelsamp |      2006          . |     Total
+-----------+----------------------+----------
+         0 |         0      2,510 |     2,510 
+         1 |     2,000          0 |     2,000 
+-----------+----------------------+----------
+     Total |     2,000      2,510 |     4,510 
+
+----------------------------------------------------------------------------------------------------
+-> year = 2008
+
+           |  samptype
+ panelsamp |      2008 |     Total
+-----------+-----------+----------
+         1 |     2,023 |     2,023 
+-----------+-----------+----------
+     Total |     2,023 |     2,023 
+
+----------------------------------------------------------------------------------------------------
+-> year = 2010
+
+           |  samptype
+ panelsamp |      2010 |     Total
+-----------+-----------+----------
+         1 |     2,044 |     2,044 
+-----------+-----------+----------
+     Total |     2,044 |     2,044 
+
+----------------------------------------------------------------------------------------------------
+-> year = 2012
+
+           |  samptype
+ panelsamp |         . |     Total
+-----------+-----------+----------
+         0 |     1,974 |     1,974 
+-----------+-----------+----------
+     Total |     1,974 |     1,974 
+
+----------------------------------------------------------------------------------------------------
+-> year = 2014
+
+           |  samptype
+ panelsamp |         . |     Total
+-----------+-----------+----------
+         0 |     2,538 |     2,538 
+-----------+-----------+----------
+     Total |     2,538 |     2,538 
+
+
+. /*  Note:  2006 is unusual in two ways:
+>      1.  Four ballots, the fourth of which is an add-on with limited variables 
+>        with 1518 respondents (usually dropped from analysis).
+>      2.  2000 individuals were subsampled from the first 2992 in the first three  
+>        ballots to make the panel sample. */
+. 
+. ********************************************************************************
+. *** Sort and keep variables; save panel filled in temporary dataset
+. ********************************************************************************
+. 
+. sort year id yearid
+
+. order year id yearid samptype panelsamp wt*
+
+. tempfile before_nonpanel_fillin
+
+. save `before_nonpanel_fillin'
+file /var/folders/4s/qpg7f70j5_n6r1nb7h6k43gr0000gn/T//S_84065.000006 saved
+
+. 
+. ********************************************************************************
+. *** Fill in _pl variables for individuals who are not in the panel sample with
+. ***  information from non _pl cross-section variables
+. ***    (Note:  These variables will rarely be used, but we create them anyway.)
+. ********************************************************************************
+. 
+. *** make new list of all _pl variables generated by prior fill-in procedure
+. use `before_nonpanel_fillin', clear
+
+. keep *_pl
+
+. rename *_pl *
+
+. quietly ds
+
+. local pl_stubs  `r(varlist)'
+
+. 
+. macro list _pl_stubs
+_pl_stubs:      age sex degree spdeg wordsum marital uscitzn born parborn relig hispanic race eth1
+                eth2 eth3 ethnic racecen1 racecen2 racecen3 occ10 spocc10 realinc realrinc dwelown
+                class wrkslf wrkstat spwrkslf spwrksta numemps reg16 incom16 family16 padeg madeg
+                paocc10 maocc10 pawrkslf mawrkslf
+
+. 
+. *** Replace missing in _pl with non _pl for individuals who are not in the panel
+. ***  sample (and replace _fl with 1 for non panel sample, with the rationale
+. ***  that variables from 'wave 1' are used for the _pl variable, even though
+. ***  no 'waves' exist for these resondents)
+. 
+. use `before_nonpanel_fillin', clear
+
+. 
+. foreach var in `pl_stubs' {
+  2.   qui replace `var'_pl = `var' if panelsamp == 0
+  3.   qui replace `var'_fl = 1 if `var' < . & panelsamp == 0
+  4. }
+
+. 
+. ********************************************************************************
+. *** Eliminate panel data in separate vars (can be kept by commenting out)
+. ********************************************************************************
+. 
+. drop *_1 *_2 *_3 
+
+. 
+. ********************************************************************************
+. *** Save the data
+. ********************************************************************************
+. 
+. compress
+  variable year was float now int
+  variable samptype was float now int
+  variable panelsamp was float now byte
+  (91,623 bytes saved)
+
+. cap drop __00* // drop any lingering temporary variables //
+
+. save data/gss-2006-2014-with-panel-fill-in.dta, replace
+file data/gss-2006-2014-with-panel-fill-in.dta saved
+
+. 
+. log close
+      name:  <unnamed>
+       log:  /Users/smorgan/Documents/GitHub/gss-panel-weights/log/mk-gss-2006-2014-with-panel-fill-
+> in.log
+  log type:  text
+ closed on:  21 Jan 2020, 14:23:27
+----------------------------------------------------------------------------------------------------

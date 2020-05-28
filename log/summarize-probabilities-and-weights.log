@@ -1,0 +1,1474 @@
+----------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  /Users/smorgan/Documents/GitHub/gss-panel-weights/log/summarize-probabilities-and-weigh
+> ts.log
+  log type:  text
+ opened on:  28 Jan 2020, 18:25:32
+
+. 
+. *** To run this file, the following line must be run once to install estout: 
+. ***    ssc install estout, replace
+. 
+. use data/gss-panel-allyears-fill-in-and-recoded-panel-merged-wt.dta, clear
+
+. 
+. ********************************************************************************
+. *** Calculate summary statistics of estimated probabilities and inverses
+. ********************************************************************************
+. 
+. *** Macros
+. 
+. #delimit ;
+delimiter now ;
+. local pr_list1 pr_2006 pr_shr_2006 
+>                            pr_2008 pr_shr_2008 
+>                            pr_2010 pr_shr_2010 
+>                            pr_2006_insc pr_shr_2006_insc
+>                pr_2008_insc pr_shr_2008_insc 
+>                            pr_2010_insc pr_shr_2010_insc ;
+
+.                            local pr_list1 pr_2006 pr_shr_2006 pr_2008 pr_shr_2008
+>                pr_2010 pr_shr_2010 pr_2006_insc pr_shr_2006_insc
+>                pr_2008_insc pr_shr_2008_insc pr_2010_insc pr_shr_2010_insc ;
+
+.  local pr_list2 pr_all 
+>                            pr_2006 pr_shr_2006 
+>                            pr_2008 pr_shr_2008 
+>                            pr_2010 pr_shr_2010 
+>                            pr_all_insc 
+>                            pr_2006_insc pr_shr_2006_insc
+>                pr_2008_insc pr_shr_2008_insc 
+>                            pr_2010_insc pr_shr_2010_insc ;
+
+. local invp_list invp_all 
+>                                 invp_2006 invp_shr_2006 
+>                                 invp_2008 invp_shr_2008 
+>                                 invp_2010 invp_shr_2010 
+>                             invp_all_insc 
+>                             invp_2006_insc invp_shr_2006_insc 
+>                             invp_2008_insc invp_shr_2008_insc 
+>                             invp_2010_insc invp_shr_2010_insc ;
+
+. #delimit cr
+delimiter now cr
+. 
+. *** Create log inverse probabilities
+. foreach var of varlist `invp_list' {
+  2. 
+.         gen l`var' = ln(`var')
+  3. 
+. }
+(2,985 missing values generated)
+(10,782 missing values generated)
+(10,782 missing values generated)
+(10,725 missing values generated)
+(10,725 missing values generated)
+(10,698 missing values generated)
+(10,698 missing values generated)
+(2,985 missing values generated)
+(10,782 missing values generated)
+(10,782 missing values generated)
+(10,725 missing values generated)
+(10,725 missing values generated)
+(10,698 missing values generated)
+(10,698 missing values generated)
+
+. 
+. #delimit ;
+delimiter now ;
+. local linvp_list linvp_all 
+>                                  linvp_2006 linvp_shr_2006 
+>                                  linvp_2008 linvp_shr_2008 
+>                                  linvp_2010 linvp_shr_2010 
+>                              linvp_all_insc 
+>                              linvp_2006_insc linvp_shr_2006_insc 
+>                              linvp_2008_insc linvp_shr_2008_insc 
+>                              linvp_2010_insc linvp_shr_2010_insc ;
+
+. #delimit cr
+delimiter now cr
+. 
+. ** summary statistics of probabilities and inverse probabilities
+. estpost sum `pr_list2' [aw = wtssnr_rs] if panelwave == 1
+
+             |  e(count)   e(sum_w)    e(mean)     e(Var)      e(sd)     e(min)     e(max) 
+-------------+-----------------------------------------------------------------------------
+      pr_all |      6067       6067    .357999    .017266   .1314001   .1404807   .9577196 
+     pr_2006 |      2000       2000   .3464215    .024873   .1577118   .0499729   .9401075 
+ pr_shr_2006 |      2000       2000   .3592374   .0184427   .1358039   .1322348   .9489003 
+     pr_2008 |      2023       2023   .3663853   .0180774   .1344523   .0878717   .9500549 
+ pr_shr_2008 |      2023       2023   .3547696   .0155923   .1248691   .1455797   .9232415 
+     pr_2010 |      2044       2044    .361218   .0260447   .1613836   .0520254   .9907178 
+ pr_shr_2010 |      2044       2044   .3610007   .0187148   .1368022    .152108   .9659509 
+ pr_all_insc |      5732   5777.313   .3258008   .0134874   .1161352   .1121957   .9042338 
+pr_2006_insc |      1891   1905.086   .3138594   .0209802   .1448454   .0396861   .8652723 
+pr_sh~6_insc |      1891   1905.086   .3290199   .0150619    .122727   .1213093   .8633623 
+pr_2008_insc |      1918   1939.031   .3389469   .0156048   .1249193   .0558458   .9313959 
+pr_sh~8_insc |      1918   1939.031    .325104   .0122731    .110784   .1200332   .8746343 
+pr_2010_insc |      1923   1933.195    .324605   .0217082   .1473372   .0355898   .9805461 
+pr_shr_201~c |      1923   1933.195   .3246948   .0141399   .1189112   .1307832   .9233643 
+
+             |    e(sum) 
+-------------+-----------
+      pr_all |   2171.98 
+     pr_2006 |   692.843 
+ pr_shr_2006 |  718.4748 
+     pr_2008 |  741.1974 
+ pr_shr_2008 |  717.6989 
+     pr_2010 |  738.3295 
+ pr_shr_2010 |  737.8854 
+ pr_all_insc |  1882.253 
+pr_2006_insc |  597.9292 
+pr_sh~6_insc |  626.8112 
+pr_2008_insc |  657.2287 
+pr_sh~8_insc |  630.3869 
+pr_2010_insc |  627.5248 
+pr_shr_201~c |  627.6985 
+
+. esttab, ///
+>   cells("count mean sd min max") ///
+>   noobs label
+
+-------------------------------------------------------------------------------------
+                              (1)                                                    
+                                                                                     
+                            count         mean           sd          min          max
+-------------------------------------------------------------------------------------
+MI prediction                6067      .357999     .1314001     .1404807     .9577196
+MI prediction                2000     .3464215     .1577118     .0499729     .9401075
+pr_shr_2006                  2000     .3592374     .1358039     .1322348     .9489003
+MI prediction                2023     .3663853     .1344523     .0878717     .9500549
+pr_shr_2008                  2023     .3547696     .1248691     .1455797     .9232415
+MI prediction                2044      .361218     .1613836     .0520254     .9907178
+pr_shr_2010                  2044     .3610007     .1368022      .152108     .9659509
+MI prediction                5732     .3258008     .1161352     .1121957     .9042338
+MI prediction                1891     .3138594     .1448454     .0396861     .8652723
+pr_shr_2006_insc             1891     .3290199      .122727     .1213093     .8633623
+MI prediction                1918     .3389469     .1249193     .0558458     .9313959
+pr_shr_2008_insc             1918      .325104      .110784     .1200332     .8746343
+MI prediction                1923      .324605     .1473372     .0355898     .9805461
+pr_shr_2010_insc             1923     .3246948     .1189112     .1307832     .9233643
+-------------------------------------------------------------------------------------
+
+. mat pr_summ = r(coefs)
+
+. 
+. estpost sum `pr_list2' [aw = wtpannr123] if panelwave == 1 & attr_w23 == 0
+
+             |  e(count)   e(sum_w)    e(mean)     e(Var)      e(sd)     e(min)     e(max) 
+-------------+-----------------------------------------------------------------------------
+      pr_all |      3875       3875   .3336361   .0113698   .1066295   .1404807   .9261153 
+     pr_2006 |      1276       1276   .3125625   .0176105   .1327047   .0499729   .8458453 
+ pr_shr_2006 |      1276       1276   .3333424   .0125745   .1121359   .1322348    .764946 
+     pr_2008 |      1295       1295   .3404718   .0119604   .1093638   .0878717   .8991994 
+ pr_shr_2008 |      1295       1295   .3326719   .0097799   .0988933   .1455797    .919868 
+     pr_2010 |      1304       1304   .3229476   .0165599   .1286851   .0520254   .8565191 
+ pr_shr_2010 |      1304       1304   .3296118   .0115443   .1074446    .152108   .8324835 
+ pr_all_insc |      3875       3875   .3077671   .0094117   .0970137   .1263522    .850028 
+pr_2006_insc |      1276       1276   .2862488   .0156239   .1249956   .0396861   .7792463 
+pr_sh~6_insc |      1276       1276   .3084328   .0108704   .1042614   .1213093   .7352471 
+pr_2008_insc |      1295       1295    .317715   .0112397   .1060176   .0558458   .8038941 
+pr_sh~8_insc |      1295       1295   .3082505   .0080732    .089851   .1200332   .8329318 
+pr_2010_insc |      1304       1304   .2948761   .0146753   .1211415   .0355898   .8306182 
+pr_shr_201~c |      1304       1304   .3018611   .0093472   .0966811   .1307832   .8193548 
+
+             |    e(sum) 
+-------------+-----------
+      pr_all |   1292.84 
+     pr_2006 |  398.8298 
+ pr_shr_2006 |  425.3449 
+     pr_2008 |  440.9109 
+ pr_shr_2008 |  430.8102 
+     pr_2010 |  421.1237 
+ pr_shr_2010 |  429.8138 
+ pr_all_insc |  1192.597 
+pr_2006_insc |  365.2535 
+pr_sh~6_insc |  393.5603 
+pr_2008_insc |  411.4409 
+pr_sh~8_insc |  399.1844 
+pr_2010_insc |  384.5184 
+pr_shr_201~c |  393.6269 
+
+. esttab, ///
+>   cells("count mean sd min max") ///
+>   noobs label
+
+-------------------------------------------------------------------------------------
+                              (1)                                                    
+                                                                                     
+                            count         mean           sd          min          max
+-------------------------------------------------------------------------------------
+MI prediction                3875     .3336361     .1066295     .1404807     .9261153
+MI prediction                1276     .3125625     .1327047     .0499729     .8458453
+pr_shr_2006                  1276     .3333424     .1121359     .1322348      .764946
+MI prediction                1295     .3404718     .1093638     .0878717     .8991994
+pr_shr_2008                  1295     .3326719     .0988933     .1455797      .919868
+MI prediction                1304     .3229476     .1286851     .0520254     .8565191
+pr_shr_2010                  1304     .3296118     .1074446      .152108     .8324835
+MI prediction                3875     .3077671     .0970137     .1263522      .850028
+MI prediction                1276     .2862488     .1249956     .0396861     .7792463
+pr_shr_2006_insc             1276     .3084328     .1042614     .1213093     .7352471
+MI prediction                1295      .317715     .1060176     .0558458     .8038941
+pr_shr_2008_insc             1295     .3082505      .089851     .1200332     .8329318
+MI prediction                1304     .2948761     .1211415     .0355898     .8306182
+pr_shr_2010_insc             1304     .3018611     .0966811     .1307832     .8193548
+-------------------------------------------------------------------------------------
+
+. mat pr_summ_pnl = r(coefs)
+
+. 
+. estpost sum `invp_list' `linvp_list' [aw = wtpannr123] if panelwave == 1 & attr_w23 == 0
+
+             |  e(count)   e(sum_w)    e(mean)     e(Var)      e(sd)     e(min)     e(max) 
+-------------+-----------------------------------------------------------------------------
+    invp_all |      3875       3875   1.565677   .2104072   .4587017   1.157772   13.61011 
+   invp_2006 |      1276       1276   1.567398   .2382234   .4880813   1.072182   6.607659 
+invp_sh~2006 |      1276       1276   1.567398    .157022   .3962601   1.155449   4.265651 
+   invp_2008 |      1295       1295   1.562162    .195683   .4423607   1.085345   9.821111 
+invp_sh~2008 |      1295       1295   1.562162   .2243594   .4736659   1.176742    12.5472 
+   invp_2010 |      1304       1304   1.567485   .3272763   .5720807   1.050611    6.94136 
+invp_sh~2010 |      1304       1304   1.567485   .2049582   .4527231   1.187153   6.008824 
+invp_all_i~c |      3875       3875   1.479226   .1122632    .335057   1.130102   6.651408 
+invp_2006_~c |      1276       1276   1.481975   .1582942   .3978621   1.053396   4.582443 
+invp_shr_2.. |      1276       1276   1.481975   .1070187   .3271372   1.129241   3.747849 
+invp_2008_~c |      1295       1295   1.481081   .1075883   .3280065   1.036746   4.991425 
+invp_shr_2.. |      1295       1295   1.481081   .0928897   .3047781   1.136073   5.983823 
+invp_2010_~c |      1304       1304   1.474693   .1924802   .4387256   1.028666   5.856924 
+invp_shr_2.. |      1304       1304   1.474693   .1174012   .3426386   1.149788   5.532474 
+   linvp_all |      3875       3875   .4238665   .0396605   .1991495   .1464974   2.610813 
+  linvp_2006 |      1276       1276   .4169696   .0548865   .2342786   .0696958   1.888229 
+linvp_s~2006 |      1276       1276   .4260002   .0406964   .2017335    .144489   1.450595 
+  linvp_2008 |      1295       1295    .422928   .0383425   .1958123   .0818977   2.284534 
+linvp_s~2008 |      1295       1295   .4242266   .0340266    .184463     .16275   2.529498 
+  linvp_2010 |      1304       1304   .4110019   .0608409   .2466595   .0493718   1.937498 
+linvp_s~2010 |      1304       1304   .4238396   .0414955   .2037045   .1715578   1.793229 
+linvp_all_~c |      3875       3875   .3745056   .0286977   .1694039   .1223078   1.894829 
+linvp_2006~c |      1276       1276   .3679419   .0437956   .2092741   .0520197   1.522232 
+linvp_shr_.. |      1276       1276   .3751593   .0319357   .1787056   .1215459   1.321182 
+linvp_2008~c |      1295       1295   .3750622   .0312557   .1767927   .0360868   1.607721 
+linvp_shr_.. |      1295       1295   .3787103   .0238766   .1545206   .1275779    1.78906 
+linvp_2010~c |      1304       1304    .360761   .0455169   .2133469   .0282632   1.767625 
+linvp_shr_.. |      1304       1304   .3711216   .0287869   .1696669   .1395775   1.710635 
+
+             |    e(sum) 
+-------------+-----------
+    invp_all |      6067 
+   invp_2006 |      2000 
+invp_sh~2006 |      2000 
+   invp_2008 |      2023 
+invp_sh~2008 |      2023 
+   invp_2010 |      2044 
+invp_sh~2010 |      2044 
+invp_all_i~c |      5732 
+invp_2006_~c |      1891 
+invp_shr_2.. |      1891 
+invp_2008_~c |      1918 
+invp_shr_2.. |      1918 
+invp_2010_~c |      1923 
+invp_shr_2.. |      1923 
+   linvp_all |  1642.483 
+  linvp_2006 |  532.0533 
+linvp_s~2006 |  543.5762 
+  linvp_2008 |  547.6917 
+linvp_s~2008 |  549.3735 
+  linvp_2010 |  535.9465 
+linvp_s~2010 |  552.6868 
+linvp_all_~c |  1451.209 
+linvp_2006~c |  469.4939 
+linvp_shr_.. |  478.7033 
+linvp_2008~c |  485.7055 
+linvp_shr_.. |  490.4299 
+linvp_2010~c |  470.4323 
+linvp_shr_.. |  483.9425 
+
+. esttab, ///
+>   cells("count mean sd min max") ///
+>   noobs label
+
+-------------------------------------------------------------------------------------
+                              (1)                                                    
+                                                                                     
+                            count         mean           sd          min          max
+-------------------------------------------------------------------------------------
+invp_all                     3875     1.565677     .4587017     1.157772     13.61011
+invp_2006                    1276     1.567398     .4880813     1.072182     6.607659
+invp_shr_2006                1276     1.567398     .3962601     1.155449     4.265651
+invp_2008                    1295     1.562162     .4423607     1.085345     9.821111
+invp_shr_2008                1295     1.562162     .4736659     1.176742      12.5472
+invp_2010                    1304     1.567485     .5720807     1.050611      6.94136
+invp_shr_2010                1304     1.567485     .4527231     1.187153     6.008824
+invp_all_insc                3875     1.479226      .335057     1.130102     6.651408
+invp_2006_insc               1276     1.481975     .3978621     1.053396     4.582443
+invp_shr_2006_insc           1276     1.481975     .3271372     1.129241     3.747849
+invp_2008_insc               1295     1.481081     .3280065     1.036746     4.991425
+invp_shr_2008_insc           1295     1.481081     .3047781     1.136073     5.983823
+invp_2010_insc               1304     1.474693     .4387256     1.028666     5.856924
+invp_shr_2010_insc           1304     1.474693     .3426386     1.149788     5.532474
+linvp_all                    3875     .4238665     .1991495     .1464974     2.610813
+linvp_2006                   1276     .4169696     .2342786     .0696958     1.888229
+linvp_shr_2006               1276     .4260002     .2017335      .144489     1.450595
+linvp_2008                   1295      .422928     .1958123     .0818977     2.284534
+linvp_shr_2008               1295     .4242266      .184463       .16275     2.529498
+linvp_2010                   1304     .4110019     .2466595     .0493718     1.937498
+linvp_shr_2010               1304     .4238396     .2037045     .1715578     1.793229
+linvp_all_insc               3875     .3745056     .1694039     .1223078     1.894829
+linvp_2006_insc              1276     .3679419     .2092741     .0520197     1.522232
+linvp_shr_2006_insc          1276     .3751593     .1787056     .1215459     1.321182
+linvp_2008_insc              1295     .3750622     .1767927     .0360868     1.607721
+linvp_shr_2008_insc          1295     .3787103     .1545206     .1275779      1.78906
+linvp_2010_insc              1304      .360761     .2133469     .0282632     1.767625
+linvp_shr_2010_insc          1304     .3711216     .1696669     .1395775     1.710635
+-------------------------------------------------------------------------------------
+
+. mat invp_summ = r(coefs)
+
+. 
+. pwcorr `pr_list2' [aw = wtssnr_rs] if panelwave == 1, obs 
+
+             |   pr_all  pr_2006 pr_shr~6  pr_2008 pr_shr~8  pr_2010 pr_shr~0
+-------------+---------------------------------------------------------------
+      pr_all |   1.0000 
+             |     6067
+             |
+     pr_2006 |   0.8851   1.0000 
+             |     2000     2000
+             |
+ pr_shr_2006 |   0.9913   0.9382   1.0000 
+             |     2000     2000     2000
+             |
+     pr_2008 |   0.8194        .        .   1.0000 
+             |     2023        0        0     2023
+             |
+ pr_shr_2008 |   0.9876        .        .   0.8987   1.0000 
+             |     2023        0        0     2023     2023
+             |
+     pr_2010 |   0.9009        .        .        .        .   1.0000 
+             |     2044        0        0        0        0     2044
+             |
+ pr_shr_2010 |   0.9909        .        .        .        .   0.9509   1.0000 
+             |     2044        0        0        0        0     2044     2044
+             |
+ pr_all_insc |   0.9667   0.8571   0.9618   0.7875   0.9551   0.8565   0.9541 
+             |     5732     1891     1891     1918     1918     1923     1923
+             |
+pr_2006_insc |   0.8460   0.9637   0.9000        .        .        .        . 
+             |     1891     1891     1891        0        0        0        0
+             |
+pr_sh~6_insc |   0.9578   0.9075   0.9676        .        .        .        . 
+             |     1891     1891     1891        0        0        0        0
+             |
+pr_2008_insc |   0.7258        .        .   0.9619   0.8184        .        . 
+             |     1918        0        0     1918     1918        0        0
+             |
+pr_sh~8_insc |   0.9472        .        .   0.8777   0.9653        .        . 
+             |     1918        0        0     1918     1918        0        0
+             |
+pr_2010_insc |   0.8515        .        .        .        .   0.9741   0.9097 
+             |     1923        0        0        0        0     1923     1923
+             |
+pr_shr_201~c |   0.9573        .        .        .        .   0.9197   0.9686 
+             |     1923        0        0        0        0     1923     1923
+             |
+
+             | pr_all~c pr_200.. pr_shr.. pr_200.. pr_shr.. pr_201~c pr_shr..
+-------------+---------------------------------------------------------------
+ pr_all_insc |   1.0000 
+             |     5732
+             |
+pr_2006_insc |   0.8843   1.0000 
+             |     1891     1891
+             |
+pr_sh~6_insc |   0.9911   0.9379   1.0000 
+             |     1891     1891     1891
+             |
+pr_2008_insc |   0.7606        .        .   1.0000 
+             |     1918        0        0     1918
+             |
+pr_sh~8_insc |   0.9823        .        .   0.8679   1.0000 
+             |     1918        0        0     1918     1918
+             |
+pr_2010_insc |   0.8662        .        .        .        .   1.0000 
+             |     1923        0        0        0        0     1923
+             |
+pr_shr_201~c |   0.9871        .        .        .        .   0.9345   1.0000 
+             |     1923        0        0        0        0     1923     1923
+             |
+
+. mat corrmat_pr = r(C)
+
+. 
+. pwcorr `pr_list2' [aw = wtpannr123] if panelwave == 1  & attr_w23 == 0, obs 
+
+             |   pr_all  pr_2006 pr_shr~6  pr_2008 pr_shr~8  pr_2010 pr_shr~0
+-------------+---------------------------------------------------------------
+      pr_all |   1.0000 
+             |     3875
+             |
+     pr_2006 |   0.8310   1.0000 
+             |     1276     1276
+             |
+ pr_shr_2006 |   0.9872   0.9085   1.0000 
+             |     1276     1276     1276
+             |
+     pr_2008 |   0.7355        .        .   1.0000 
+             |     1295        0        0     1295
+             |
+ pr_shr_2008 |   0.9816        .        .   0.8509   1.0000 
+             |     1295        0        0     1295     1295
+             |
+     pr_2010 |   0.8471        .        .        .        .   1.0000 
+             |     1304        0        0        0        0     1304
+             |
+ pr_shr_2010 |   0.9860        .        .        .        .   0.9235   1.0000 
+             |     1304        0        0        0        0     1304     1304
+             |
+ pr_all_insc |   0.9577   0.8053   0.9494   0.7053   0.9380   0.8016   0.9415 
+             |     3875     1276     1276     1295     1295     1304     1304
+             |
+pr_2006_insc |   0.7896   0.9530   0.8636        .        .        .        . 
+             |     1276     1276     1276        0        0        0        0
+             |
+pr_sh~6_insc |   0.9435   0.8738   0.9569        .        .        .        . 
+             |     1276     1276     1276        0        0        0        0
+             |
+pr_2008_insc |   0.6300        .        .   0.9500   0.7548        .        . 
+             |     1295        0        0     1295     1295        0        0
+             |
+pr_sh~8_insc |   0.9278        .        .   0.8308   0.9524        .        . 
+             |     1295        0        0     1295     1295        0        0
+             |
+pr_2010_insc |   0.7959        .        .        .        .   0.9674   0.8761 
+             |     1304        0        0        0        0     1304     1304
+             |
+pr_shr_201~c |   0.9473        .        .        .        .   0.8900   0.9616 
+             |     1304        0        0        0        0     1304     1304
+             |
+
+             | pr_all~c pr_200.. pr_shr.. pr_200.. pr_shr.. pr_201~c pr_shr..
+-------------+---------------------------------------------------------------
+ pr_all_insc |   1.0000 
+             |     3875
+             |
+pr_2006_insc |   0.8407   1.0000 
+             |     1276     1276
+             |
+pr_sh~6_insc |   0.9879   0.9138   1.0000 
+             |     1276     1276     1276
+             |
+pr_2008_insc |   0.6721        .        .   1.0000 
+             |     1295        0        0     1295
+             |
+pr_sh~8_insc |   0.9746        .        .   0.8201   1.0000 
+             |     1295        0        0     1295     1295
+             |
+pr_2010_insc |   0.8071        .        .        .        .   1.0000 
+             |     1304        0        0        0        0     1304
+             |
+pr_shr_201~c |   0.9816        .        .        .        .   0.9043   1.0000 
+             |     1304        0        0        0        0     1304     1304
+             |
+
+. mat corrmat_pr_pnl = r(C)
+
+. 
+. pwcorr `invp_list' [aw = wtpannr123] if panelwave == 1  & attr_w23 == 0, obs 
+
+             | invp_all invp_2~6 invp_s~6 invp_2~8 invp_s~8 invp_2~0 invp_s~0
+-------------+---------------------------------------------------------------
+    invp_all |   1.0000 
+             |     3875
+             |
+   invp_2006 |   0.8195   1.0000 
+             |     1276     1276
+             |
+invp_sh~2006 |   0.9765   0.9126   1.0000 
+             |     1276     1276     1276
+             |
+   invp_2008 |   0.8348        .        .   1.0000 
+             |     1295        0        0     1295
+             |
+invp_sh~2008 |   0.9912        .        .   0.8977   1.0000 
+             |     1295        0        0     1295     1295
+             |
+   invp_2010 |   0.8712        .        .        .        .   1.0000 
+             |     1304        0        0        0        0     1304
+             |
+invp_sh~2010 |   0.9856        .        .        .        .   0.9378   1.0000 
+             |     1304        0        0        0        0     1304     1304
+             |
+invp_all_i~c |   0.9366   0.7740   0.9366   0.7857   0.9148   0.7852   0.9204 
+             |     3875     1276     1276     1295     1295     1304     1304
+             |
+invp_2006_~c |   0.7867   0.9197   0.8671        .        .        .        . 
+             |     1276     1276     1276        0        0        0        0
+             |
+invp_shr_2.. |   0.9325   0.8483   0.9502        .        .        .        . 
+             |     1276     1276     1276        0        0        0        0
+             |
+invp_2008_~c |   0.6573        .        .   0.9205   0.7340        .        . 
+             |     1295        0        0     1295     1295        0        0
+             |
+invp_shr_2.. |   0.9092        .        .   0.8680   0.9252        .        . 
+             |     1295        0        0     1295     1295        0        0
+             |
+invp_2010_~c |   0.8311        .        .        .        .   0.9463   0.8936 
+             |     1304        0        0        0        0     1304     1304
+             |
+invp_shr_2.. |   0.9448        .        .        .        .   0.8675   0.9480 
+             |     1304        0        0        0        0     1304     1304
+             |
+
+             | invp_a~c invp_2.. invp_s.. invp_2.. invp_s.. invp_2.. invp_s..
+-------------+---------------------------------------------------------------
+invp_all_i~c |   1.0000 
+             |     3875
+             |
+invp_2006_~c |   0.8407   1.0000 
+             |     1276     1276
+             |
+invp_shr_2.. |   0.9815   0.9210   1.0000 
+             |     1276     1276     1276
+             |
+invp_2008_~c |   0.7176        .        .   1.0000 
+             |     1295        0        0     1295
+             |
+invp_shr_2.. |   0.9827        .        .   0.8278   1.0000 
+             |     1295        0        0     1295     1295
+             |
+invp_2010_~c |   0.8304        .        .        .        .   1.0000 
+             |     1304        0        0        0        0     1304
+             |
+invp_shr_2.. |   0.9817        .        .        .        .   0.9173   1.0000 
+             |     1304        0        0        0        0     1304     1304
+             |
+
+. mat corrmat_invp = r(C)
+
+. 
+. pwcorr `linvp_list' [aw = wtpannr123] if panelwave == 1  & attr_w23 == 0, obs 
+
+             | linvp_~l l~p_2006 l~r_2006 l~p_2008 l~r_2008 l~p_2010 l~r_2010
+-------------+---------------------------------------------------------------
+   linvp_all |   1.0000 
+             |     3875
+             |
+  linvp_2006 |   0.8421   1.0000 
+             |     1276     1276
+             |
+linvp_s~2006 |   0.9858   0.9184   1.0000 
+             |     1276     1276     1276
+             |
+  linvp_2008 |   0.7701        .        .   1.0000 
+             |     1295        0        0     1295
+             |
+linvp_s~2008 |   0.9852        .        .   0.8670   1.0000 
+             |     1295        0        0     1295     1295
+             |
+  linvp_2010 |   0.8777        .        .        .        .   1.0000 
+             |     1304        0        0        0        0     1304
+             |
+linvp_s~2010 |   0.9884        .        .        .        .   0.9395   1.0000 
+             |     1304        0        0        0        0     1304     1304
+             |
+linvp_all_~c |   0.9564   0.8086   0.9471   0.7388   0.9416   0.8210   0.9380 
+             |     3875     1276     1276     1295     1295     1304     1304
+             |
+linvp_2006~c |   0.8026   0.9449   0.8729        .        .        .        . 
+             |     1276     1276     1276        0        0        0        0
+             |
+linvp_shr_.. |   0.9431   0.8750   0.9557        .        .        .        . 
+             |     1276     1276     1276        0        0        0        0
+             |
+linvp_2008~c |   0.6548        .        .   0.9479   0.7620        .        . 
+             |     1295        0        0     1295     1295        0        0
+             |
+linvp_shr_.. |   0.9337        .        .   0.8470   0.9538        .        . 
+             |     1295        0        0     1295     1295        0        0
+             |
+linvp_2010~c |   0.8280        .        .        .        .   0.9640   0.8926 
+             |     1304        0        0        0        0     1304     1304
+             |
+linvp_shr_.. |   0.9479        .        .        .        .   0.8963   0.9576 
+             |     1304        0        0        0        0     1304     1304
+             |
+
+             | l~l_insc linvp_.. linvp_.. linvp_.. linvp_.. linvp_.. linvp_..
+-------------+---------------------------------------------------------------
+linvp_all_~c |   1.0000 
+             |     3875
+             |
+linvp_2006~c |   0.8522   1.0000 
+             |     1276     1276
+             |
+linvp_shr_.. |   0.9870   0.9232   1.0000 
+             |     1276     1276     1276
+             |
+linvp_2008~c |   0.6939        .        .   1.0000 
+             |     1295        0        0     1295
+             |
+linvp_shr_.. |   0.9786        .        .   0.8255   1.0000 
+             |     1295        0        0     1295     1295
+             |
+linvp_2010~c |   0.8363        .        .        .        .   1.0000 
+             |     1304        0        0        0        0     1304
+             |
+linvp_shr_.. |   0.9845        .        .        .        .   0.9187   1.0000 
+             |     1304        0        0        0        0     1304     1304
+             |
+
+. mat corrmat_linvp = r(C)
+
+. 
+. ********************************************************************************
+. *** Write summary statistics of estimated probabilities to excel spreadsheet
+. ********************************************************************************
+. 
+. * summary statistics of the estimated probabilities
+. putexcel set docs/summary-of-attrition-weights.xlsx, sheet("pr-summ") replace
+Note: file will be replaced when the first putexcel command is issued
+
+. 
+. * assign column labels
+. putexcel B1 = "N" C1 = "Mean" D1= "SD" E1 = "Min" F1 = "Max"
+file docs/summary-of-attrition-weights.xlsx saved
+
+. putexcel A2 = "Non-attriters and attriters"
+file docs/summary-of-attrition-weights.xlsx saved
+
+. putexcel A18 = "Non-attriters only"
+file docs/summary-of-attrition-weights.xlsx saved
+
+. 
+. local row = 3
+
+. local rowp2 = 19
+
+. 
+. foreach var of varlist `pr_list2' {
+  2.         
+.         putexcel A`row' = ("`var'")
+  3.         putexcel A`rowp2' = ("`var'")
+  4. 
+.         local row = `row' + 1
+  5.         local rowp2 = `rowp2' + 1
+  6. }
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+
+. 
+. * export to excel
+. putexcel B3 = matrix(pr_summ)
+file docs/summary-of-attrition-weights.xlsx saved
+
+. putexcel B19 = matrix(pr_summ_pnl) 
+file docs/summary-of-attrition-weights.xlsx saved
+
+. 
+. * correlation among the probabilities
+. putexcel set docs/summary-of-attrition-weights.xlsx, sheet("pr-corr") modify
+
+. 
+. * assign row labels
+. putexcel A1 = "Non-attriters and attriters"
+file docs/summary-of-attrition-weights.xlsx saved
+
+. putexcel A20 = "Non-attriters only"
+file docs/summary-of-attrition-weights.xlsx saved
+
+. 
+. local row = 3
+
+. local rowp2 = 22
+
+. 
+. foreach var of varlist `pr_list2' {
+  2.         
+.         putexcel A`row' = ("`var'")
+  3.         putexcel A`rowp2' = ("`var'")
+  4.         
+.         local back1 = `row' - 1
+  5.         local col : word `back1'  of `c(ALPHA)'
+  6.         putexcel `col'2 = ("`var'")
+  7.         putexcel `col'21 = ("`var'")
+  8. 
+.         local row = `row' + 1
+  9.         local rowp2 = `rowp2' + 1
+ 10.         }
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+
+. 
+. * export to excel
+. putexcel B3 = matrix(corrmat_pr), nformat(number_d2)
+file docs/summary-of-attrition-weights.xlsx saved
+
+. putexcel B22 = matrix(corrmat_pr_pnl), nformat(number_d2)
+file docs/summary-of-attrition-weights.xlsx saved
+
+. 
+. ********************************************************************************
+. *** Write summary statistics of scaled inverse probs to excel spreadsheet
+. ********************************************************************************
+. 
+. * summary statistics of the estimated probabilities
+. putexcel set docs/summary-of-attrition-weights.xlsx, sheet("invp-summ") modify
+
+. 
+. * assign column labels
+. putexcel B1 = "N" C1 = "Mean" D1= "SD" E1 = "Min" F1 = "Max"
+file docs/summary-of-attrition-weights.xlsx saved
+
+. putexcel A2 = "Non-attriters only"
+file docs/summary-of-attrition-weights.xlsx saved
+
+. 
+. local row = 3
+
+. 
+. foreach var of varlist `invp_list' `linvp_list' {
+  2.         
+.         putexcel A`row' = ("`var'")
+  3. 
+.         local row = `row' + 1
+  4. }
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+
+. 
+. * export to excel
+. putexcel B3 = matrix(invp_summ)
+file docs/summary-of-attrition-weights.xlsx saved
+
+. 
+. * correlation among the probabilities
+. putexcel set docs/summary-of-attrition-weights.xlsx, sheet("invp-corr") modify
+
+. 
+. * assign row labels
+. putexcel A1 = "Non-attriters only"
+file docs/summary-of-attrition-weights.xlsx saved
+
+. 
+. local row = 3
+
+. 
+. foreach var of varlist `invp_list' {
+  2.         
+.         putexcel A`row' = ("`var'")
+  3.         
+.         local back1 = `row' - 1
+  4.         local col : word `back1'  of `c(ALPHA)'
+  5.         putexcel `col'2 = ("`var'")
+  6. 
+.         local row = `row' + 1
+  7.         }
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+
+. 
+. local row = 3
+
+. local rowp2 = 22
+
+. 
+. foreach var of varlist `linvp_list' {
+  2.         
+.         putexcel A`rowp2' = ("`var'")
+  3.         
+.         local back1 = `row' - 1
+  4.         local col : word `back1'  of `c(ALPHA)'
+  5.         putexcel `col'21 = ("`var'")
+  6. 
+.         local row = `row' + 1
+  7.         local rowp2 = `rowp2' + 1
+  8.         }
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+
+. 
+. * export to excel
+. putexcel B3 = matrix(corrmat_invp), nformat(number_d2)
+file docs/summary-of-attrition-weights.xlsx saved
+
+. putexcel B22 = matrix(corrmat_linvp), nformat(number_d2)
+file docs/summary-of-attrition-weights.xlsx saved
+
+. 
+. ********************************************************************************
+. *** Calculate summary statistics of weights
+. ********************************************************************************
+. 
+. local wt_list ///
+>         wtpannr123 ///
+>         wt_no_pooling wt_pooled wt_shrunken ///
+>         wt_no_pooling_insc wt_pooled_insc wt_shrunken_insc
+
+. 
+. foreach var of varlist `wt_list' {
+  2. 
+.         gen l`var' = ln(`var')
+  3. 
+. }
+(2,985 missing values generated)
+(2,985 missing values generated)
+(2,985 missing values generated)
+(2,985 missing values generated)
+(2,985 missing values generated)
+(2,985 missing values generated)
+(2,985 missing values generated)
+
+. 
+. local lwt_list ///
+>         lwtpannr123 ///
+>         lwt_no_pooling lwt_pooled lwt_shrunken ///
+>         lwt_no_pooling_insc lwt_pooled_insc lwt_shrunken_insc
+
+. 
+. estpost sum `wt_list' `lwt_list' if panelwave==1 & attr_w23==0
+
+             |  e(count)   e(sum_w)    e(mean)     e(Var)      e(sd)     e(min)     e(max) 
+-------------+-----------------------------------------------------------------------------
+  wtpannr123 |      3875       3875          1   .3931636   .6270276   .3072024   6.322945 
+wt_no_pool~g |      3875       3875   1.565677   1.269134   1.126559   .3797988   13.53567 
+   wt_pooled |      3875       3875   1.565677   1.231569   1.109761   .3969225    14.8637 
+ wt_shrunken |      3875       3875   1.565677   1.213985    1.10181   .3939344   13.70289 
+wt_no_pool~c |      3875       3875   1.479226   1.103523   1.050487   .3593284   11.84643 
+wt_pooled_~c |      3875       3875   1.479226    1.05844   1.028805    .378843   10.99003 
+wt_shrunke~c |      3875       3875   1.479226   1.051181   1.025271    .375239   10.77767 
+ lwtpannr123 |      3875       3875  -.1502079   .2820051   .5310415  -1.180248   1.844185 
+lwt_no_poo~g |      3875       3875   .2688805   .3278567   .5725877  -.9681137   2.605328 
+  lwt_pooled |      3875       3875   .2744236   .3169662   .5629975  -.9240142   2.698922 
+lwt_shrunken |      3875       3875   .2755244   .3157562   .5619219  -.9315709   2.617606 
+lwt_no_poo~c |      3875       3875   .2116026   .3318051   .5760253  -1.023518   2.472026 
+lwt_pooled~c |      3875       3875   .2174155   .3205707   .5661896  -.9706333   2.396989 
+lwt_shrunk~c |      3875       3875   .2180342   .3200205   .5657036   -.980192   2.377477 
+
+             |    e(sum) 
+-------------+-----------
+  wtpannr123 |      3875 
+wt_no_pool~g |      6067 
+   wt_pooled |      6067 
+ wt_shrunken |      6067 
+wt_no_pool~c |      5732 
+wt_pooled_~c |      5732 
+wt_shrunke~c |      5732 
+ lwtpannr123 | -582.0555 
+lwt_no_poo~g |  1041.912 
+  lwt_pooled |  1063.391 
+lwt_shrunken |  1067.657 
+lwt_no_poo~c |  819.9602 
+lwt_pooled~c |   842.485 
+lwt_shrunk~c |  844.8825 
+
+. esttab, ///
+>         cells("count mean sd min max") ///
+>         noobs label
+
+-------------------------------------------------------------------------------------
+                              (1)                                                    
+                                                                                     
+                            count         mean           sd          min          max
+-------------------------------------------------------------------------------------
+NORC base weight, ~e         3875            1     .6270276     .3072024     6.322945
+Estimated separate~l         3875     1.565677     1.126559     .3797988     13.53567
+Estimated with pan~d         3875     1.565677     1.109761     .3969225      14.8637
+Shrunk to pooled e~s         3875     1.565677      1.10181     .3939344     13.70289
+Estimated separate~i         3875     1.479226     1.050487     .3593284     11.84643
+Estimated with pan~n         3875     1.479226     1.028805      .378843     10.99003
+Shrunk to pooled e~s         3875     1.479226     1.025271      .375239     10.77767
+lwtpannr123                  3875    -.1502079     .5310415    -1.180248     1.844185
+lwt_no_pooling               3875     .2688805     .5725877    -.9681137     2.605328
+lwt_pooled                   3875     .2744236     .5629975    -.9240142     2.698922
+lwt_shrunken                 3875     .2755244     .5619219    -.9315709     2.617606
+lwt_no_pooling_insc          3875     .2116026     .5760253    -1.023518     2.472026
+lwt_pooled_insc              3875     .2174155     .5661896    -.9706333     2.396989
+lwt_shrunken_insc            3875     .2180342     .5657036     -.980192     2.377477
+-------------------------------------------------------------------------------------
+
+. mat wt_summ = r(coefs)
+
+. 
+. estpost sum `wt_list' `lwt_list' if panelwave==1 & attr_w23==0 [aw = wtpannr123]
+
+             |  e(count)   e(sum_w)    e(mean)     e(Var)      e(sd)     e(min)     e(max) 
+-------------+-----------------------------------------------------------------------------
+  wtpannr123 |      3875       3875   1.393062   .8181838   .9045351   .3072024   6.322945 
+wt_no_pool~g |      3875       3875   2.174623   2.437961   1.561397   .3797988   13.53567 
+   wt_pooled |      3875       3875   2.181461   2.397492   1.548384   .3969225    14.8637 
+ wt_shrunken |      3875       3875   2.180339   2.368208   1.538898   .3939344   13.70289 
+wt_no_pool~c |      3875       3875   2.071494   2.165906   1.471702   .3593284   11.84643 
+wt_pooled_~c |      3875       3875   2.075513   2.105439   1.451013    .378843   10.99003 
+wt_shrunke~c |      3875       3875   2.074944   2.093272   1.446814    .375239   10.77767 
+ lwtpannr123 |      3875       3875   .1589375   .3340142   .5779396  -1.180248   1.844185 
+lwt_no_poo~g |      3875       3875   .5758902   .3831287   .6189739  -.9681137   2.605328 
+  lwt_pooled |      3875       3875    .582804   .3754855   .6127688  -.9240142   2.698922 
+lwt_shrunken |      3875       3875   .5836179   .3735982   .6112268  -.9315709   2.617606 
+lwt_no_poo~c |      3875       3875   .5268425   .3872121   .6222637  -1.023518   2.472026 
+lwt_pooled~c |      3875       3875   .5334431   .3782171   .6149935  -.9706333   2.396989 
+lwt_shrunk~c |      3875       3875   .5339248   .3771728   .6141439   -.980192   2.377477 
+
+             |    e(sum) 
+-------------+-----------
+  wtpannr123 |  5398.116 
+wt_no_pool~g |  8426.663 
+   wt_pooled |  8453.161 
+ wt_shrunken |  8448.815 
+wt_no_pool~c |  8027.038 
+wt_pooled_~c |  8042.614 
+wt_shrunke~c |  8040.408 
+ lwtpannr123 |  615.8829 
+lwt_no_poo~g |  2231.574 
+  lwt_pooled |  2258.366 
+lwt_shrunken |  2261.519 
+lwt_no_poo~c |  2041.515 
+lwt_pooled~c |  2067.092 
+lwt_shrunk~c |  2068.959 
+
+. esttab, ///
+>         cells("count mean sd min max") ///
+>         noobs label
+
+-------------------------------------------------------------------------------------
+                              (1)                                                    
+                                                                                     
+                            count         mean           sd          min          max
+-------------------------------------------------------------------------------------
+NORC base weight, ~e         3875     1.393062     .9045351     .3072024     6.322945
+Estimated separate~l         3875     2.174623     1.561397     .3797988     13.53567
+Estimated with pan~d         3875     2.181461     1.548384     .3969225      14.8637
+Shrunk to pooled e~s         3875     2.180339     1.538898     .3939344     13.70289
+Estimated separate~i         3875     2.071494     1.471702     .3593284     11.84643
+Estimated with pan~n         3875     2.075513     1.451013      .378843     10.99003
+Shrunk to pooled e~s         3875     2.074944     1.446814      .375239     10.77767
+lwtpannr123                  3875     .1589375     .5779396    -1.180248     1.844185
+lwt_no_pooling               3875     .5758902     .6189739    -.9681137     2.605328
+lwt_pooled                   3875      .582804     .6127688    -.9240142     2.698922
+lwt_shrunken                 3875     .5836179     .6112268    -.9315709     2.617606
+lwt_no_pooling_insc          3875     .5268425     .6222637    -1.023518     2.472026
+lwt_pooled_insc              3875     .5334431     .6149935    -.9706333     2.396989
+lwt_shrunken_insc            3875     .5339248     .6141439     -.980192     2.377477
+-------------------------------------------------------------------------------------
+
+. mat wt_summ_wtd = r(coefs)
+
+. 
+. pwcorr `wt_list' `lwt_list' ///
+>  if panelwave==1  & attr_w23==0, obs 
+
+             | wtpann~3 wt_no_~g wt_poo~d wt_shr~n wt_no_~c wt_poo~c w~n_insc
+-------------+---------------------------------------------------------------
+  wtpannr123 |   1.0000 
+             |     3875
+             |
+wt_no_pool~g |   0.8623   1.0000 
+             |     3875     3875
+             |
+   wt_pooled |   0.8852   0.9616   1.0000 
+             |     3875     3875     3875
+             |
+ wt_shrunken |   0.8899   0.9789   0.9970   1.0000 
+             |     3875     3875     3875     3875
+             |
+wt_no_pool~c |   0.8994   0.9845   0.9524   0.9690   1.0000 
+             |     3875     3875     3875     3875     3875
+             |
+wt_pooled_~c |   0.9246   0.9521   0.9862   0.9852   0.9674   1.0000 
+             |     3875     3875     3875     3875     3875     3875
+             |
+wt_shrunke~c |   0.9269   0.9661   0.9829   0.9870   0.9818   0.9976   1.0000 
+             |     3875     3875     3875     3875     3875     3875     3875
+             |
+ lwtpannr123 |   0.9287   0.8034   0.8221   0.8272   0.8381   0.8596   0.8621 
+             |     3875     3875     3875     3875     3875     3875     3875
+             |
+lwt_no_poo~g |   0.8553   0.9094   0.8837   0.8977   0.9085   0.8896   0.9002 
+             |     3875     3875     3875     3875     3875     3875     3875
+             |
+  lwt_pooled |   0.8738   0.8856   0.9110   0.9115   0.8896   0.9159   0.9147 
+             |     3875     3875     3875     3875     3875     3875     3875
+             |
+lwt_shrunken |   0.8746   0.8959   0.9080   0.9123   0.8990   0.9136   0.9156 
+             |     3875     3875     3875     3875     3875     3875     3875
+             |
+lwt_no_poo~c |   0.8730   0.8953   0.8746   0.8878   0.9133   0.8945   0.9053 
+             |     3875     3875     3875     3875     3875     3875     3875
+             |
+lwt_pooled~c |   0.8904   0.8733   0.8987   0.8998   0.8920   0.9183   0.9175 
+             |     3875     3875     3875     3875     3875     3875     3875
+             |
+lwt_shrunk~c |   0.8908   0.8824   0.8959   0.9004   0.9011   0.9159   0.9183 
+             |     3875     3875     3875     3875     3875     3875     3875
+             |
+
+             | lwtp~123 lwt_no~g lwt_po~d lwt_sh~n lwt_no~c lwt_po~c lwt_sh~c
+-------------+---------------------------------------------------------------
+ lwtpannr123 |   1.0000 
+             |     3875
+             |
+lwt_no_poo~g |   0.9161   1.0000 
+             |     3875     3875
+             |
+  lwt_pooled |   0.9345   0.9747   1.0000 
+             |     3875     3875     3875
+             |
+lwt_shrunken |   0.9358   0.9860   0.9982   1.0000 
+             |     3875     3875     3875     3875
+             |
+lwt_no_poo~c |   0.9390   0.9908   0.9699   0.9803   1.0000 
+             |     3875     3875     3875     3875     3875
+             |
+lwt_pooled~c |   0.9567   0.9681   0.9925   0.9912   0.9776   1.0000 
+             |     3875     3875     3875     3875     3875     3875
+             |
+lwt_shrunk~c |   0.9574   0.9779   0.9908   0.9926   0.9875   0.9985   1.0000 
+             |     3875     3875     3875     3875     3875     3875     3875
+             |
+
+. mat corrmat_wt = r(C)
+
+. 
+. pwcorr `wt_list' `lwt_list' ///
+>   if panelwave==1  & attr_w23==0 [aw = wtpannr123], obs 
+
+             | wtpann~3 wt_no_~g wt_poo~d wt_shr~n wt_no_~c wt_poo~c w~n_insc
+-------------+---------------------------------------------------------------
+  wtpannr123 |   1.0000 
+             |     3875
+             |
+wt_no_pool~g |   0.8764   1.0000 
+             |     3875     3875
+             |
+   wt_pooled |   0.9039   0.9667   1.0000 
+             |     3875     3875     3875
+             |
+ wt_shrunken |   0.9054   0.9816   0.9975   1.0000 
+             |     3875     3875     3875     3875
+             |
+wt_no_pool~c |   0.9045   0.9887   0.9612   0.9752   1.0000 
+             |     3875     3875     3875     3875     3875
+             |
+wt_pooled_~c |   0.9323   0.9599   0.9905   0.9894   0.9715   1.0000 
+             |     3875     3875     3875     3875     3875     3875
+             |
+wt_shrunke~c |   0.9323   0.9722   0.9879   0.9910   0.9840   0.9980   1.0000 
+             |     3875     3875     3875     3875     3875     3875     3875
+             |
+ lwtpannr123 |   0.9301   0.8292   0.8489   0.8518   0.8557   0.8765   0.8776 
+             |     3875     3875     3875     3875     3875     3875     3875
+             |
+lwt_no_poo~g |   0.8642   0.9200   0.8998   0.9112   0.9200   0.9038   0.9128 
+             |     3875     3875     3875     3875     3875     3875     3875
+             |
+  lwt_pooled |   0.8808   0.8987   0.9227   0.9224   0.9022   0.9257   0.9244 
+             |     3875     3875     3875     3875     3875     3875     3875
+             |
+lwt_shrunken |   0.8811   0.9078   0.9203   0.9233   0.9106   0.9239   0.9253 
+             |     3875     3875     3875     3875     3875     3875     3875
+             |
+lwt_no_poo~c |   0.8765   0.9090   0.8925   0.9033   0.9227   0.9065   0.9156 
+             |     3875     3875     3875     3875     3875     3875     3875
+             |
+lwt_pooled~c |   0.8921   0.8892   0.9129   0.9131   0.9031   0.9265   0.9254 
+             |     3875     3875     3875     3875     3875     3875     3875
+             |
+lwt_shrunk~c |   0.8921   0.8973   0.9107   0.9138   0.9113   0.9246   0.9263 
+             |     3875     3875     3875     3875     3875     3875     3875
+             |
+
+             | lwtp~123 lwt_no~g lwt_po~d lwt_sh~n lwt_no~c lwt_po~c lwt_sh~c
+-------------+---------------------------------------------------------------
+ lwtpannr123 |   1.0000 
+             |     3875
+             |
+lwt_no_poo~g |   0.9306   1.0000 
+             |     3875     3875
+             |
+  lwt_pooled |   0.9457   0.9790   1.0000 
+             |     3875     3875     3875
+             |
+lwt_shrunken |   0.9468   0.9884   0.9985   1.0000 
+             |     3875     3875     3875     3875
+             |
+lwt_no_poo~c |   0.9468   0.9936   0.9757   0.9844   1.0000 
+             |     3875     3875     3875     3875     3875
+             |
+lwt_pooled~c |   0.9616   0.9746   0.9949   0.9938   0.9810   1.0000 
+             |     3875     3875     3875     3875     3875     3875
+             |
+lwt_shrunk~c |   0.9622   0.9829   0.9934   0.9950   0.9894   0.9987   1.0000 
+             |     3875     3875     3875     3875     3875     3875     3875
+             |
+
+. mat corrmat_wt_wtd = r(C)
+
+.                                  
+. ********************************************************************************
+. *** Write summary statistics of weights to excel spreadsheet
+. ********************************************************************************
+. 
+. * summary statistics of the constructed weights
+. putexcel set docs/summary-of-attrition-weights.xlsx, ///
+>   sheet("weights-summ") modify
+
+. 
+. * assign row labels
+. putexcel A2 = "Unweighted"
+file docs/summary-of-attrition-weights.xlsx saved
+
+. putexcel A22 = "Weighted by wtpannr123"
+file docs/summary-of-attrition-weights.xlsx saved
+
+. 
+. * assign labels
+. putexcel C1 = "N" D1 = "Mean" E1 = "SD" F1 = "Min" G1 = "Max"
+file docs/summary-of-attrition-weights.xlsx saved
+
+. local row = 3
+
+. local rowp2 = 23
+
+. 
+. foreach var of varlist `wt_list' `lwt_list' {
+  2. 
+.         qui describe `var'
+  3.         local varlabel : var label `var'
+  4. 
+.         putexcel A`row' = ("`var'")
+  5.         putexcel A`rowp2' = ("`var'")
+  6.         putexcel B`row' = ("`varlabel'")
+  7.         putexcel B`rowp2' = ("`varlabel'")
+  8. 
+.         local row = `row' + 1
+  9.         local rowp2 = `rowp2' + 1
+ 10. }
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+
+. 
+. * export to excel
+. putexcel C3 = matrix(wt_summ) 
+file docs/summary-of-attrition-weights.xlsx saved
+
+. putexcel C23 = matrix(wt_summ_wtd)
+file docs/summary-of-attrition-weights.xlsx saved
+
+. 
+. * correlation among the constructed weights
+. putexcel set docs/summary-of-attrition-weights.xlsx, ///
+>   sheet("weights-corr") modify 
+
+. 
+. * assign labels
+. putexcel A1 = "Unweighted"
+file docs/summary-of-attrition-weights.xlsx saved
+
+. putexcel A24 = "Weighted by wtpannr123"
+file docs/summary-of-attrition-weights.xlsx saved
+
+. 
+. local row = 3
+
+. local rowp2 = 26
+
+. 
+. foreach var of varlist `wt_list' `lwt_list' {
+  2. 
+.         qui describe `var'
+  3.         local varlabel : var label `var'
+  4. 
+.         putexcel A`row' = ("`var'")
+  5.         putexcel A`rowp2' = ("`var'")
+  6. 
+.         local back1 = `row' - 1
+  7.         local col : word `back1'  of `c(ALPHA)'
+  8.         putexcel `col'2 = ("`var'")
+  9.         putexcel `col'13 = ("`var'")
+ 10. 
+.         local row = `row' + 1
+ 11.         local rowp2 = `rowp2' + 1
+ 12. }
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+file docs/summary-of-attrition-weights.xlsx saved
+
+. 
+. * export to excel
+. putexcel B3 = matrix(corrmat_wt), nformat(number_d2)
+file docs/summary-of-attrition-weights.xlsx saved
+
+. putexcel B26 = matrix(corrmat_wt_wtd), nformat(number_d2)
+file docs/summary-of-attrition-weights.xlsx saved
+
+. 
+. log close
+      name:  <unnamed>
+       log:  /Users/smorgan/Documents/GitHub/gss-panel-weights/log/summarize-probabilities-and-weigh
+> ts.log
+  log type:  text
+ closed on:  28 Jan 2020, 18:25:41
+----------------------------------------------------------------------------------------------------

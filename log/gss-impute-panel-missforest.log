@@ -1,0 +1,671 @@
+[1] "2020-01-21 14:32:27 EST"
+      year            id           samptype       panelid           panelwave        intage          intsex         intethn     
+ Min.   :2006   Min.   :    1   Min.   :2006   Min.   :   20069   Min.   :1.00   Min.   :22.00   Min.   :1.000   Min.   :1.000  
+ 1st Qu.:2008   1st Qu.: 1491   1st Qu.:2006   1st Qu.: 2008981   1st Qu.:1.00   1st Qu.:48.00   1st Qu.:2.000   1st Qu.:1.000  
+ Median :2010   Median : 4324   Median :2008   Median :20062377   Median :2.00   Median :55.00   Median :2.000   Median :1.000  
+ Mean   :2010   Mean   : 5378   Mean   :2008   Mean   :12822433   Mean   :1.85   Mean   :53.96   Mean   :1.817   Mean   :1.485  
+ 3rd Qu.:2012   3rd Qu.: 9040   3rd Qu.:2010   3rd Qu.:20081571   3rd Qu.:3.00   3rd Qu.:62.00   3rd Qu.:2.000   3rd Qu.:2.000  
+ Max.   :2014   Max.   :11551   Max.   :2010   Max.   :20102044   Max.   :3.00   Max.   :84.00   Max.   :2.000   Max.   :5.000  
+                                                                                 NA's   :80      NA's   :205     NA's   :338    
+     intyrs           lngthinv          coop          comprend        daysint          spaneng           mode          feeused    
+ Min.   : 0.0000   Min.   : 30.0   Min.   :1.000   Min.   :1.000   Min.   :  0.00   Min.   :1.000   Min.   :1.000   Min.   :1.00  
+ 1st Qu.: 0.5233   1st Qu.: 83.0   1st Qu.:1.000   1st Qu.:1.000   1st Qu.: 22.00   1st Qu.:1.000   1st Qu.:1.000   1st Qu.:1.00  
+ Median : 1.8000   Median :101.0   Median :1.000   Median :1.000   Median : 43.00   Median :1.000   Median :1.000   Median :1.00  
+ Mean   : 3.2839   Mean   :106.4   Mean   :1.228   Mean   :1.183   Mean   : 52.47   Mean   :1.037   Mean   :1.156   Mean   :1.69  
+ 3rd Qu.: 4.5000   3rd Qu.:123.0   3rd Qu.:1.000   3rd Qu.:1.000   3rd Qu.: 76.00   3rd Qu.:1.000   3rd Qu.:1.000   3rd Qu.:3.00  
+ Max.   :25.6400   Max.   :200.0   Max.   :4.000   Max.   :3.000   Max.   :157.00   Max.   :2.000   Max.   :2.000   Max.   :3.00  
+ NA's   :80        NA's   :9       NA's   :40      NA's   :42      NA's   :1                        NA's   :19      NA's   :64    
+    egp10_11        spegp10_11      paegp10_11       maegp10_11        parborn         family16         reg16          incom16     
+ Min.   : 1.000   Min.   : 1.00   Min.   : 1.000   Min.   : 1.000   Min.   :0.000   Min.   :0.000   Min.   :0.000   Min.   :1.000  
+ 1st Qu.: 2.000   1st Qu.: 2.00   1st Qu.: 4.000   1st Qu.: 3.000   1st Qu.:0.000   1st Qu.:1.000   1st Qu.:2.000   1st Qu.:2.000  
+ Median : 4.000   Median : 4.00   Median : 7.000   Median : 4.000   Median :0.000   Median :1.000   Median :4.000   Median :3.000  
+ Mean   : 5.027   Mean   : 5.08   Mean   : 6.534   Mean   : 5.201   Mean   :1.232   Mean   :1.991   Mean   :4.426   Mean   :2.741  
+ 3rd Qu.: 8.000   3rd Qu.: 8.00   3rd Qu.:10.000   3rd Qu.: 9.000   3rd Qu.:0.000   3rd Qu.:3.000   3rd Qu.:7.000   3rd Qu.:3.000  
+ Max.   :12.000   Max.   :12.00   Max.   :12.000   Max.   :12.000   Max.   :8.000   Max.   :8.000   Max.   :9.000   Max.   :5.000  
+ NA's   :250      NA's   :7056    NA's   :1911     NA's   :3617     NA's   :11                                      NA's   :58     
+      age             sex             born           relig            class           spdeg           madeg           padeg      
+ Min.   :18.00   Min.   :1.000   Min.   :1.000   Min.   : 1.000   Min.   :1.000   Min.   :0.000   Min.   :0.000   Min.   :0.000  
+ 1st Qu.:35.00   1st Qu.:1.000   1st Qu.:1.000   1st Qu.: 1.000   1st Qu.:2.000   1st Qu.:1.000   1st Qu.:0.000   1st Qu.:0.000  
+ Median :49.00   Median :2.000   Median :1.000   Median : 1.000   Median :2.000   Median :1.000   Median :1.000   Median :1.000  
+ Mean   :49.21   Mean   :1.564   Mean   :1.114   Mean   : 2.361   Mean   :2.413   Mean   :1.728   Mean   :1.069   Mean   :1.147  
+ 3rd Qu.:61.50   3rd Qu.:2.000   3rd Qu.:1.000   3rd Qu.: 3.000   3rd Qu.:3.000   3rd Qu.:3.000   3rd Qu.:1.000   3rd Qu.:1.000  
+ Max.   :89.00   Max.   :2.000   Max.   :2.000   Max.   :13.000   Max.   :4.000   Max.   :4.000   Max.   :4.000   Max.   :4.000  
+ NA's   :15                                      NA's   :70       NA's   :89      NA's   :7688    NA's   :1097    NA's   :3151   
+    wrkstat          degree         uscitzn         realinc          realrinc          region         wordsum          dwelown     
+ Min.   :1.000   Min.   :0.000   Min.   :1.000   Min.   : 5.466   Min.   : 5.466   Min.   :1.000   Min.   : 0.000   Min.   :1.000  
+ 1st Qu.:1.000   1st Qu.:1.000   1st Qu.:1.000   1st Qu.: 9.399   1st Qu.: 9.038   1st Qu.:3.000   1st Qu.: 5.000   1st Qu.:1.000  
+ Median :2.000   Median :1.000   Median :1.000   Median :10.090   Median : 9.731   Median :5.000   Median : 6.000   Median :1.000  
+ Mean   :3.045   Mean   :1.651   Mean   :1.525   Mean   : 9.966   Mean   : 9.551   Mean   :5.127   Mean   : 6.151   Mean   :1.349  
+ 3rd Qu.:5.000   3rd Qu.:3.000   3rd Qu.:2.000   3rd Qu.:10.663   3rd Qu.:10.257   3rd Qu.:7.000   3rd Qu.: 7.000   3rd Qu.:2.000  
+ Max.   :8.000   Max.   :4.000   Max.   :4.000   Max.   :11.952   Max.   :13.082   Max.   :9.000   Max.   :10.000   Max.   :3.000  
+ NA's   :12      NA's   :2       NA's   :13238   NA's   :1475     NA's   :5927     NA's   :3       NA's   :4958     NA's   :4460   
+      size           xnorcsiz         marital        racehisp5       evercitzn     
+ Min.   :   0.0   Min.   : 1.000   Min.   :1.000   Min.   :1.000   Min.   :0.0000  
+ 1st Qu.:   7.0   1st Qu.: 2.000   1st Qu.:1.000   1st Qu.:1.000   1st Qu.:1.0000  
+ Median :  24.0   Median : 3.000   Median :2.000   Median :1.000   Median :1.0000  
+ Mean   : 361.8   Mean   : 4.365   Mean   :2.479   Mean   :1.478   Mean   :0.9493  
+ 3rd Qu.:  99.0   3rd Qu.: 6.000   3rd Qu.:4.000   3rd Qu.:2.000   3rd Qu.:1.0000  
+ Max.   :8008.0   Max.   :10.000   Max.   :5.000   Max.   :5.000   Max.   :1.0000  
+ NA's   :3        NA's   :3        NA's   :15                                      
+      year         samptype          id           panelid           panelwave         m_id     m_samptype   m_panelid  m_panelwave
+ Min.   :2006   Min.   :2006   Min.   :    1   Min.   :   20069   Min.   :1.00   Min.   :0   Min.   :0    Min.   :0   Min.   :0   
+ 1st Qu.:2008   1st Qu.:2006   1st Qu.: 1491   1st Qu.: 2008981   1st Qu.:1.00   1st Qu.:0   1st Qu.:0    1st Qu.:0   1st Qu.:0   
+ Median :2010   Median :2008   Median : 4324   Median :20062377   Median :2.00   Median :0   Median :0    Median :0   Median :0   
+ Mean   :2010   Mean   :2008   Mean   : 5378   Mean   :12822433   Mean   :1.85   Mean   :0   Mean   :0    Mean   :0   Mean   :0   
+ 3rd Qu.:2012   3rd Qu.:2010   3rd Qu.: 9040   3rd Qu.:20081571   3rd Qu.:3.00   3rd Qu.:0   3rd Qu.:0    3rd Qu.:0   3rd Qu.:0   
+ Max.   :2014   Max.   :2010   Max.   :11551   Max.   :20102044   Max.   :3.00   Max.   :0   Max.   :0    Max.   :0   Max.   :0   
+    m_intage           m_intsex         m_intethn          m_intyrs          m_lngthinv           m_coop           m_comprend      
+ Min.   :0.000000   Min.   :0.00000   Min.   :0.00000   Min.   :0.000000   Min.   :0.000000   Min.   :0.000000   Min.   :0.000000  
+ 1st Qu.:0.000000   1st Qu.:0.00000   1st Qu.:0.00000   1st Qu.:0.000000   1st Qu.:0.000000   1st Qu.:0.000000   1st Qu.:0.000000  
+ Median :0.000000   Median :0.00000   Median :0.00000   Median :0.000000   Median :0.000000   Median :0.000000   Median :0.000000  
+ Mean   :0.005476   Mean   :0.01403   Mean   :0.02313   Mean   :0.005476   Mean   :0.000616   Mean   :0.002738   Mean   :0.002875  
+ 3rd Qu.:0.000000   3rd Qu.:0.00000   3rd Qu.:0.00000   3rd Qu.:0.000000   3rd Qu.:0.000000   3rd Qu.:0.000000   3rd Qu.:0.000000  
+ Max.   :1.000000   Max.   :1.00000   Max.   :1.00000   Max.   :1.000000   Max.   :1.000000   Max.   :1.000000   Max.   :1.000000  
+   m_daysint          m_spaneng     m_mode           m_feeused          m_egp10_11       m_spegp10_11    m_paegp10_11   
+ Min.   :0.00e+00   Min.   :0   Min.   :0.000000   Min.   :0.000000   Min.   :0.00000   Min.   :0.000   Min.   :0.0000  
+ 1st Qu.:0.00e+00   1st Qu.:0   1st Qu.:0.000000   1st Qu.:0.000000   1st Qu.:0.00000   1st Qu.:0.000   1st Qu.:0.0000  
+ Median :0.00e+00   Median :0   Median :0.000000   Median :0.000000   Median :0.00000   Median :0.000   Median :0.0000  
+ Mean   :6.84e-05   Mean   :0   Mean   :0.001301   Mean   :0.004381   Mean   :0.01711   Mean   :0.483   Mean   :0.1308  
+ 3rd Qu.:0.00e+00   3rd Qu.:0   3rd Qu.:0.000000   3rd Qu.:0.000000   3rd Qu.:0.00000   3rd Qu.:1.000   3rd Qu.:0.0000  
+ Max.   :1.00e+00   Max.   :0   Max.   :1.000000   Max.   :1.000000   Max.   :1.00000   Max.   :1.000   Max.   :1.0000  
+  m_maegp10_11      m_parborn           m_family16    m_reg16    m_incom16           m_age              m_sex       m_born 
+ Min.   :0.0000   Min.   :0.0000000   Min.   :0    Min.   :0   Min.   :0.00000   Min.   :0.000000   Min.   :0   Min.   :0  
+ 1st Qu.:0.0000   1st Qu.:0.0000000   1st Qu.:0    1st Qu.:0   1st Qu.:0.00000   1st Qu.:0.000000   1st Qu.:0   1st Qu.:0  
+ Median :0.0000   Median :0.0000000   Median :0    Median :0   Median :0.00000   Median :0.000000   Median :0   Median :0  
+ Mean   :0.2476   Mean   :0.0007529   Mean   :0    Mean   :0   Mean   :0.00397   Mean   :0.001027   Mean   :0   Mean   :0  
+ 3rd Qu.:0.0000   3rd Qu.:0.0000000   3rd Qu.:0    3rd Qu.:0   3rd Qu.:0.00000   3rd Qu.:0.000000   3rd Qu.:0   3rd Qu.:0  
+ Max.   :1.0000   Max.   :1.0000000   Max.   :0    Max.   :0   Max.   :1.00000   Max.   :1.000000   Max.   :0   Max.   :0  
+    m_relig            m_class            m_spdeg          m_madeg           m_padeg         m_wrkstat            m_degree        
+ Min.   :0.000000   Min.   :0.000000   Min.   :0.0000   Min.   :0.00000   Min.   :0.0000   Min.   :0.0000000   Min.   :0.0000000  
+ 1st Qu.:0.000000   1st Qu.:0.000000   1st Qu.:0.0000   1st Qu.:0.00000   1st Qu.:0.0000   1st Qu.:0.0000000   1st Qu.:0.0000000  
+ Median :0.000000   Median :0.000000   Median :1.0000   Median :0.00000   Median :0.0000   Median :0.0000000   Median :0.0000000  
+ Mean   :0.004791   Mean   :0.006092   Mean   :0.5262   Mean   :0.07509   Mean   :0.2157   Mean   :0.0008214   Mean   :0.0001369  
+ 3rd Qu.:0.000000   3rd Qu.:0.000000   3rd Qu.:1.0000   3rd Qu.:0.00000   3rd Qu.:0.0000   3rd Qu.:0.0000000   3rd Qu.:0.0000000  
+ Max.   :1.000000   Max.   :1.000000   Max.   :1.0000   Max.   :1.00000   Max.   :1.0000   Max.   :1.0000000   Max.   :1.0000000  
+   m_uscitzn        m_realinc       m_realrinc        m_region           m_wordsum        m_dwelown          m_size         
+ Min.   :0.0000   Min.   :0.000   Min.   :0.0000   Min.   :0.0000000   Min.   :0.0000   Min.   :0.0000   Min.   :0.0000000  
+ 1st Qu.:1.0000   1st Qu.:0.000   1st Qu.:0.0000   1st Qu.:0.0000000   1st Qu.:0.0000   1st Qu.:0.0000   1st Qu.:0.0000000  
+ Median :1.0000   Median :0.000   Median :0.0000   Median :0.0000000   Median :0.0000   Median :0.0000   Median :0.0000000  
+ Mean   :0.9061   Mean   :0.101   Mean   :0.4057   Mean   :0.0002053   Mean   :0.3394   Mean   :0.3053   Mean   :0.0002053  
+ 3rd Qu.:1.0000   3rd Qu.:0.000   3rd Qu.:1.0000   3rd Qu.:0.0000000   3rd Qu.:1.0000   3rd Qu.:1.0000   3rd Qu.:0.0000000  
+ Max.   :1.0000   Max.   :1.000   Max.   :1.0000   Max.   :1.0000000   Max.   :1.0000   Max.   :1.0000   Max.   :1.0000000  
+   m_xnorcsiz          m_marital         m_racehisp5  m_evercitzn
+ Min.   :0.0000000   Min.   :0.000000   Min.   :0    Min.   :0   
+ 1st Qu.:0.0000000   1st Qu.:0.000000   1st Qu.:0    1st Qu.:0   
+ Median :0.0000000   Median :0.000000   Median :0    Median :0   
+ Mean   :0.0002053   Mean   :0.001027   Mean   :0    Mean   :0   
+ 3rd Qu.:0.0000000   3rd Qu.:0.000000   3rd Qu.:0    3rd Qu.:0   
+ Max.   :1.0000000   Max.   :1.000000   Max.   :0    Max.   :0   
+[1] "factor"
+[1] "factor"
+[1] "factor"
+[1] "factor"
+[1] "factor"
+[1] "factor"
+[1] "factor"
+[1] "factor"
+[1] "factor"
+[1] "factor"
+[1] "factor"
+[1] "factor"
+[1] "factor"
+[1] "factor"
+[1] "factor"
+[1] "factor"
+[1] "factor"
+[1] "factor"
+[1] "factor"
+[1] "factor"
+[1] "factor"
+[1] "factor"
+[1] "factor"
+[1] "factor"
+[1] "factor"
+[1] "factor"
+[1] "factor"
+[1] "factor"
+[1] "factor"
+[1] "factor"
+[1] "factor"
+[1] "factor"
+[1] "factor"
+[1] "factor"
+   year            id        samptype       panelid         panelwave     intage       intsex      intethn          intyrs       
+ 2006:2000   Min.   :    1   2006:4812   Min.   :   20069   1:6067    Min.   :22.00   1   : 2633   1   :10593   Min.   : 0.0000  
+ 2008:3559   1st Qu.: 1491   2008:4899   1st Qu.: 2008981   2:4668    1st Qu.:48.00   2   :11772   2   : 1887   1st Qu.: 0.5233  
+ 2010:4901   Median : 4324   2010:4899   Median :20062377   3:3875    Median :55.00   NA's:  205   3   : 1006   Median : 1.8000  
+ 2012:2846   Mean   : 5378               Mean   :12822433             Mean   :53.96                4   :  121   Mean   : 3.2839  
+ 2014:1304   3rd Qu.: 9040               3rd Qu.:20081571             3rd Qu.:62.00                5   :  665   3rd Qu.: 4.5000  
+             Max.   :11551               Max.   :20102044             Max.   :84.00                NA's:  338   Max.   :25.6400  
+                                                                      NA's   :80                                NA's   :80       
+    lngthinv       coop       comprend        daysint       spaneng     mode       feeused        egp10_11      spegp10_11  
+ Min.   : 30.0   1   :11797   1   :12245   Min.   :  0.00   1:14067   1   :12318   1   :9465   10     :2524   2      :1372  
+ 1st Qu.: 83.0   2   : 2253   2   : 1978   1st Qu.: 22.00   2:  543   2   : 2273   2   : 131   3      :2467   10     :1252  
+ Median :101.0   3   :  495   3   :  345   Median : 43.00             NA's:   19   3   :4950   2      :2381   3      :1217  
+ Mean   :106.4   4   :   25   NA's:   42   Mean   : 52.47                          NA's:  64   4      :2376   4      : 972  
+ 3rd Qu.:123.0   NA's:   40                3rd Qu.: 76.00                                      1      :1320   1      : 757  
+ Max.   :200.0                             Max.   :157.00                                      (Other):3292   (Other):1984  
+ NA's   :9                                 NA's   :1                                           NA's   : 250   NA's   :7056  
+   paegp10_11     maegp10_11      parborn         family16         reg16      incom16          age        sex      born     
+ 10     :2866   10     :2539   0      :11767   1      :10005   3      :2764   1   :1457   Min.   :18.00   1:6375   1:12951  
+ 5      :1890   4      :2326   8      : 2102   5      : 2131   5      :2365   2   :3876   1st Qu.:35.00   2:8235   2: 1659  
+ 9      :1745   3      :2294   1      :  384   3      :  873   2      :2065   3   :6471   Median :49.00                     
+ 1      :1304   2      :1562   2      :  298   0      :  488   9      :1770   4   :2471   Mean   :49.21                     
+ 2      :1176   5      :1181   3      :   24   4      :  389   7      :1293   5   : 277   3rd Qu.:61.50                     
+ (Other):3718   (Other):1091   (Other):   24   8      :  256   0      :1236   NA's:  58   Max.   :89.00                     
+ NA's   :1911   NA's   :3617   NA's   :   11   (Other):  468   (Other):3117               NA's   :15                        
+     relig       class       spdeg       madeg       padeg         wrkstat      degree     uscitzn         realinc      
+ 1      :7390   1   :1181   0   : 748   0   :4255   0   :4084   1      :6926   0   :1850   1   :  710   Min.   : 5.466  
+ 2      :3340   2   :6611   1   :3399   1   :6625   1   :4802   5      :2650   1   :7274   2   :  628   1st Qu.: 9.399  
+ 4      :2542   3   :6285   2   : 586   2   : 676   2   : 322   7      :1643   2   :1161   3   :   10   Median :10.090  
+ 11     : 512   4   : 444   3   :1369   3   :1359   3   :1302   2      :1556   3   :2767   4   :   24   Mean   : 9.966  
+ 3      : 265   NA's:  89   4   : 820   4   : 598   4   : 949   4      : 688   4   :1556   NA's:13238   3rd Qu.:10.663  
+ (Other): 491               NA's:7688   NA's:1097   NA's:3151   (Other):1135   NA's:   2                Max.   :11.952  
+ NA's   :  70                                                   NA's   :  12                            NA's   :1475    
+    realrinc          region        wordsum       dwelown          size           xnorcsiz    marital     racehisp5 evercitzn
+ Min.   : 5.466   5      :3153   Min.   : 0.000   1   :6810   Min.   :   0.0   3      :2972   1   :6955   1:10418   0:  740  
+ 1st Qu.: 9.038   3      :2518   1st Qu.: 5.000   2   :3137   1st Qu.:   7.0   2      :2430   2   :1250   2: 2114   1:13870  
+ Median : 9.731   9      :2104   Median : 6.000   3   : 203   Median :  24.0   1      :2229   3   :2379   3: 1512            
+ Mean   : 9.551   2      :1899   Mean   : 6.151   NA's:4460   Mean   : 361.8   10     :1692   4   : 469   4:  413            
+ 3rd Qu.:10.257   7      :1566   3rd Qu.: 7.000               3rd Qu.:  99.0   5      :1197   5   :3542   5:  153            
+ Max.   :13.082   (Other):3367   Max.   :10.000               Max.   :8008.0   (Other):4087   NA's:  15                      
+ NA's   :5927     NA's   :   3   NA's   :4958                 NA's   :3        NA's   :   3                                  
+  parallelizing over the variables of the input data matrix 'xmis'
+  missForest iteration 1 in progress...done!
+    estimated error(s): 0.07328829 0.1890561 
+    difference(s): 2.852119e-07 0.03128397 
+    time: 9969.155 seconds
+
+  missForest iteration 2 in progress...done!
+    estimated error(s): 0.07480234 0.1901861 
+    difference(s): 4.558434e-06 0.01154125 
+    time: 9966.335 seconds
+
+  missForest iteration 3 in progress...done!
+    estimated error(s): 0.0742076 0.1902569 
+    difference(s): 4.076142e-06 0.009117446 
+    time: 10001.31 seconds
+
+  missForest iteration 4 in progress...done!
+    estimated error(s): 0.07376654 0.1907449 
+    difference(s): 4.685983e-06 0.00846318 
+    time: 10059.25 seconds
+
+  missForest iteration 5 in progress...done!
+    estimated error(s): 0.07371677 0.1907226 
+    difference(s): 1.804321e-06 0.008114909 
+    time: 10158.6 seconds
+
+[1] 1
+      year            id           samptype      panelwave        intage          intsex        intethn          intyrs       
+ Min.   :2006   Min.   :    1   Min.   :2006   Min.   :1.00   Min.   :22.00   Min.   :1.00   Min.   :1.000   Min.   : 0.0000  
+ 1st Qu.:2008   1st Qu.: 1491   1st Qu.:2006   1st Qu.:1.00   1st Qu.:48.00   1st Qu.:2.00   1st Qu.:1.000   1st Qu.: 0.5233  
+ Median :2010   Median : 4324   Median :2008   Median :2.00   Median :55.00   Median :2.00   Median :1.000   Median : 1.8000  
+ Mean   :2010   Mean   : 5378   Mean   :2008   Mean   :1.85   Mean   :53.96   Mean   :1.82   Mean   :1.478   Mean   : 3.2750  
+ 3rd Qu.:2012   3rd Qu.: 9040   3rd Qu.:2010   3rd Qu.:3.00   3rd Qu.:61.00   3rd Qu.:2.00   3rd Qu.:2.000   3rd Qu.: 4.5000  
+ Max.   :2014   Max.   :11551   Max.   :2010   Max.   :3.00   Max.   :84.00   Max.   :2.00   Max.   :5.000   Max.   :25.6400  
+    lngthinv          coop          comprend        daysint          spaneng           mode          feeused         egp10_11    
+ Min.   : 30.0   Min.   :1.000   Min.   :1.000   Min.   :  0.00   Min.   :1.000   Min.   :1.000   Min.   :1.000   Min.   : 1.00  
+ 1st Qu.: 83.0   1st Qu.:1.000   1st Qu.:1.000   1st Qu.: 22.00   1st Qu.:1.000   1st Qu.:1.000   1st Qu.:1.000   1st Qu.: 2.00  
+ Median :101.0   Median :1.000   Median :1.000   Median : 43.00   Median :1.000   Median :1.000   Median :1.000   Median : 4.00  
+ Mean   :106.4   Mean   :1.227   Mean   :1.183   Mean   : 52.47   Mean   :1.037   Mean   :1.156   Mean   :1.688   Mean   : 5.05  
+ 3rd Qu.:123.0   3rd Qu.:1.000   3rd Qu.:1.000   3rd Qu.: 76.00   3rd Qu.:1.000   3rd Qu.:1.000   3rd Qu.:3.000   3rd Qu.: 8.00  
+ Max.   :200.0   Max.   :4.000   Max.   :3.000   Max.   :157.00   Max.   :2.000   Max.   :2.000   Max.   :3.000   Max.   :12.00  
+   spegp10_11       paegp10_11       maegp10_11        parborn         family16         reg16          incom16          age       
+ Min.   : 1.000   Min.   : 1.000   Min.   : 1.000   Min.   :0.000   Min.   :0.000   Min.   :0.000   Min.   :1.00   Min.   :18.00  
+ 1st Qu.: 3.000   1st Qu.: 4.000   1st Qu.: 3.000   1st Qu.:0.000   1st Qu.:1.000   1st Qu.:2.000   1st Qu.:2.00   1st Qu.:35.00  
+ Median : 4.000   Median : 8.000   Median : 4.000   Median :0.000   Median :1.000   Median :4.000   Median :3.00   Median :49.00  
+ Mean   : 5.878   Mean   : 6.747   Mean   : 5.497   Mean   :1.232   Mean   :1.991   Mean   :4.426   Mean   :2.74   Mean   :49.21  
+ 3rd Qu.:10.000   3rd Qu.:10.000   3rd Qu.:10.000   3rd Qu.:0.000   3rd Qu.:3.000   3rd Qu.:7.000   3rd Qu.:3.00   3rd Qu.:61.00  
+ Max.   :12.000   Max.   :12.000   Max.   :12.000   Max.   :8.000   Max.   :8.000   Max.   :9.000   Max.   :5.00   Max.   :89.00  
+      sex             born           relig            class           spdeg           madeg           padeg          wrkstat     
+ Min.   :1.000   Min.   :1.000   Min.   : 1.000   Min.   :1.000   Min.   :0.000   Min.   :0.000   Min.   :0.000   Min.   :1.000  
+ 1st Qu.:1.000   1st Qu.:1.000   1st Qu.: 1.000   1st Qu.:2.000   1st Qu.:1.000   1st Qu.:0.000   1st Qu.:0.000   1st Qu.:1.000  
+ Median :2.000   Median :1.000   Median : 1.000   Median :2.000   Median :1.000   Median :1.000   Median :1.000   Median :2.000  
+ Mean   :1.564   Mean   :1.114   Mean   : 2.357   Mean   :2.413   Mean   :1.562   Mean   :1.036   Mean   :1.066   Mean   :3.046  
+ 3rd Qu.:2.000   3rd Qu.:1.000   3rd Qu.: 3.000   3rd Qu.:3.000   3rd Qu.:3.000   3rd Qu.:1.000   3rd Qu.:1.000   3rd Qu.:5.000  
+ Max.   :2.000   Max.   :2.000   Max.   :13.000   Max.   :4.000   Max.   :4.000   Max.   :4.000   Max.   :4.000   Max.   :8.000  
+     degree         uscitzn         realinc          realrinc          region         wordsum          dwelown           size       
+ Min.   :0.000   Min.   :1.000   Min.   : 5.466   Min.   : 5.466   Min.   :1.000   Min.   : 0.000   Min.   :1.000   Min.   :   0.0  
+ 1st Qu.:1.000   1st Qu.:1.000   1st Qu.: 9.362   1st Qu.: 8.649   1st Qu.:3.000   1st Qu.: 5.000   1st Qu.:1.000   1st Qu.:   7.0  
+ Median :1.000   Median :1.000   Median :10.057   Median : 9.306   Median :5.000   Median : 6.000   Median :1.000   Median :  24.0  
+ Mean   :1.651   Mean   :1.063   Mean   : 9.950   Mean   : 9.272   Mean   :5.128   Mean   : 6.135   Mean   :1.324   Mean   : 361.9  
+ 3rd Qu.:3.000   3rd Qu.:1.000   3rd Qu.:10.663   3rd Qu.: 9.972   3rd Qu.:7.000   3rd Qu.: 7.000   3rd Qu.:2.000   3rd Qu.:  99.0  
+ Max.   :4.000   Max.   :4.000   Max.   :11.952   Max.   :13.082   Max.   :9.000   Max.   :10.000   Max.   :3.000   Max.   :8008.0  
+    xnorcsiz         marital        racehisp5       evercitzn           flag  
+ Min.   : 1.000   Min.   :1.000   Min.   :1.000   Min.   :0.0000   Min.   :1  
+ 1st Qu.: 2.000   1st Qu.:1.000   1st Qu.:1.000   1st Qu.:1.0000   1st Qu.:1  
+ Median : 3.000   Median :2.000   Median :1.000   Median :1.0000   Median :1  
+ Mean   : 4.364   Mean   :2.479   Mean   :1.478   Mean   :0.9493   Mean   :1  
+ 3rd Qu.: 6.000   3rd Qu.:4.000   3rd Qu.:2.000   3rd Qu.:1.0000   3rd Qu.:1  
+ Max.   :10.000   Max.   :5.000   Max.   :5.000   Max.   :1.0000   Max.   :1  
+  parallelizing over the variables of the input data matrix 'xmis'
+  missForest iteration 1 in progress...done!
+    estimated error(s): 0.07326401 0.1891022 
+    difference(s): 2.72218e-07 0.0312276 
+    time: 9961.196 seconds
+
+  missForest iteration 2 in progress...done!
+    estimated error(s): 0.07457571 0.1900453 
+    difference(s): 4.480034e-06 0.01140033 
+    time: 9820.035 seconds
+
+  missForest iteration 3 in progress...done!
+    estimated error(s): 0.07505122 0.1904277 
+    difference(s): 2.067016e-06 0.008918146 
+    time: 10176.19 seconds
+
+  missForest iteration 4 in progress...done!
+    estimated error(s): 0.07327925 0.1908705 
+    difference(s): 1.798644e-06 0.008300117 
+    time: 10271.02 seconds
+
+  missForest iteration 5 in progress...done!
+    estimated error(s): 0.07432707 0.1904636 
+    difference(s): 1.64506e-06 0.00814108 
+    time: 9748.517 seconds
+
+[1] 2
+      year            id           samptype      panelwave        intage          intsex        intethn          intyrs       
+ Min.   :2006   Min.   :    1   Min.   :2006   Min.   :1.00   Min.   :22.00   Min.   :1.00   Min.   :1.000   Min.   : 0.0000  
+ 1st Qu.:2008   1st Qu.: 1491   1st Qu.:2006   1st Qu.:1.00   1st Qu.:48.00   1st Qu.:2.00   1st Qu.:1.000   1st Qu.: 0.5233  
+ Median :2010   Median : 4324   Median :2008   Median :2.00   Median :55.00   Median :2.00   Median :1.000   Median : 1.8000  
+ Mean   :2010   Mean   : 5378   Mean   :2008   Mean   :1.85   Mean   :53.96   Mean   :1.82   Mean   :1.478   Mean   : 3.2749  
+ 3rd Qu.:2012   3rd Qu.: 9040   3rd Qu.:2010   3rd Qu.:3.00   3rd Qu.:61.00   3rd Qu.:2.00   3rd Qu.:2.000   3rd Qu.: 4.5000  
+ Max.   :2014   Max.   :11551   Max.   :2010   Max.   :3.00   Max.   :84.00   Max.   :2.00   Max.   :5.000   Max.   :25.6400  
+    lngthinv          coop          comprend        daysint          spaneng           mode          feeused         egp10_11     
+ Min.   : 30.0   Min.   :1.000   Min.   :1.000   Min.   :  0.00   Min.   :1.000   Min.   :1.000   Min.   :1.000   Min.   : 1.000  
+ 1st Qu.: 83.0   1st Qu.:1.000   1st Qu.:1.000   1st Qu.: 22.00   1st Qu.:1.000   1st Qu.:1.000   1st Qu.:1.000   1st Qu.: 2.000  
+ Median :101.0   Median :1.000   Median :1.000   Median : 43.00   Median :1.000   Median :1.000   Median :1.000   Median : 4.000  
+ Mean   :106.4   Mean   :1.227   Mean   :1.183   Mean   : 52.47   Mean   :1.037   Mean   :1.156   Mean   :1.687   Mean   : 5.051  
+ 3rd Qu.:123.0   3rd Qu.:1.000   3rd Qu.:1.000   3rd Qu.: 76.00   3rd Qu.:1.000   3rd Qu.:1.000   3rd Qu.:3.000   3rd Qu.: 8.000  
+ Max.   :200.0   Max.   :4.000   Max.   :3.000   Max.   :157.00   Max.   :2.000   Max.   :2.000   Max.   :3.000   Max.   :12.000  
+   spegp10_11       paegp10_11       maegp10_11        parborn         family16         reg16          incom16          age       
+ Min.   : 1.000   Min.   : 1.000   Min.   : 1.000   Min.   :0.000   Min.   :0.000   Min.   :0.000   Min.   :1.00   Min.   :18.00  
+ 1st Qu.: 3.000   1st Qu.: 4.000   1st Qu.: 3.000   1st Qu.:0.000   1st Qu.:1.000   1st Qu.:2.000   1st Qu.:2.00   1st Qu.:35.00  
+ Median : 4.000   Median : 8.000   Median : 4.000   Median :0.000   Median :1.000   Median :4.000   Median :3.00   Median :49.00  
+ Mean   : 5.895   Mean   : 6.749   Mean   : 5.493   Mean   :1.232   Mean   :1.991   Mean   :4.426   Mean   :2.74   Mean   :49.21  
+ 3rd Qu.:10.000   3rd Qu.:10.000   3rd Qu.:10.000   3rd Qu.:0.000   3rd Qu.:3.000   3rd Qu.:7.000   3rd Qu.:3.00   3rd Qu.:61.00  
+ Max.   :12.000   Max.   :12.000   Max.   :12.000   Max.   :8.000   Max.   :8.000   Max.   :9.000   Max.   :5.00   Max.   :89.00  
+      sex             born           relig            class           spdeg           madeg           padeg          wrkstat     
+ Min.   :1.000   Min.   :1.000   Min.   : 1.000   Min.   :1.000   Min.   :0.000   Min.   :0.000   Min.   :0.000   Min.   :1.000  
+ 1st Qu.:1.000   1st Qu.:1.000   1st Qu.: 1.000   1st Qu.:2.000   1st Qu.:1.000   1st Qu.:0.000   1st Qu.:0.000   1st Qu.:1.000  
+ Median :2.000   Median :1.000   Median : 1.000   Median :2.000   Median :1.000   Median :1.000   Median :1.000   Median :2.000  
+ Mean   :1.564   Mean   :1.114   Mean   : 2.357   Mean   :2.412   Mean   :1.559   Mean   :1.035   Mean   :1.064   Mean   :3.046  
+ 3rd Qu.:2.000   3rd Qu.:1.000   3rd Qu.: 3.000   3rd Qu.:3.000   3rd Qu.:3.000   3rd Qu.:1.000   3rd Qu.:1.000   3rd Qu.:5.000  
+ Max.   :2.000   Max.   :2.000   Max.   :13.000   Max.   :4.000   Max.   :4.000   Max.   :4.000   Max.   :4.000   Max.   :8.000  
+     degree         uscitzn         realinc          realrinc          region         wordsum          dwelown           size       
+ Min.   :0.000   Min.   :1.000   Min.   : 5.466   Min.   : 5.466   Min.   :1.000   Min.   : 0.000   Min.   :1.000   Min.   :   0.0  
+ 1st Qu.:1.000   1st Qu.:1.000   1st Qu.: 9.362   1st Qu.: 8.651   1st Qu.:3.000   1st Qu.: 5.000   1st Qu.:1.000   1st Qu.:   7.0  
+ Median :1.000   Median :1.000   Median :10.057   Median : 9.306   Median :5.000   Median : 6.000   Median :1.000   Median :  24.0  
+ Mean   :1.651   Mean   :1.063   Mean   : 9.950   Mean   : 9.271   Mean   :5.128   Mean   : 6.135   Mean   :1.325   Mean   : 361.9  
+ 3rd Qu.:3.000   3rd Qu.:1.000   3rd Qu.:10.663   3rd Qu.: 9.967   3rd Qu.:7.000   3rd Qu.: 7.000   3rd Qu.:2.000   3rd Qu.:  99.0  
+ Max.   :4.000   Max.   :4.000   Max.   :11.952   Max.   :13.082   Max.   :9.000   Max.   :10.000   Max.   :3.000   Max.   :8008.0  
+    xnorcsiz         marital        racehisp5       evercitzn           flag  
+ Min.   : 1.000   Min.   :1.000   Min.   :1.000   Min.   :0.0000   Min.   :2  
+ 1st Qu.: 2.000   1st Qu.:1.000   1st Qu.:1.000   1st Qu.:1.0000   1st Qu.:2  
+ Median : 3.000   Median :2.000   Median :1.000   Median :1.0000   Median :2  
+ Mean   : 4.364   Mean   :2.479   Mean   :1.478   Mean   :0.9493   Mean   :2  
+ 3rd Qu.: 6.000   3rd Qu.:4.000   3rd Qu.:2.000   3rd Qu.:1.0000   3rd Qu.:2  
+ Max.   :10.000   Max.   :5.000   Max.   :5.000   Max.   :1.0000   Max.   :2  
+  parallelizing over the variables of the input data matrix 'xmis'
+  missForest iteration 1 in progress...done!
+    estimated error(s): 0.07344468 0.1894 
+    difference(s): 2.520793e-07 0.03120143 
+    time: 9798.558 seconds
+
+  missForest iteration 2 in progress...done!
+    estimated error(s): 0.07484972 0.1904729 
+    difference(s): 4.815966e-06 0.01141442 
+    time: 10005.72 seconds
+
+  missForest iteration 3 in progress...done!
+    estimated error(s): 0.07401273 0.1906311 
+    difference(s): 2.669669e-06 0.009127511 
+    time: 10048.77 seconds
+
+  missForest iteration 4 in progress...done!
+    estimated error(s): 0.07402481 0.1908878 
+    difference(s): 2.082299e-06 0.008503442 
+    time: 10053.81 seconds
+
+  missForest iteration 5 in progress...done!
+    estimated error(s): 0.07361825 0.1906004 
+    difference(s): 1.80262e-06 0.00816725 
+    time: 10047.76 seconds
+
+[1] 3
+      year            id           samptype      panelwave        intage          intsex        intethn          intyrs       
+ Min.   :2006   Min.   :    1   Min.   :2006   Min.   :1.00   Min.   :22.00   Min.   :1.00   Min.   :1.000   Min.   : 0.0000  
+ 1st Qu.:2008   1st Qu.: 1491   1st Qu.:2006   1st Qu.:1.00   1st Qu.:48.00   1st Qu.:2.00   1st Qu.:1.000   1st Qu.: 0.5233  
+ Median :2010   Median : 4324   Median :2008   Median :2.00   Median :55.00   Median :2.00   Median :1.000   Median : 1.8000  
+ Mean   :2010   Mean   : 5378   Mean   :2008   Mean   :1.85   Mean   :53.96   Mean   :1.82   Mean   :1.478   Mean   : 3.2750  
+ 3rd Qu.:2012   3rd Qu.: 9040   3rd Qu.:2010   3rd Qu.:3.00   3rd Qu.:61.00   3rd Qu.:2.00   3rd Qu.:2.000   3rd Qu.: 4.5000  
+ Max.   :2014   Max.   :11551   Max.   :2010   Max.   :3.00   Max.   :84.00   Max.   :2.00   Max.   :5.000   Max.   :25.6400  
+    lngthinv          coop          comprend        daysint          spaneng           mode          feeused         egp10_11    
+ Min.   : 30.0   Min.   :1.000   Min.   :1.000   Min.   :  0.00   Min.   :1.000   Min.   :1.000   Min.   :1.000   Min.   : 1.00  
+ 1st Qu.: 83.0   1st Qu.:1.000   1st Qu.:1.000   1st Qu.: 22.00   1st Qu.:1.000   1st Qu.:1.000   1st Qu.:1.000   1st Qu.: 2.00  
+ Median :101.0   Median :1.000   Median :1.000   Median : 43.00   Median :1.000   Median :1.000   Median :1.000   Median : 4.00  
+ Mean   :106.4   Mean   :1.227   Mean   :1.183   Mean   : 52.47   Mean   :1.037   Mean   :1.156   Mean   :1.687   Mean   : 5.05  
+ 3rd Qu.:123.0   3rd Qu.:1.000   3rd Qu.:1.000   3rd Qu.: 76.00   3rd Qu.:1.000   3rd Qu.:1.000   3rd Qu.:3.000   3rd Qu.: 8.00  
+ Max.   :200.0   Max.   :4.000   Max.   :3.000   Max.   :157.00   Max.   :2.000   Max.   :2.000   Max.   :3.000   Max.   :12.00  
+   spegp10_11       paegp10_11       maegp10_11        parborn         family16         reg16          incom16          age       
+ Min.   : 1.000   Min.   : 1.000   Min.   : 1.000   Min.   :0.000   Min.   :0.000   Min.   :0.000   Min.   :1.00   Min.   :18.00  
+ 1st Qu.: 3.000   1st Qu.: 4.000   1st Qu.: 3.000   1st Qu.:0.000   1st Qu.:1.000   1st Qu.:2.000   1st Qu.:2.00   1st Qu.:35.00  
+ Median : 4.000   Median : 8.000   Median : 4.000   Median :0.000   Median :1.000   Median :4.000   Median :3.00   Median :49.00  
+ Mean   : 5.879   Mean   : 6.743   Mean   : 5.487   Mean   :1.232   Mean   :1.991   Mean   :4.426   Mean   :2.74   Mean   :49.21  
+ 3rd Qu.:10.000   3rd Qu.:10.000   3rd Qu.:10.000   3rd Qu.:0.000   3rd Qu.:3.000   3rd Qu.:7.000   3rd Qu.:3.00   3rd Qu.:61.00  
+ Max.   :12.000   Max.   :12.000   Max.   :12.000   Max.   :8.000   Max.   :8.000   Max.   :9.000   Max.   :5.00   Max.   :89.00  
+      sex             born           relig            class           spdeg           madeg           padeg          wrkstat     
+ Min.   :1.000   Min.   :1.000   Min.   : 1.000   Min.   :1.000   Min.   :0.000   Min.   :0.000   Min.   :0.000   Min.   :1.000  
+ 1st Qu.:1.000   1st Qu.:1.000   1st Qu.: 1.000   1st Qu.:2.000   1st Qu.:1.000   1st Qu.:0.000   1st Qu.:0.000   1st Qu.:1.000  
+ Median :2.000   Median :1.000   Median : 1.000   Median :2.000   Median :1.000   Median :1.000   Median :1.000   Median :2.000  
+ Mean   :1.564   Mean   :1.114   Mean   : 2.357   Mean   :2.412   Mean   :1.559   Mean   :1.036   Mean   :1.065   Mean   :3.046  
+ 3rd Qu.:2.000   3rd Qu.:1.000   3rd Qu.: 3.000   3rd Qu.:3.000   3rd Qu.:3.000   3rd Qu.:1.000   3rd Qu.:1.000   3rd Qu.:5.000  
+ Max.   :2.000   Max.   :2.000   Max.   :13.000   Max.   :4.000   Max.   :4.000   Max.   :4.000   Max.   :4.000   Max.   :8.000  
+     degree         uscitzn         realinc          realrinc          region         wordsum          dwelown           size       
+ Min.   :0.000   Min.   :1.000   Min.   : 5.466   Min.   : 5.466   Min.   :1.000   Min.   : 0.000   Min.   :1.000   Min.   :   0.0  
+ 1st Qu.:1.000   1st Qu.:1.000   1st Qu.: 9.362   1st Qu.: 8.643   1st Qu.:3.000   1st Qu.: 5.000   1st Qu.:1.000   1st Qu.:   7.0  
+ Median :1.000   Median :1.000   Median :10.057   Median : 9.306   Median :5.000   Median : 6.000   Median :1.000   Median :  24.0  
+ Mean   :1.651   Mean   :1.063   Mean   : 9.950   Mean   : 9.271   Mean   :5.128   Mean   : 6.135   Mean   :1.325   Mean   : 361.9  
+ 3rd Qu.:3.000   3rd Qu.:1.000   3rd Qu.:10.663   3rd Qu.: 9.969   3rd Qu.:7.000   3rd Qu.: 7.000   3rd Qu.:2.000   3rd Qu.:  99.0  
+ Max.   :4.000   Max.   :4.000   Max.   :11.952   Max.   :13.082   Max.   :9.000   Max.   :10.000   Max.   :3.000   Max.   :8008.0  
+    xnorcsiz         marital        racehisp5       evercitzn           flag  
+ Min.   : 1.000   Min.   :1.000   Min.   :1.000   Min.   :0.0000   Min.   :3  
+ 1st Qu.: 2.000   1st Qu.:1.000   1st Qu.:1.000   1st Qu.:1.0000   1st Qu.:3  
+ Median : 3.000   Median :2.000   Median :1.000   Median :1.0000   Median :3  
+ Mean   : 4.364   Mean   :2.479   Mean   :1.478   Mean   :0.9493   Mean   :3  
+ 3rd Qu.: 6.000   3rd Qu.:4.000   3rd Qu.:2.000   3rd Qu.:1.0000   3rd Qu.:3  
+ Max.   :10.000   Max.   :5.000   Max.   :5.000   Max.   :1.0000   Max.   :3  
+  parallelizing over the variables of the input data matrix 'xmis'
+  missForest iteration 1 in progress...done!
+    estimated error(s): 0.07320781 0.1894508 
+    difference(s): 2.861655e-07 0.03110883 
+    time: 9819.628 seconds
+
+  missForest iteration 2 in progress...done!
+    estimated error(s): 0.07381176 0.1899792 
+    difference(s): 5.560964e-06 0.01115473 
+    time: 10418.96 seconds
+
+  missForest iteration 3 in progress...done!
+    estimated error(s): 0.07543935 0.1907447 
+    difference(s): 2.890302e-06 0.008859766 
+    time: 9759.207 seconds
+
+  missForest iteration 4 in progress...done!
+    estimated error(s): 0.07449118 0.1903041 
+    difference(s): 2.561527e-06 0.008298104 
+    time: 9984.553 seconds
+
+  missForest iteration 5 in progress...done!
+    estimated error(s): 0.07462319 0.1911794 
+    difference(s): 2.355478e-06 0.008197447 
+    time: 9910.944 seconds
+
+[1] 4
+      year            id           samptype      panelwave        intage          intsex        intethn          intyrs       
+ Min.   :2006   Min.   :    1   Min.   :2006   Min.   :1.00   Min.   :22.00   Min.   :1.00   Min.   :1.000   Min.   : 0.0000  
+ 1st Qu.:2008   1st Qu.: 1491   1st Qu.:2006   1st Qu.:1.00   1st Qu.:48.00   1st Qu.:2.00   1st Qu.:1.000   1st Qu.: 0.5233  
+ Median :2010   Median : 4324   Median :2008   Median :2.00   Median :55.00   Median :2.00   Median :1.000   Median : 1.8000  
+ Mean   :2010   Mean   : 5378   Mean   :2008   Mean   :1.85   Mean   :53.96   Mean   :1.82   Mean   :1.478   Mean   : 3.2750  
+ 3rd Qu.:2012   3rd Qu.: 9040   3rd Qu.:2010   3rd Qu.:3.00   3rd Qu.:61.00   3rd Qu.:2.00   3rd Qu.:2.000   3rd Qu.: 4.5000  
+ Max.   :2014   Max.   :11551   Max.   :2010   Max.   :3.00   Max.   :84.00   Max.   :2.00   Max.   :5.000   Max.   :25.6400  
+    lngthinv          coop          comprend        daysint          spaneng           mode          feeused         egp10_11     
+ Min.   : 30.0   Min.   :1.000   Min.   :1.000   Min.   :  0.00   Min.   :1.000   Min.   :1.000   Min.   :1.000   Min.   : 1.000  
+ 1st Qu.: 83.0   1st Qu.:1.000   1st Qu.:1.000   1st Qu.: 22.00   1st Qu.:1.000   1st Qu.:1.000   1st Qu.:1.000   1st Qu.: 2.000  
+ Median :101.0   Median :1.000   Median :1.000   Median : 43.00   Median :1.000   Median :1.000   Median :1.000   Median : 4.000  
+ Mean   :106.4   Mean   :1.227   Mean   :1.183   Mean   : 52.47   Mean   :1.037   Mean   :1.156   Mean   :1.687   Mean   : 5.051  
+ 3rd Qu.:123.0   3rd Qu.:1.000   3rd Qu.:1.000   3rd Qu.: 76.00   3rd Qu.:1.000   3rd Qu.:1.000   3rd Qu.:3.000   3rd Qu.: 8.000  
+ Max.   :200.0   Max.   :4.000   Max.   :3.000   Max.   :157.00   Max.   :2.000   Max.   :2.000   Max.   :3.000   Max.   :12.000  
+   spegp10_11       paegp10_11       maegp10_11        parborn         family16         reg16          incom16          age       
+ Min.   : 1.000   Min.   : 1.000   Min.   : 1.000   Min.   :0.000   Min.   :0.000   Min.   :0.000   Min.   :1.00   Min.   :18.00  
+ 1st Qu.: 3.000   1st Qu.: 4.000   1st Qu.: 3.000   1st Qu.:0.000   1st Qu.:1.000   1st Qu.:2.000   1st Qu.:2.00   1st Qu.:35.00  
+ Median : 4.000   Median : 8.000   Median : 4.000   Median :0.000   Median :1.000   Median :4.000   Median :3.00   Median :49.00  
+ Mean   : 5.867   Mean   : 6.744   Mean   : 5.489   Mean   :1.232   Mean   :1.991   Mean   :4.426   Mean   :2.74   Mean   :49.21  
+ 3rd Qu.:10.000   3rd Qu.:10.000   3rd Qu.:10.000   3rd Qu.:0.000   3rd Qu.:3.000   3rd Qu.:7.000   3rd Qu.:3.00   3rd Qu.:61.00  
+ Max.   :12.000   Max.   :12.000   Max.   :12.000   Max.   :8.000   Max.   :8.000   Max.   :9.000   Max.   :5.00   Max.   :89.00  
+      sex             born           relig            class           spdeg           madeg           padeg          wrkstat     
+ Min.   :1.000   Min.   :1.000   Min.   : 1.000   Min.   :1.000   Min.   :0.000   Min.   :0.000   Min.   :0.000   Min.   :1.000  
+ 1st Qu.:1.000   1st Qu.:1.000   1st Qu.: 1.000   1st Qu.:2.000   1st Qu.:1.000   1st Qu.:0.000   1st Qu.:0.000   1st Qu.:1.000  
+ Median :2.000   Median :1.000   Median : 1.000   Median :2.000   Median :1.000   Median :1.000   Median :1.000   Median :2.000  
+ Mean   :1.564   Mean   :1.114   Mean   : 2.357   Mean   :2.412   Mean   :1.558   Mean   :1.035   Mean   :1.063   Mean   :3.046  
+ 3rd Qu.:2.000   3rd Qu.:1.000   3rd Qu.: 3.000   3rd Qu.:3.000   3rd Qu.:3.000   3rd Qu.:1.000   3rd Qu.:1.000   3rd Qu.:5.000  
+ Max.   :2.000   Max.   :2.000   Max.   :13.000   Max.   :4.000   Max.   :4.000   Max.   :4.000   Max.   :4.000   Max.   :8.000  
+     degree         uscitzn         realinc          realrinc          region         wordsum          dwelown           size       
+ Min.   :0.000   Min.   :1.000   Min.   : 5.466   Min.   : 5.466   Min.   :1.000   Min.   : 0.000   Min.   :1.000   Min.   :   0.0  
+ 1st Qu.:1.000   1st Qu.:1.000   1st Qu.: 9.362   1st Qu.: 8.655   1st Qu.:3.000   1st Qu.: 5.000   1st Qu.:1.000   1st Qu.:   7.0  
+ Median :1.000   Median :1.000   Median :10.057   Median : 9.306   Median :5.000   Median : 6.000   Median :1.000   Median :  24.0  
+ Mean   :1.651   Mean   :1.063   Mean   : 9.951   Mean   : 9.272   Mean   :5.127   Mean   : 6.135   Mean   :1.325   Mean   : 361.9  
+ 3rd Qu.:3.000   3rd Qu.:1.000   3rd Qu.:10.663   3rd Qu.: 9.967   3rd Qu.:7.000   3rd Qu.: 7.000   3rd Qu.:2.000   3rd Qu.:  99.0  
+ Max.   :4.000   Max.   :4.000   Max.   :11.952   Max.   :13.082   Max.   :9.000   Max.   :10.000   Max.   :3.000   Max.   :8008.0  
+    xnorcsiz         marital        racehisp5       evercitzn           flag  
+ Min.   : 1.000   Min.   :1.000   Min.   :1.000   Min.   :0.0000   Min.   :4  
+ 1st Qu.: 2.000   1st Qu.:1.000   1st Qu.:1.000   1st Qu.:1.0000   1st Qu.:4  
+ Median : 3.000   Median :2.000   Median :1.000   Median :1.0000   Median :4  
+ Mean   : 4.364   Mean   :2.479   Mean   :1.478   Mean   :0.9493   Mean   :4  
+ 3rd Qu.: 6.000   3rd Qu.:4.000   3rd Qu.:2.000   3rd Qu.:1.0000   3rd Qu.:4  
+ Max.   :10.000   Max.   :5.000   Max.   :5.000   Max.   :1.0000   Max.   :4  
+  parallelizing over the variables of the input data matrix 'xmis'
+  missForest iteration 1 in progress...done!
+    estimated error(s): 0.07297856 0.189341 
+    difference(s): 2.986361e-07 0.0312578 
+    time: 10095.29 seconds
+
+  missForest iteration 2 in progress...done!
+    estimated error(s): 0.07446518 0.1904094 
+    difference(s): 4.851428e-06 0.01117083 
+    time: 10034.61 seconds
+
+  missForest iteration 3 in progress...done!
+    estimated error(s): 0.07471041 0.1904613 
+    difference(s): 4.467834e-06 0.008765149 
+    time: 10490.17 seconds
+
+  missForest iteration 4 in progress...done!
+    estimated error(s): 0.07430429 0.1901812 
+    difference(s): 4.601508e-06 0.008098804 
+    time: 10006.36 seconds
+
+  missForest iteration 5 in progress...done!
+    estimated error(s): 0.07444047 0.1906459 
+    difference(s): 2.467721e-06 0.007802875 
+    time: 10370.39 seconds
+
+[1] 5
+      year            id           samptype      panelwave        intage          intsex        intethn          intyrs       
+ Min.   :2006   Min.   :    1   Min.   :2006   Min.   :1.00   Min.   :22.00   Min.   :1.00   Min.   :1.000   Min.   : 0.0000  
+ 1st Qu.:2008   1st Qu.: 1491   1st Qu.:2006   1st Qu.:1.00   1st Qu.:48.00   1st Qu.:2.00   1st Qu.:1.000   1st Qu.: 0.5233  
+ Median :2010   Median : 4324   Median :2008   Median :2.00   Median :55.00   Median :2.00   Median :1.000   Median : 1.8000  
+ Mean   :2010   Mean   : 5378   Mean   :2008   Mean   :1.85   Mean   :53.96   Mean   :1.82   Mean   :1.478   Mean   : 3.2748  
+ 3rd Qu.:2012   3rd Qu.: 9040   3rd Qu.:2010   3rd Qu.:3.00   3rd Qu.:61.00   3rd Qu.:2.00   3rd Qu.:2.000   3rd Qu.: 4.5000  
+ Max.   :2014   Max.   :11551   Max.   :2010   Max.   :3.00   Max.   :84.00   Max.   :2.00   Max.   :5.000   Max.   :25.6400  
+    lngthinv          coop          comprend        daysint          spaneng           mode          feeused         egp10_11    
+ Min.   : 30.0   Min.   :1.000   Min.   :1.000   Min.   :  0.00   Min.   :1.000   Min.   :1.000   Min.   :1.000   Min.   : 1.00  
+ 1st Qu.: 83.0   1st Qu.:1.000   1st Qu.:1.000   1st Qu.: 22.00   1st Qu.:1.000   1st Qu.:1.000   1st Qu.:1.000   1st Qu.: 2.00  
+ Median :101.0   Median :1.000   Median :1.000   Median : 43.00   Median :1.000   Median :1.000   Median :1.000   Median : 4.00  
+ Mean   :106.4   Mean   :1.227   Mean   :1.183   Mean   : 52.47   Mean   :1.037   Mean   :1.156   Mean   :1.688   Mean   : 5.05  
+ 3rd Qu.:123.0   3rd Qu.:1.000   3rd Qu.:1.000   3rd Qu.: 76.00   3rd Qu.:1.000   3rd Qu.:1.000   3rd Qu.:3.000   3rd Qu.: 8.00  
+ Max.   :200.0   Max.   :4.000   Max.   :3.000   Max.   :157.00   Max.   :2.000   Max.   :2.000   Max.   :3.000   Max.   :12.00  
+   spegp10_11      paegp10_11       maegp10_11        parborn         family16         reg16          incom16          age       
+ Min.   : 1.00   Min.   : 1.000   Min.   : 1.000   Min.   :0.000   Min.   :0.000   Min.   :0.000   Min.   :1.00   Min.   :18.00  
+ 1st Qu.: 3.00   1st Qu.: 4.000   1st Qu.: 3.000   1st Qu.:0.000   1st Qu.:1.000   1st Qu.:2.000   1st Qu.:2.00   1st Qu.:35.00  
+ Median : 4.00   Median : 8.000   Median : 4.000   Median :0.000   Median :1.000   Median :4.000   Median :3.00   Median :49.00  
+ Mean   : 5.87   Mean   : 6.748   Mean   : 5.496   Mean   :1.232   Mean   :1.991   Mean   :4.426   Mean   :2.74   Mean   :49.21  
+ 3rd Qu.:10.00   3rd Qu.:10.000   3rd Qu.:10.000   3rd Qu.:0.000   3rd Qu.:3.000   3rd Qu.:7.000   3rd Qu.:3.00   3rd Qu.:61.00  
+ Max.   :12.00   Max.   :12.000   Max.   :12.000   Max.   :8.000   Max.   :8.000   Max.   :9.000   Max.   :5.00   Max.   :89.00  
+      sex             born           relig            class           spdeg           madeg           padeg          wrkstat     
+ Min.   :1.000   Min.   :1.000   Min.   : 1.000   Min.   :1.000   Min.   :0.000   Min.   :0.000   Min.   :0.000   Min.   :1.000  
+ 1st Qu.:1.000   1st Qu.:1.000   1st Qu.: 1.000   1st Qu.:2.000   1st Qu.:1.000   1st Qu.:0.000   1st Qu.:0.000   1st Qu.:1.000  
+ Median :2.000   Median :1.000   Median : 1.000   Median :2.000   Median :1.000   Median :1.000   Median :1.000   Median :2.000  
+ Mean   :1.564   Mean   :1.114   Mean   : 2.357   Mean   :2.412   Mean   :1.554   Mean   :1.035   Mean   :1.063   Mean   :3.046  
+ 3rd Qu.:2.000   3rd Qu.:1.000   3rd Qu.: 3.000   3rd Qu.:3.000   3rd Qu.:3.000   3rd Qu.:1.000   3rd Qu.:1.000   3rd Qu.:5.000  
+ Max.   :2.000   Max.   :2.000   Max.   :13.000   Max.   :4.000   Max.   :4.000   Max.   :4.000   Max.   :4.000   Max.   :8.000  
+     degree         uscitzn         realinc          realrinc          region         wordsum          dwelown           size       
+ Min.   :0.000   Min.   :1.000   Min.   : 5.466   Min.   : 5.466   Min.   :1.000   Min.   : 0.000   Min.   :1.000   Min.   :   0.0  
+ 1st Qu.:1.000   1st Qu.:1.000   1st Qu.: 9.362   1st Qu.: 8.647   1st Qu.:3.000   1st Qu.: 5.000   1st Qu.:1.000   1st Qu.:   7.0  
+ Median :1.000   Median :1.000   Median :10.057   Median : 9.306   Median :5.000   Median : 6.000   Median :1.000   Median :  24.0  
+ Mean   :1.651   Mean   :1.062   Mean   : 9.950   Mean   : 9.273   Mean   :5.128   Mean   : 6.136   Mean   :1.324   Mean   : 361.9  
+ 3rd Qu.:3.000   3rd Qu.:1.000   3rd Qu.:10.663   3rd Qu.: 9.969   3rd Qu.:7.000   3rd Qu.: 7.000   3rd Qu.:2.000   3rd Qu.:  99.0  
+ Max.   :4.000   Max.   :4.000   Max.   :11.952   Max.   :13.082   Max.   :9.000   Max.   :10.000   Max.   :3.000   Max.   :8008.0  
+    xnorcsiz         marital        racehisp5       evercitzn           flag  
+ Min.   : 1.000   Min.   :1.000   Min.   :1.000   Min.   :0.0000   Min.   :5  
+ 1st Qu.: 2.000   1st Qu.:1.000   1st Qu.:1.000   1st Qu.:1.0000   1st Qu.:5  
+ Median : 3.000   Median :2.000   Median :1.000   Median :1.0000   Median :5  
+ Mean   : 4.364   Mean   :2.479   Mean   :1.478   Mean   :0.9493   Mean   :5  
+ 3rd Qu.: 6.000   3rd Qu.:4.000   3rd Qu.:2.000   3rd Qu.:1.0000   3rd Qu.:5  
+ Max.   :10.000   Max.   :5.000   Max.   :5.000   Max.   :1.0000   Max.   :5  
+  parallelizing over the variables of the input data matrix 'xmis'
+  missForest iteration 1 in progress...done!
+    estimated error(s): 0.07277741 0.1891933 
+    difference(s): 2.895041e-07 0.03137255 
+    time: 9958.2 seconds
+
+  missForest iteration 2 in progress...done!
+    estimated error(s): 0.07522573 0.1903232 
+    difference(s): 5.366347e-06 0.01164794 
+    time: 10285.84 seconds
+
+  missForest iteration 3 in progress...done!
+    estimated error(s): 0.07480784 0.1910067 
+    difference(s): 2.615989e-06 0.009218102 
+    time: 9877.183 seconds
+
+  missForest iteration 4 in progress...done!
+    estimated error(s): 0.07414663 0.1904438 
+    difference(s): 2.509218e-06 0.008598059 
+    time: 10040.49 seconds
+
+  missForest iteration 5 in progress...done!
+    estimated error(s): 0.07464812 0.1904229 
+    difference(s): 2.377918e-06 0.00836655 
+    time: 9746.719 seconds
+
+[1] 6
+      year            id           samptype      panelwave        intage          intsex        intethn          intyrs       
+ Min.   :2006   Min.   :    1   Min.   :2006   Min.   :1.00   Min.   :22.00   Min.   :1.00   Min.   :1.000   Min.   : 0.0000  
+ 1st Qu.:2008   1st Qu.: 1491   1st Qu.:2006   1st Qu.:1.00   1st Qu.:48.00   1st Qu.:2.00   1st Qu.:1.000   1st Qu.: 0.5233  
+ Median :2010   Median : 4324   Median :2008   Median :2.00   Median :55.00   Median :2.00   Median :1.000   Median : 1.7883  
+ Mean   :2010   Mean   : 5378   Mean   :2008   Mean   :1.85   Mean   :53.96   Mean   :1.82   Mean   :1.478   Mean   : 3.2750  
+ 3rd Qu.:2012   3rd Qu.: 9040   3rd Qu.:2010   3rd Qu.:3.00   3rd Qu.:61.00   3rd Qu.:2.00   3rd Qu.:2.000   3rd Qu.: 4.5000  
+ Max.   :2014   Max.   :11551   Max.   :2010   Max.   :3.00   Max.   :84.00   Max.   :2.00   Max.   :5.000   Max.   :25.6400  
+    lngthinv          coop          comprend        daysint          spaneng           mode          feeused         egp10_11     
+ Min.   : 30.0   Min.   :1.000   Min.   :1.000   Min.   :  0.00   Min.   :1.000   Min.   :1.000   Min.   :1.000   Min.   : 1.000  
+ 1st Qu.: 83.0   1st Qu.:1.000   1st Qu.:1.000   1st Qu.: 22.00   1st Qu.:1.000   1st Qu.:1.000   1st Qu.:1.000   1st Qu.: 2.000  
+ Median :101.0   Median :1.000   Median :1.000   Median : 43.00   Median :1.000   Median :1.000   Median :1.000   Median : 4.000  
+ Mean   :106.4   Mean   :1.227   Mean   :1.183   Mean   : 52.47   Mean   :1.037   Mean   :1.156   Mean   :1.687   Mean   : 5.051  
+ 3rd Qu.:123.0   3rd Qu.:1.000   3rd Qu.:1.000   3rd Qu.: 76.00   3rd Qu.:1.000   3rd Qu.:1.000   3rd Qu.:3.000   3rd Qu.: 8.000  
+ Max.   :200.0   Max.   :4.000   Max.   :3.000   Max.   :157.00   Max.   :2.000   Max.   :2.000   Max.   :3.000   Max.   :12.000  
+   spegp10_11       paegp10_11      maegp10_11        parborn         family16         reg16          incom16           age       
+ Min.   : 1.000   Min.   : 1.00   Min.   : 1.000   Min.   :0.000   Min.   :0.000   Min.   :0.000   Min.   :1.000   Min.   :18.00  
+ 1st Qu.: 3.000   1st Qu.: 4.00   1st Qu.: 3.000   1st Qu.:0.000   1st Qu.:1.000   1st Qu.:2.000   1st Qu.:2.000   1st Qu.:35.00  
+ Median : 4.000   Median : 8.00   Median : 4.000   Median :0.000   Median :1.000   Median :4.000   Median :3.000   Median :49.00  
+ Mean   : 5.873   Mean   : 6.75   Mean   : 5.488   Mean   :1.232   Mean   :1.991   Mean   :4.426   Mean   :2.741   Mean   :49.21  
+ 3rd Qu.:10.000   3rd Qu.:10.00   3rd Qu.:10.000   3rd Qu.:0.000   3rd Qu.:3.000   3rd Qu.:7.000   3rd Qu.:3.000   3rd Qu.:61.00  
+ Max.   :12.000   Max.   :12.00   Max.   :12.000   Max.   :8.000   Max.   :8.000   Max.   :9.000   Max.   :5.000   Max.   :89.00  
+      sex             born           relig            class           spdeg           madeg           padeg          wrkstat     
+ Min.   :1.000   Min.   :1.000   Min.   : 1.000   Min.   :1.000   Min.   :0.000   Min.   :0.000   Min.   :0.000   Min.   :1.000  
+ 1st Qu.:1.000   1st Qu.:1.000   1st Qu.: 1.000   1st Qu.:2.000   1st Qu.:1.000   1st Qu.:0.000   1st Qu.:0.000   1st Qu.:1.000  
+ Median :2.000   Median :1.000   Median : 1.000   Median :2.000   Median :1.000   Median :1.000   Median :1.000   Median :2.000  
+ Mean   :1.564   Mean   :1.114   Mean   : 2.357   Mean   :2.413   Mean   :1.562   Mean   :1.036   Mean   :1.063   Mean   :3.045  
+ 3rd Qu.:2.000   3rd Qu.:1.000   3rd Qu.: 3.000   3rd Qu.:3.000   3rd Qu.:3.000   3rd Qu.:1.000   3rd Qu.:1.000   3rd Qu.:5.000  
+ Max.   :2.000   Max.   :2.000   Max.   :13.000   Max.   :4.000   Max.   :4.000   Max.   :4.000   Max.   :4.000   Max.   :8.000  
+     degree         uscitzn         realinc          realrinc          region         wordsum          dwelown           size       
+ Min.   :0.000   Min.   :1.000   Min.   : 5.466   Min.   : 5.466   Min.   :1.000   Min.   : 0.000   Min.   :1.000   Min.   :   0.0  
+ 1st Qu.:1.000   1st Qu.:1.000   1st Qu.: 9.362   1st Qu.: 8.652   1st Qu.:3.000   1st Qu.: 5.000   1st Qu.:1.000   1st Qu.:   7.0  
+ Median :1.000   Median :1.000   Median :10.057   Median : 9.306   Median :5.000   Median : 6.000   Median :1.000   Median :  24.0  
+ Mean   :1.651   Mean   :1.063   Mean   : 9.950   Mean   : 9.273   Mean   :5.128   Mean   : 6.134   Mean   :1.326   Mean   : 361.9  
+ 3rd Qu.:3.000   3rd Qu.:1.000   3rd Qu.:10.663   3rd Qu.: 9.970   3rd Qu.:7.000   3rd Qu.: 7.000   3rd Qu.:2.000   3rd Qu.:  99.0  
+ Max.   :4.000   Max.   :4.000   Max.   :11.952   Max.   :13.082   Max.   :9.000   Max.   :10.000   Max.   :3.000   Max.   :8008.0  
+    xnorcsiz         marital        racehisp5       evercitzn           flag  
+ Min.   : 1.000   Min.   :1.000   Min.   :1.000   Min.   :0.0000   Min.   :6  
+ 1st Qu.: 2.000   1st Qu.:1.000   1st Qu.:1.000   1st Qu.:1.0000   1st Qu.:6  
+ Median : 3.000   Median :2.000   Median :1.000   Median :1.0000   Median :6  
+ Mean   : 4.364   Mean   :2.479   Mean   :1.478   Mean   :0.9493   Mean   :6  
+ 3rd Qu.: 6.000   3rd Qu.:4.000   3rd Qu.:2.000   3rd Qu.:1.0000   3rd Qu.:6  
+ Max.   :10.000   Max.   :5.000   Max.   :5.000   Max.   :1.0000   Max.   :6  
+      year            id           samptype     panelwave.x       intage          intsex        intethn          intyrs       
+ Min.   :2006   Min.   :    1   Min.   :2006   Min.   :1.00   Min.   :22.00   Min.   :1.00   Min.   :1.000   Min.   : 0.0000  
+ 1st Qu.:2008   1st Qu.: 1491   1st Qu.:2006   1st Qu.:1.00   1st Qu.:48.00   1st Qu.:2.00   1st Qu.:1.000   1st Qu.: 0.5233  
+ Median :2010   Median : 4324   Median :2008   Median :2.00   Median :55.00   Median :2.00   Median :1.000   Median : 1.8000  
+ Mean   :2010   Mean   : 5378   Mean   :2008   Mean   :1.85   Mean   :53.96   Mean   :1.82   Mean   :1.478   Mean   : 3.2749  
+ 3rd Qu.:2012   3rd Qu.: 9040   3rd Qu.:2010   3rd Qu.:3.00   3rd Qu.:61.00   3rd Qu.:2.00   3rd Qu.:2.000   3rd Qu.: 4.5000  
+ Max.   :2014   Max.   :11551   Max.   :2010   Max.   :3.00   Max.   :84.00   Max.   :2.00   Max.   :5.000   Max.   :25.6400  
+    lngthinv          coop          comprend        daysint          spaneng           mode          feeused         egp10_11    
+ Min.   : 30.0   Min.   :1.000   Min.   :1.000   Min.   :  0.00   Min.   :1.000   Min.   :1.000   Min.   :1.000   Min.   : 1.00  
+ 1st Qu.: 83.0   1st Qu.:1.000   1st Qu.:1.000   1st Qu.: 22.00   1st Qu.:1.000   1st Qu.:1.000   1st Qu.:1.000   1st Qu.: 2.00  
+ Median :101.0   Median :1.000   Median :1.000   Median : 43.00   Median :1.000   Median :1.000   Median :1.000   Median : 4.00  
+ Mean   :106.4   Mean   :1.227   Mean   :1.183   Mean   : 52.47   Mean   :1.037   Mean   :1.156   Mean   :1.687   Mean   : 5.05  
+ 3rd Qu.:123.0   3rd Qu.:1.000   3rd Qu.:1.000   3rd Qu.: 76.00   3rd Qu.:1.000   3rd Qu.:1.000   3rd Qu.:3.000   3rd Qu.: 8.00  
+ Max.   :200.0   Max.   :4.000   Max.   :3.000   Max.   :157.00   Max.   :2.000   Max.   :2.000   Max.   :3.000   Max.   :12.00  
+   spegp10_11       paegp10_11       maegp10_11        parborn         family16         reg16          incom16          age       
+ Min.   : 1.000   Min.   : 1.000   Min.   : 1.000   Min.   :0.000   Min.   :0.000   Min.   :0.000   Min.   :1.00   Min.   :18.00  
+ 1st Qu.: 3.000   1st Qu.: 4.000   1st Qu.: 3.000   1st Qu.:0.000   1st Qu.:1.000   1st Qu.:2.000   1st Qu.:2.00   1st Qu.:35.00  
+ Median : 4.000   Median : 8.000   Median : 4.000   Median :0.000   Median :1.000   Median :4.000   Median :3.00   Median :49.00  
+ Mean   : 5.877   Mean   : 6.747   Mean   : 5.492   Mean   :1.232   Mean   :1.991   Mean   :4.426   Mean   :2.74   Mean   :49.21  
+ 3rd Qu.:10.000   3rd Qu.:10.000   3rd Qu.:10.000   3rd Qu.:0.000   3rd Qu.:3.000   3rd Qu.:7.000   3rd Qu.:3.00   3rd Qu.:61.00  
+ Max.   :12.000   Max.   :12.000   Max.   :12.000   Max.   :8.000   Max.   :8.000   Max.   :9.000   Max.   :5.00   Max.   :89.00  
+      sex             born           relig            class           spdeg           madeg           padeg          wrkstat     
+ Min.   :1.000   Min.   :1.000   Min.   : 1.000   Min.   :1.000   Min.   :0.000   Min.   :0.000   Min.   :0.000   Min.   :1.000  
+ 1st Qu.:1.000   1st Qu.:1.000   1st Qu.: 1.000   1st Qu.:2.000   1st Qu.:1.000   1st Qu.:0.000   1st Qu.:0.000   1st Qu.:1.000  
+ Median :2.000   Median :1.000   Median : 1.000   Median :2.000   Median :1.000   Median :1.000   Median :1.000   Median :2.000  
+ Mean   :1.564   Mean   :1.114   Mean   : 2.357   Mean   :2.412   Mean   :1.559   Mean   :1.036   Mean   :1.064   Mean   :3.046  
+ 3rd Qu.:2.000   3rd Qu.:1.000   3rd Qu.: 3.000   3rd Qu.:3.000   3rd Qu.:3.000   3rd Qu.:1.000   3rd Qu.:1.000   3rd Qu.:5.000  
+ Max.   :2.000   Max.   :2.000   Max.   :13.000   Max.   :4.000   Max.   :4.000   Max.   :4.000   Max.   :4.000   Max.   :8.000  
+     degree         uscitzn         realinc          realrinc          region         wordsum          dwelown           size       
+ Min.   :0.000   Min.   :1.000   Min.   : 5.466   Min.   : 5.466   Min.   :1.000   Min.   : 0.000   Min.   :1.000   Min.   :   0.0  
+ 1st Qu.:1.000   1st Qu.:1.000   1st Qu.: 9.362   1st Qu.: 8.650   1st Qu.:3.000   1st Qu.: 5.000   1st Qu.:1.000   1st Qu.:   7.0  
+ Median :1.000   Median :1.000   Median :10.057   Median : 9.306   Median :5.000   Median : 6.000   Median :1.000   Median :  24.0  
+ Mean   :1.651   Mean   :1.063   Mean   : 9.950   Mean   : 9.272   Mean   :5.128   Mean   : 6.135   Mean   :1.325   Mean   : 361.9  
+ 3rd Qu.:3.000   3rd Qu.:1.000   3rd Qu.:10.663   3rd Qu.: 9.968   3rd Qu.:7.000   3rd Qu.: 7.000   3rd Qu.:2.000   3rd Qu.:  99.0  
+ Max.   :4.000   Max.   :4.000   Max.   :11.952   Max.   :13.082   Max.   :9.000   Max.   :10.000   Max.   :3.000   Max.   :8008.0  
+    xnorcsiz         marital        racehisp5       evercitzn           flag        panelid          panelwave.y        m_id  
+ Min.   : 1.000   Min.   :1.000   Min.   :1.000   Min.   :0.0000   Min.   :1.0   Min.   :   20069   Min.   :1.00   Min.   :0  
+ 1st Qu.: 2.000   1st Qu.:1.000   1st Qu.:1.000   1st Qu.:1.0000   1st Qu.:2.0   1st Qu.: 2008981   1st Qu.:1.00   1st Qu.:0  
+ Median : 3.000   Median :2.000   Median :1.000   Median :1.0000   Median :3.5   Median :20062377   Median :2.00   Median :0  
+ Mean   : 4.364   Mean   :2.479   Mean   :1.478   Mean   :0.9493   Mean   :3.5   Mean   :12822433   Mean   :1.85   Mean   :0  
+ 3rd Qu.: 6.000   3rd Qu.:4.000   3rd Qu.:2.000   3rd Qu.:1.0000   3rd Qu.:5.0   3rd Qu.:20081571   3rd Qu.:3.00   3rd Qu.:0  
+ Max.   :10.000   Max.   :5.000   Max.   :5.000   Max.   :1.0000   Max.   :6.0   Max.   :20102044   Max.   :3.00   Max.   :0  
+   m_samptype   m_panelid  m_panelwave    m_intage           m_intsex         m_intethn          m_intyrs          m_lngthinv      
+ Min.   :0    Min.   :0   Min.   :0    Min.   :0.000000   Min.   :0.00000   Min.   :0.00000   Min.   :0.000000   Min.   :0.000000  
+ 1st Qu.:0    1st Qu.:0   1st Qu.:0    1st Qu.:0.000000   1st Qu.:0.00000   1st Qu.:0.00000   1st Qu.:0.000000   1st Qu.:0.000000  
+ Median :0    Median :0   Median :0    Median :0.000000   Median :0.00000   Median :0.00000   Median :0.000000   Median :0.000000  
+ Mean   :0    Mean   :0   Mean   :0    Mean   :0.005476   Mean   :0.01403   Mean   :0.02313   Mean   :0.005476   Mean   :0.000616  
+ 3rd Qu.:0    3rd Qu.:0   3rd Qu.:0    3rd Qu.:0.000000   3rd Qu.:0.00000   3rd Qu.:0.00000   3rd Qu.:0.000000   3rd Qu.:0.000000  
+ Max.   :0    Max.   :0   Max.   :0    Max.   :1.000000   Max.   :1.00000   Max.   :1.00000   Max.   :1.000000   Max.   :1.000000  
+     m_coop           m_comprend         m_daysint          m_spaneng     m_mode           m_feeused          m_egp10_11     
+ Min.   :0.000000   Min.   :0.000000   Min.   :0.00e+00   Min.   :0   Min.   :0.000000   Min.   :0.000000   Min.   :0.00000  
+ 1st Qu.:0.000000   1st Qu.:0.000000   1st Qu.:0.00e+00   1st Qu.:0   1st Qu.:0.000000   1st Qu.:0.000000   1st Qu.:0.00000  
+ Median :0.000000   Median :0.000000   Median :0.00e+00   Median :0   Median :0.000000   Median :0.000000   Median :0.00000  
+ Mean   :0.002738   Mean   :0.002875   Mean   :6.84e-05   Mean   :0   Mean   :0.001301   Mean   :0.004381   Mean   :0.01711  
+ 3rd Qu.:0.000000   3rd Qu.:0.000000   3rd Qu.:0.00e+00   3rd Qu.:0   3rd Qu.:0.000000   3rd Qu.:0.000000   3rd Qu.:0.00000  
+ Max.   :1.000000   Max.   :1.000000   Max.   :1.00e+00   Max.   :0   Max.   :1.000000   Max.   :1.000000   Max.   :1.00000  
+  m_spegp10_11    m_paegp10_11     m_maegp10_11      m_parborn           m_family16    m_reg16    m_incom16           m_age         
+ Min.   :0.000   Min.   :0.0000   Min.   :0.0000   Min.   :0.0000000   Min.   :0    Min.   :0   Min.   :0.00000   Min.   :0.000000  
+ 1st Qu.:0.000   1st Qu.:0.0000   1st Qu.:0.0000   1st Qu.:0.0000000   1st Qu.:0    1st Qu.:0   1st Qu.:0.00000   1st Qu.:0.000000  
+ Median :0.000   Median :0.0000   Median :0.0000   Median :0.0000000   Median :0    Median :0   Median :0.00000   Median :0.000000  
+ Mean   :0.483   Mean   :0.1308   Mean   :0.2476   Mean   :0.0007529   Mean   :0    Mean   :0   Mean   :0.00397   Mean   :0.001027  
+ 3rd Qu.:1.000   3rd Qu.:0.0000   3rd Qu.:0.0000   3rd Qu.:0.0000000   3rd Qu.:0    3rd Qu.:0   3rd Qu.:0.00000   3rd Qu.:0.000000  
+ Max.   :1.000   Max.   :1.0000   Max.   :1.0000   Max.   :1.0000000   Max.   :0    Max.   :0   Max.   :1.00000   Max.   :1.000000  
+     m_sex       m_born     m_relig            m_class            m_spdeg          m_madeg           m_padeg         m_wrkstat        
+ Min.   :0   Min.   :0   Min.   :0.000000   Min.   :0.000000   Min.   :0.0000   Min.   :0.00000   Min.   :0.0000   Min.   :0.0000000  
+ 1st Qu.:0   1st Qu.:0   1st Qu.:0.000000   1st Qu.:0.000000   1st Qu.:0.0000   1st Qu.:0.00000   1st Qu.:0.0000   1st Qu.:0.0000000  
+ Median :0   Median :0   Median :0.000000   Median :0.000000   Median :1.0000   Median :0.00000   Median :0.0000   Median :0.0000000  
+ Mean   :0   Mean   :0   Mean   :0.004791   Mean   :0.006092   Mean   :0.5262   Mean   :0.07509   Mean   :0.2157   Mean   :0.0008214  
+ 3rd Qu.:0   3rd Qu.:0   3rd Qu.:0.000000   3rd Qu.:0.000000   3rd Qu.:1.0000   3rd Qu.:0.00000   3rd Qu.:0.0000   3rd Qu.:0.0000000  
+ Max.   :0   Max.   :0   Max.   :1.000000   Max.   :1.000000   Max.   :1.0000   Max.   :1.00000   Max.   :1.0000   Max.   :1.0000000  
+    m_degree           m_uscitzn        m_realinc       m_realrinc        m_region           m_wordsum        m_dwelown     
+ Min.   :0.0000000   Min.   :0.0000   Min.   :0.000   Min.   :0.0000   Min.   :0.0000000   Min.   :0.0000   Min.   :0.0000  
+ 1st Qu.:0.0000000   1st Qu.:1.0000   1st Qu.:0.000   1st Qu.:0.0000   1st Qu.:0.0000000   1st Qu.:0.0000   1st Qu.:0.0000  
+ Median :0.0000000   Median :1.0000   Median :0.000   Median :0.0000   Median :0.0000000   Median :0.0000   Median :0.0000  
+ Mean   :0.0001369   Mean   :0.9061   Mean   :0.101   Mean   :0.4057   Mean   :0.0002053   Mean   :0.3394   Mean   :0.3053  
+ 3rd Qu.:0.0000000   3rd Qu.:1.0000   3rd Qu.:0.000   3rd Qu.:1.0000   3rd Qu.:0.0000000   3rd Qu.:1.0000   3rd Qu.:1.0000  
+ Max.   :1.0000000   Max.   :1.0000   Max.   :1.000   Max.   :1.0000   Max.   :1.0000000   Max.   :1.0000   Max.   :1.0000  
+     m_size            m_xnorcsiz          m_marital         m_racehisp5  m_evercitzn
+ Min.   :0.0000000   Min.   :0.0000000   Min.   :0.000000   Min.   :0    Min.   :0   
+ 1st Qu.:0.0000000   1st Qu.:0.0000000   1st Qu.:0.000000   1st Qu.:0    1st Qu.:0   
+ Median :0.0000000   Median :0.0000000   Median :0.000000   Median :0    Median :0   
+ Mean   :0.0002053   Mean   :0.0002053   Mean   :0.001027   Mean   :0    Mean   :0   
+ 3rd Qu.:0.0000000   3rd Qu.:0.0000000   3rd Qu.:0.000000   3rd Qu.:0    3rd Qu.:0   
+ Max.   :1.0000000   Max.   :1.0000000   Max.   :1.000000   Max.   :0    Max.   :0   
+[1] "2020-01-25 02:07:17 EST"

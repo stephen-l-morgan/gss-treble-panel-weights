@@ -1,0 +1,421 @@
+----------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  /Users/smorgan/Documents/GitHub/gss-panel-weights/log/create-and-demonstrate-usage-of-m
+> erge-file.log
+  log type:  text
+ opened on:  29 Jan 2020, 19:56:14
+
+. 
+. ********************************************************************************
+. *** Create merge file with only the essential columns
+. ********************************************************************************
+. 
+. *** Long form (three records for each non-attriting panel member, with id for
+. ***   each data collection year)
+. 
+. use data/gss-panel-allyears-fill-in-and-recoded-panel-merged-wt.dta, clear
+
+. keep if attr_w23 == 0
+(2,985 observations deleted)
+
+. keep panelid panelwave year id wt_pooled - wt_shrunken_insc
+
+. order panelid panelwave year id wt_pooled - wt_shrunken_insc
+
+. sort panelid panelwave
+
+. summ
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     panelid |     11,625    1.29e+07     8917349      20069   2.01e+07
+   panelwave |     11,625           2    .8165317          1          3
+        year |     11,625    2010.014     2.30871       2006       2014
+          id |     11,625    5970.873     3825.59          1      11551
+   wt_pooled |     11,625    1.565677    1.109665   .3969225    14.8637
+-------------+---------------------------------------------------------
+wt_pooled_~c |     11,625    1.479226    1.028717    .378843   10.99003
+wt_no_pool~g |     11,625    1.565677    1.126462   .3797988   13.53567
+wt_no_pool~c |     11,625    1.479226    1.050397   .3593284   11.84643
+ wt_shrunken |     11,625    1.565677    1.101715   .3939344   13.70289
+wt_shrunke~c |     11,625    1.479226    1.025183    .375239   10.77767
+
+. save data/gss-treble-panel-weights-long.dta, replace
+file data/gss-treble-panel-weights-long.dta saved
+
+. outsheet using data/gss-treble-panel-weights-long.csv, comma replace
+
+. 
+. *** Wide form (one record for each non-attriting panel member, with base 
+. ***   year id)
+. 
+. keep if panelwave == 1
+(7,750 observations deleted)
+
+. drop panelid panelwave
+
+. sort year id
+
+. summ
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+        year |      3,875    2008.014    1.632086       2006       2010
+          id |      3,875    1444.214     1060.72          1       4510
+   wt_pooled |      3,875    1.565677    1.109761   .3969225    14.8637
+wt_pooled_~c |      3,875    1.479226    1.028805    .378843   10.99003
+wt_no_pool~g |      3,875    1.565677    1.126559   .3797988   13.53567
+-------------+---------------------------------------------------------
+wt_no_pool~c |      3,875    1.479226    1.050487   .3593284   11.84643
+ wt_shrunken |      3,875    1.565677     1.10181   .3939344   13.70289
+wt_shrunke~c |      3,875    1.479226    1.025271    .375239   10.77767
+
+. save data/gss-treble-panel-weights-wide.dta, replace
+file data/gss-treble-panel-weights-wide.dta saved
+
+. outsheet using data/gss-treble-panel-weights-wide.csv, comma replace
+
+. 
+. ********************************************************************************
+. *** Demonstration of merge code 
+. ********************************************************************************
+. 
+. * GSS 2006-2010 panel 
+. 
+. use ../gss-from-norc/GSS_panel06w123_R6a.dta, clear
+
+. rename *, lower
+  (all newnames==oldnames)
+
+. clonevar year = year_1
+
+. clonevar id = id_1
+
+. sort year id
+
+. merge m:m year id using data/gss-treble-panel-weights-wide.dta
+
+    Result                           # of obs.
+    -----------------------------------------
+    not matched                         3,323
+        from master                       724  (_merge==1)
+        from using                      2,599  (_merge==2)
+
+    matched                             1,276  (_merge==3)
+    -----------------------------------------
+
+. order year - _merge
+
+. drop if _merge == 2
+(2,599 observations deleted)
+
+. codebook year - wtpannr123, c
+
+Variable       Obs Unique      Mean       Min       Max  Label
+----------------------------------------------------------------------------------------------------
+year          2000      1      2006      2006      2006  year_1: gss year for this respondent
+id            2000   2000  2233.943         9      4510  id_1: respondnt id number
+wt_pooled     1276   1276  1.567398  .4169763  12.00962  Estimated with panels pooled
+wt_pooled_~c  1276   1276  1.481975  .3870352  10.99003  Estimated with panels pooled (in scope a...
+wt_no_pool~g  1276   1275  1.567398  .4195347  13.53567  Estimated separately by panel
+wt_no_pool~c  1276   1276  1.481975  .3861519  11.84643  Estimated separately by panel (in scope ...
+wt_shrunken   1276   1276  1.567398  .4212598   11.5909  Shrunk to pooled estimates
+wt_shrunke~c  1276   1276  1.481975  .3873765  10.77767  Shrunk to pooled estimates (in scope all...
+_merge        2000      2     2.276         1         3  
+ballot        2000      3     2.009         1         3  ballot used for interview
+form          2000      2     1.503         1         2  form of split questionnaire asked
+formwt        2000      1         1         1         1  weight deal with experimental randomization
+oversamp      2000      1         1         1         1  weights for black oversamples
+sampcode      2000     79  534.3705       501       579  sampcode_1: sampling error code
+sample        2000      1         9         9         9  sampling frame and method
+samptype      2000      1      2006      2006      2006  sample type
+vstrat        2000    148  2063.971      1957      2105  variance stratum
+vpsu          2000      2     1.487         1         2  variance primary sampling unit
+wtpan12       1536     72         1  .3540025   5.66404  wtpan_2: weight variable
+wtpan123      1276    645         1  .3064633  5.211864  wtpan_3: weight variable
+wtpannr12     1536    212         1   .327221  5.948337  
+wtpannr123    1276    807         1  .3098931  5.928037  
+----------------------------------------------------------------------------------------------------
+
+. 
+. * GSS 2008-2012 panel 
+. use ../gss-from-norc/GSS_panel08w123_R6.dta, clear
+( )
+
+. rename *, lower
+
+. clonevar year = year_1
+
+. clonevar id = id_1
+
+. sort year id
+
+. merge m:m year id using data/gss-treble-panel-weights-wide.dta
+(label ID_1 already defined)
+
+    Result                           # of obs.
+    -----------------------------------------
+    not matched                         3,308
+        from master                       728  (_merge==1)
+        from using                      2,580  (_merge==2)
+
+    matched                             1,295  (_merge==3)
+    -----------------------------------------
+
+. order year - _merge
+
+. drop if _merge == 2
+(2,580 observations deleted)
+
+. codebook year - wtpannr123, c
+
+Variable       Obs Unique      Mean       Min       Max  Label
+----------------------------------------------------------------------------------------------------
+year          2023      1      2008      2008      2008  year_1: year
+id            2023   2023      1012         1      2023  id_1: id
+wt_pooled     1295   1295  1.562162  .3969225   14.8637  Estimated with panels pooled
+wt_pooled_~c  1295   1295  1.481081   .378843  8.675069  Estimated with panels pooled (in scope a...
+wt_no_pool~g  1295   1295  1.562162  .3797988   10.7257  Estimated separately by panel
+wt_no_pool~c  1295   1295  1.481081  .3593284  8.803192  Estimated separately by panel (in scope ...
+wt_shrunken   1295   1295  1.562162  .3939344  13.70289  Shrunk to pooled estimates
+wt_shrunke~c  1295   1295  1.481081   .375239  8.446258  Shrunk to pooled estimates (in scope all...
+_merge        2023      2  2.280277         1         3  
+wtpan12       1581    383         1  .3219388  6.755452  
+wtpan123      1295    355         1  .3227094  6.771621  wtpan_3: wtpan
+wtpannr12     1581    674         1  .3091119  6.666435  
+wtpannr123    1295    600         1  .3072024  6.322945  wtpannr
+----------------------------------------------------------------------------------------------------
+
+. 
+. * GSS 2010-2014 panel
+. use ../gss-from-norc/GSS_panel2010w123_R6.dta, clear
+( )
+
+. rename *, lower
+
+. clonevar year = year_1
+
+. clonevar id = id_1
+
+. sort year id
+
+. merge m:m year id using data/gss-treble-panel-weights-wide.dta
+(label ID_1 already defined)
+
+    Result                           # of obs.
+    -----------------------------------------
+    not matched                         3,311
+        from master                       740  (_merge==1)
+        from using                      2,571  (_merge==2)
+
+    matched                             1,304  (_merge==3)
+    -----------------------------------------
+
+. order year - _merge
+
+. drop if _merge == 2
+(2,571 observations deleted)
+
+. codebook year - wtpannr123, c
+
+Variable       Obs Unique      Mean       Min       Max  Label
+----------------------------------------------------------------------------------------------------
+year          2044      1      2010      2010      2010  year_1: year
+id            2044   2044    1022.5         1      2044  id_1: id
+wt_pooled     1304   1304  1.567485  .4106926  8.725655  Estimated with panels pooled
+wt_pooled_~c  1304   1304  1.474693  .3866114  7.085673  Estimated with panels pooled (in scope a...
+wt_no_pool~g  1304   1304  1.567485    .39014  9.547765  Estimated separately by panel
+wt_no_pool~c  1304   1304  1.474693  .3656163  9.027815  Estimated separately by panel (in scope ...
+wt_shrunken   1304   1304  1.567485  .4068952  8.933228  Shrunk to pooled estimates
+wt_shrunke~c  1304   1304  1.474693  .3824537  7.315249  Shrunk to pooled estimates (in scope all...
+_merge        2044      2   2.27593         1         3  
+oversamp      2044      1         1         1         1  WEIGHTS FOR BLACK OVERSAMPLES
+sampcode      2044     79  534.1257       501       579  sampcode_1: SAMPLING ERROR CODE
+sample        2044      1         9         9         9  sample_1: SAMPLING FRAME AND METHOD
+form          2044      2  1.503914         1         2  FORM OF SPLIT QUESTIONNAIRE ASKED
+formwt        2044      1         1         1         1  Weight deal with experimental randomization
+vpsu          2044      2  1.504892         1         2  vpsu_1: Variance primary sampling unit
+vstrat        2044    134  2334.339      2240      2373  vstrat_1: Variance stratum
+samptype      2044      1      2010      2010      2010  Sample type
+wtpan12       1551    417         1  .3348296  4.703269  Person-level weight: Wave 1 & 2 only
+wtpan123      1304    389         1  .3365385  4.727273  Person-level weight, 2010 panel cases only
+wtpannr12     1551    765         1  .3232505  4.775845  Person-level weight with NR adjustment: ...
+wtpannr123    1304    652         1  .3170063  4.830731  Person-level weight, with NR adjustment,...
+----------------------------------------------------------------------------------------------------
+
+. 
+. ********************************************************************************
+. *** Demonstrate how scaling does not affect estimates
+. ********************************************************************************
+. 
+. use data/gss-panel-allyears-fill-in-and-recoded-panel-merged-wt.dta, clear
+
+. keep if panelwave==1 & outsc_w23 == 0
+(8,878 observations deleted)
+
+. 
+. *** results in base year for panel in-scope, non-attriters and attriters
+. summ wordsum degree hisp [aweight = wtssnr]
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+     wordsum |   3,337  3409.77008    6.050174   1.973981          0         10
+      degree |   5,731  5779.32395    1.594727   1.204535          0          4
+        hisp |   5,722  5770.11712    .1353353   .3421113          0          1
+
+. regress wordsum b1.degree hisp [pweight = wtssnr]
+(sum of wgt is 3,401.99479313026)
+
+Linear regression                               Number of obs     =      3,331
+                                                F(5, 3325)        =     101.71
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.1968
+                                                Root MSE          =     1.7687
+
+---------------------------------------------------------------------------------
+                |               Robust
+        wordsum |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+----------------+----------------------------------------------------------------
+         degree |
+lt high school  |  -1.157975   .1239333    -9.34   0.000    -1.400968   -.9149818
+junior college  |    .435199   .1176559     3.70   0.000     .2045137    .6658842
+      bachelor  |   1.158048   .0908362    12.75   0.000     .9799471    1.336148
+      graduate  |   1.629902   .1419845    11.48   0.000     1.351516    1.908288
+                |
+           hisp |  -.7208002   .1263756    -5.70   0.000     -.968582   -.4730184
+          _cons |     5.9016   .0509376   115.86   0.000     5.801728    6.001472
+---------------------------------------------------------------------------------
+
+. 
+. *** drop attriters and construct a rescaled weight that sums to panel N
+. keep if attr_w23 == 0
+(1,857 observations deleted)
+
+. summ wtpannr123 wt_shrunken_insc
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+  wtpannr123 |      3,875           1    .6270276   .3072024   6.322945
+wt_shrunke~c |      3,875    1.479226    1.025271    .375239   10.77767
+
+. quietly sum wt_shrunken_insc
+
+. scalar adjust = 1/`r(mean)'
+
+. display adjust
+.67602931
+
+. gen wt_rescaled = wt_shrunken_insc * adjust
+
+. summ wtpannr123 wt_shrunken_insc wt_rescaled
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+  wtpannr123 |      3,875           1    .6270276   .3072024   6.322945
+wt_shrunke~c |      3,875    1.479226    1.025271    .375239   10.77767
+ wt_rescaled |      3,875           1    .6931134   .2536726   7.286024
+
+. 
+. *** results for non-attriters, also using rescaled attrition adjustment weight
+. summ wordsum degree hisp [aweight = wtpannr123]
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+     wordsum |   2,233  2248.00712     6.19202   1.927767          0         10
+      degree |   3,875        3875    1.655252   1.206236          0          4
+        hisp |   3,867  3867.73551    .1206532    .325766          0          1
+
+. summ wordsum degree hisp [aweight = wt_shrunken_insc]
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+     wordsum |   2,233  3323.39684    6.017984   1.988063          0         10
+      degree |   3,875        5732    1.597486    1.20923          0          4
+        hisp |   3,867  5722.00938     .145385   .3525342          0          1
+
+. summ wordsum degree hisp [aweight = wt_rescaled]
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+     wordsum |   2,233  2246.71366    6.017984   1.988063          0         10
+      degree |   3,875        3875    1.597486    1.20923          0          4
+        hisp |   3,867  3868.24604     .145385   .3525342          0          1
+
+. 
+. regress wordsum b1.degree hisp [pweight = wtpannr123]
+(sum of wgt is 2,243.03067672381)
+
+Linear regression                               Number of obs     =      2,229
+                                                F(5, 2223)        =      70.19
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.1913
+                                                Root MSE          =     1.7347
+
+---------------------------------------------------------------------------------
+                |               Robust
+        wordsum |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+----------------+----------------------------------------------------------------
+         degree |
+lt high school  |  -1.160336   .1520415    -7.63   0.000    -1.458495    -.862178
+junior college  |   .3555444   .1453572     2.45   0.015     .0704942    .6405945
+      bachelor  |   1.097873    .107463    10.22   0.000     .8871343    1.308611
+      graduate  |   1.730369   .1547191    11.18   0.000      1.42696    2.033778
+                |
+           hisp |  -.6358548    .161836    -3.93   0.000    -.9532204   -.3184892
+          _cons |   5.986911   .0623795    95.98   0.000     5.864583    6.109239
+---------------------------------------------------------------------------------
+
+. regress wordsum b1.degree hisp [pweight = wt_shrunken_insc]
+(sum of wgt is 3,316.38921153545)
+
+Linear regression                               Number of obs     =      2,229
+                                                F(5, 2223)        =      64.16
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.2055
+                                                Root MSE          =     1.7732
+
+---------------------------------------------------------------------------------
+                |               Robust
+        wordsum |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+----------------+----------------------------------------------------------------
+         degree |
+lt high school  |  -1.186667   .1623183    -7.31   0.000    -1.504978   -.8683557
+junior college  |   .3901011   .1481437     2.63   0.009     .0995866    .6806155
+      bachelor  |   1.118922   .1132678     9.88   0.000     .8968005    1.341044
+      graduate  |   1.694006   .1670682    10.14   0.000      1.36638    2.021632
+                |
+           hisp |  -.7390343   .1729644    -4.27   0.000    -1.078223   -.3998455
+          _cons |   5.893316   .0674689    87.35   0.000     5.761007    6.025625
+---------------------------------------------------------------------------------
+
+. regress wordsum b1.degree hisp [pweight = wt_rescaled]
+(sum of wgt is 2,241.9763045609)
+
+Linear regression                               Number of obs     =      2,229
+                                                F(5, 2223)        =      64.16
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.2055
+                                                Root MSE          =     1.7732
+
+---------------------------------------------------------------------------------
+                |               Robust
+        wordsum |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+----------------+----------------------------------------------------------------
+         degree |
+lt high school  |  -1.186667   .1623183    -7.31   0.000    -1.504978   -.8683557
+junior college  |   .3901011   .1481437     2.63   0.009     .0995866    .6806155
+      bachelor  |   1.118922   .1132678     9.88   0.000     .8968005    1.341044
+      graduate  |   1.694006   .1670682    10.14   0.000      1.36638    2.021632
+                |
+           hisp |  -.7390343   .1729644    -4.27   0.000    -1.078223   -.3998455
+          _cons |   5.893316   .0674689    87.35   0.000     5.761007    6.025625
+---------------------------------------------------------------------------------
+
+. 
+. log close
+      name:  <unnamed>
+       log:  /Users/smorgan/Documents/GitHub/gss-panel-weights/log/create-and-demonstrate-usage-of-m
+> erge-file.log
+  log type:  text
+ closed on:  29 Jan 2020, 19:56:14
+----------------------------------------------------------------------------------------------------

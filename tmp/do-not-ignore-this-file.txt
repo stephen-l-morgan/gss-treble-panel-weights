@@ -1,0 +1,1 @@
+This file is a text file that exists so that Git will not ignore this folder (even though all other files in the folder are set to be ignored by .gitignore).

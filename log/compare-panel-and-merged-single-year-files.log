@@ -1,0 +1,2292 @@
+------------------------------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  /Users/smorgan/Documents/GitHub/gss-panel-weights/log/compare-panel-and-merged-single-year-files.log
+  log type:  text
+ opened on:  24 Dec 2019, 14:27:07
+
+. 
+. /* 
+> 
+> NOTE 1:
+> This file attempts to demonstrate the equivalance of the panel data releases and 
+> the single year merged files for the panel responses by comparing the values 
+> in the two data files.
+> 
+> NOTE 2:
+> The -cf- command is designed to stop the do file from running after it finds 
+> any discrepencies between the two data sets in comparison.  As a result, 
+> this do-file will not run through to the end if it is run from teh do-file 
+> editor.  (It will stop after the first use of -cf-, wehere a difference is
+> found.)
+> 
+> In order to get the file run all the way to the end, you must run this file 
+> within the  master do-file ("do-all-to-create-panel-attrition-weights) 
+> which specifies the -nostop- option. 
+> */
+. 
+. ********************************************************************************
+. *** Macros and tempfiles + Recoding missing cases for consistency
+. ********************************************************************************
+. 
+. /* NOTE:
+> The two types of files have an inconsistent treatment of missing cases for some 
+> variables.  To not consider such inconsistency as a discrepancy between the 
+> datasets, we recode the inconsistent missing values in advance.
+> */
+. 
+. tempfile gss_2006_panel gss_2008_panel gss_2010_panel ///
+>                 gss_2008_all_vars gss_2010_all_vars gss_2012_all_vars ///
+>                 gss_2014_all_vars gss_7218
+
+. tempfile panel2006_ind  ///
+>         panel_2006_w1_panel panel_2006_w2_panel panel_2006_w3_panel ///
+>         panel_2008_w1_panel panel_2008_w2_panel panel_2008_w3_panel ///
+>         panel_2010_w1_panel panel_2010_w2_panel panel_2010_w3_panel ///
+>         p2006_w1_in_cross_section p2008_w1_in_cross_section ///
+>         p2010_w1_in_cross_section ///
+>         p2006_w2_in_all_vars_file p2006_w3_in_all_vars_file ///
+>         p2008_w1_in_all_vars_file p2008_w2_in_all_vars_file p2008_w3_in_all_vars_file ///
+>         p2010_w1_in_all_vars_file p2010_w2_in_all_vars_file p2010_w3_in_all_vars_file
+
+. 
+. * GSS 2006-2010 panel 
+. use ../gss-from-norc/GSS_panel06w123_R6a.dta, clear
+
+. rename *, lower
+  (all newnames==oldnames)
+
+. recode exptext_1 9=. // 9 is "No Answer to Closed ended Question"
+(exptext_1: 46 changes made)
+
+. recode exptext_3 9=. // 9 is "No Answer to Closed ended Question"
+(exptext_3: 6 changes made)
+
+. recode scinews3_3 9 98/99 =. // 9 undefined and 98/99 is "DK" or "NA
+(scinews3_3: 31 changes made)
+
+. save `gss_2006_panel'
+file /var/folders/m_/l1vkbxx13h37fq0k94zqcym80000gp/T//S_17549.000001 saved
+
+. 
+. * GSS 2008-2012 panel 
+. use ../gss-from-norc/GSS_panel08w123_R6.dta, clear
+( )
+
+. gen samptype = 2008
+
+. rename *, lower
+
+. recode mode_2 9 = . // 9 is "NA"
+(mode_2: 4 changes made)
+
+. recode mode_3 8/9 = . // 8/9 is "DK" or "NA"
+(mode_3: 4 changes made)
+
+. recode exptext_2 9 =. // 9 is "No Answer to Closed ended Question"
+(exptext_2: 6 changes made)
+
+. recode exptext_3 9 =. // 9 is "No Answer to Closed ended Question"
+(exptext_3: 6 changes made)
+
+. recode scinews3_3 98/99 =. // 98/99 is "DK" or "NA"
+(scinews3_3: 3 changes made)
+
+. recode jew16_1 99 =. // 99 is undefined
+(jew16_1: 10 changes made)
+
+. save `gss_2008_panel'
+file /var/folders/m_/l1vkbxx13h37fq0k94zqcym80000gp/T//S_17549.000002 saved
+
+. 
+. * GSS 2010-2014 panel
+. use ../gss-from-norc/GSS_panel2010w123_R6.dta, clear
+( )
+
+. rename *, lower
+
+. recode indus80_1 999=. // 999 is "NA"
+(indus80_1: 59 changes made)
+
+. recode mode_1 8/9 = . // 8/9 is "NA"
+(mode_1: 9 changes made)
+
+. recode mode_2 9 = . // 9 is "NA"
+(mode_2: 1 changes made)
+
+. recode waypaid_1 98/99 =. // 98/99 is "DK" or "NA"
+(waypaid_1: 27 changes made)
+
+. recode exptext_1 9 =. // 9 is "No Answer to Closed ended Question"
+(exptext_1: 17 changes made)
+
+. recode exptext_2 9 =. // 9 is "No Answer to Closed ended Question"
+(exptext_2: 4 changes made)
+
+. recode exptext_3 9 =. // 9 is "No Answer to Closed ended Question"
+(exptext_3: 16 changes made)
+
+. recode scinews3_1 98/99 =. // 98/99 is "DK" or "NA"
+(scinews3_1: 20 changes made)
+
+. recode scinews3_2 98/99 =. // 98/99 is "DK" or "NA"
+(scinews3_2: 11 changes made)
+
+. recode scinews3_3 98/99 =. // 98/99 is "DK" or "NA"
+(scinews3_3: 3 changes made)
+
+. save `gss_2010_panel'
+file /var/folders/m_/l1vkbxx13h37fq0k94zqcym80000gp/T//S_17549.000003 saved
+
+. 
+. * GSS 2008 all variables and cases (cross-section and panel reinterviews) 
+. use ../gss-from-norc/gss2008crosspanel_R6.dta, clear
+( )
+
+. rename *, lower
+
+. recode income 13 = . // 13 is "refused"
+(income: 251 changes made)
+
+. recode income06 26 = . // 26 is "refused"
+(income06: 253 changes made)
+
+. recode rincom06 26 = . // 26 is "refused"
+(rincom06: 126 changes made)
+
+. recode rincome 13 = . // 13 is "refused"
+(rincome: 126 changes made)
+
+. recode jew16 99 =. // 99 is undefined
+(jew16: 10 changes made)
+
+. save `gss_2008_all_vars'
+file /var/folders/m_/l1vkbxx13h37fq0k94zqcym80000gp/T//S_17549.000004 saved
+
+. 
+. * GSS 2010 all variables and cases (cross-section and panel reinterviews) 
+. use ../gss-from-norc/GSS2010merged_R8.dta, clear
+( )
+
+. rename *, lower
+
+. recode exptext 9 = . // 9 is "NA"
+(exptext: 29 changes made)
+
+. recode scinews3 9 =. // 9 likely an error for 98/99 which is "DK" or "NA"
+(scinews3: 54 changes made)
+
+. save `gss_2010_all_vars'
+file /var/folders/m_/l1vkbxx13h37fq0k94zqcym80000gp/T//S_17549.000005 saved
+
+. 
+. * GSS 2012 all variables and cases (cross-section and panel reinterviews) 
+. use ../gss-from-norc/GSS2012merged_r10.dta, clear
+( )
+
+. rename *, lower
+
+. recode exptext 99 = . // 99 is "Blanck"
+(exptext: 2 changes made)
+
+. recode refhage 98/99 =. // 98/99 is "NA" or "DK"
+(refhage: 7 changes made)
+
+. recode gotthngs 9 = . // 9 is "NA"
+(gotthngs: 2 changes made)
+
+. save `gss_2012_all_vars'
+file /var/folders/m_/l1vkbxx13h37fq0k94zqcym80000gp/T//S_17549.000006 saved
+
+. 
+. * GSS 2014 all variables and cases (cross-section and panel reinterviews) 
+. use ../gss-from-norc/gss2014merged_r10.dta, clear
+( )
+
+. rename *, lower
+
+. recode scinews3 98/99 =. // 98/99 is "NA" or "DK"
+(scinews3: 0 changes made)
+
+. save `gss_2014_all_vars'
+file /var/folders/m_/l1vkbxx13h37fq0k94zqcym80000gp/T//S_17549.000007 saved
+
+. 
+. * GSS 1972-2018 cross-section only
+. use ../gss-from-norc/GSS7218_R1.dta, clear
+file ../gss-from-norc/GSS7218_R1.dta not found
+r(601);
+
+. recode exptext 9 =. // 9 is "no answer"
+(exptext: 0 changes made)
+
+. recode indus80 999 =. // 999 is missing
+variable indus80 not found
+r(111);
+
+. recode mode 8/9 = . // 8/9 is "NA"
+(mode: 0 changes made)
+
+. recode scinews3 98/99 = . // 98/99 is "NA" or "DK"
+(scinews3: 0 changes made)
+
+. save `gss_7218'
+file /var/folders/m_/l1vkbxx13h37fq0k94zqcym80000gp/T//S_17549.000008 saved
+
+. 
+. 
+. ********************************************************************************
+. *** GSS Panel 2006
+. ********************************************************************************
+. 
+. *** First interview ************************************************************
+. 
+. *** extract an indicator for panel respondents from the panel data
+. use `gss_2006_panel', clear
+
+. keep id_1 
+
+. rename id_1 id
+
+. save `panel2006_ind'
+file /var/folders/m_/l1vkbxx13h37fq0k94zqcym80000gp/T//S_17549.000009 saved
+
+. 
+. *** merge the indicator to the respondents in 2006 in the cross-sectional data
+. use `gss_7218', clear
+( )
+
+. keep if year==2006
+(3,842 observations deleted)
+
+. merge 1:1 id using `panel2006_ind'
+(label LABB already defined)
+
+    Result                           # of obs.
+    -----------------------------------------
+    not matched                         2,000
+        from master                         0  (_merge==1)
+        from using                      2,000  (_merge==2)
+
+    matched                                 0  (_merge==3)
+    -----------------------------------------
+
+. keep if _merge==3
+(2,000 observations deleted)
+
+. drop _merge
+
+. do analysis/drop-not-aksed-and-replace-missing.do
+
+. qui ds 
+
+. local varlist `r(varlist)'
+
+. 
+. foreach var in `varlist' {
+  2.         qui sum `var'
+  3.                 if r(N)==0 | r(Var)==0 {
+  4.                         drop `var'
+  5. }               
+  6.                 else if r(N)!=0 & r(Var)!=0 {
+  7.                         qui replace `var' =. if `var' >=. | `var' < 0
+  8. } 
+  9. }
+
+. 
+. 
+end of do-file
+
+. sort id
+no variables defined
+r(111);
+
+. save `p2006_w1_in_cross_section', replace
+no variables defined
+r(111);
+
+. 
+. *** extract only the first interview responses in the panel data
+. use `gss_2006_panel', clear
+
+. keep  *_1
+
+. rename *_1 *
+
+. do analysis/drop-not-aksed-and-replace-missing.do
+
+. qui ds 
+
+. local varlist `r(varlist)'
+
+. 
+. foreach var in `varlist' {
+  2.         qui sum `var'
+  3.                 if r(N)==0 | r(Var)==0 {
+  4.                         drop `var'
+  5. }               
+  6.                 else if r(N)!=0 & r(Var)!=0 {
+  7.                         qui replace `var' =. if `var' >=. | `var' < 0
+  8. } 
+  9. }
+
+. 
+. 
+end of do-file
+
+. sort id
+
+. save `panel_2006_w1_panel', replace
+(note: file /var/folders/m_/l1vkbxx13h37fq0k94zqcym80000gp/T//S_17549.00000a not found)
+file /var/folders/m_/l1vkbxx13h37fq0k94zqcym80000gp/T//S_17549.00000a saved
+
+. 
+. *** compare cross-section to panel
+. cf _all using `p2006_w1_in_cross_section',  verbose
+file /var/folders/m_/l1vkbxx13h37fq0k94zqcym80000gp/T//S_17549.00000j not found
+r(601);
+
+. 
+. // Note: Run these commmands to ensure that the order of comparions
+. //          does not make a difference 
+. // *** compare panel to cross-section
+. // use `p2006_w1_in_cross_section', clear
+. // cf _all using `panel_2006_w1_panel',  verbose
+. 
+. 
+. *** Re-interview 1 *************************************************************
+. 
+. *** extract the 2nd wave interview from the merged single year file
+. use `gss_2008_all_vars', clear
+( )
+
+. keep if samptype==2006
+(2,023 observations deleted)
+
+. do analysis/drop-not-aksed-and-replace-missing.do
+
+. qui ds 
+
+. local varlist `r(varlist)'
+
+. 
+. foreach var in `varlist' {
+  2.         qui sum `var'
+  3.                 if r(N)==0 | r(Var)==0 {
+  4.                         drop `var'
+  5. }               
+  6.                 else if r(N)!=0 & r(Var)!=0 {
+  7.                         qui replace `var' =. if `var' >=. | `var' < 0
+  8. } 
+  9. }
+
+. 
+. 
+end of do-file
+
+. sort id
+
+. save `p2006_w2_in_all_vars_file', replace
+(note: file /var/folders/m_/l1vkbxx13h37fq0k94zqcym80000gp/T//S_17549.00000m not found)
+file /var/folders/m_/l1vkbxx13h37fq0k94zqcym80000gp/T//S_17549.00000m saved
+
+. 
+. *** extract only the second interview responses in the panel data
+. use `gss_2006_panel', clear
+
+. keep if panstat_2==1
+(464 observations deleted)
+
+. keep  *_2
+
+. rename *_2 *
+
+. do analysis/drop-not-aksed-and-replace-missing.do
+
+. qui ds 
+
+. local varlist `r(varlist)'
+
+. 
+. foreach var in `varlist' {
+  2.         qui sum `var'
+  3.                 if r(N)==0 | r(Var)==0 {
+  4.                         drop `var'
+  5. }               
+  6.                 else if r(N)!=0 & r(Var)!=0 {
+  7.                         qui replace `var' =. if `var' >=. | `var' < 0
+  8. } 
+  9. }
+
+. 
+. 
+end of do-file
+
+. sort id
+
+. save `panel_2006_w2_panel', replace
+(note: file /var/folders/m_/l1vkbxx13h37fq0k94zqcym80000gp/T//S_17549.00000b not found)
+file /var/folders/m_/l1vkbxx13h37fq0k94zqcym80000gp/T//S_17549.00000b saved
+
+. 
+. *** compare single year merged file to panel
+. cf _all using `p2006_w2_in_all_vars_file', verbose
+          cohort:  9 mismatches
+                   obs   62. 1917 in master; 1919 in using
+                   obs  137. 1917 in master; 1919 in using
+                   obs  257. 1917 in master; 1919 in using
+                   obs  868. 1917 in master; 1919 in using
+                   obs 1014. 1917 in master; 1919 in using
+                   obs 1039. 1917 in master; 1919 in using
+                   obs 1300. 1917 in master; 1919 in using
+                   obs 1494. 1917 in master; 1919 in using
+                   obs 1518. 1917 in master; 1919 in using
+         numemps:  108 mismatches
+                   obs    4. 0 in master; . in using
+                   obs    5. 0 in master; . in using
+                   obs   20. 0 in master; . in using
+                   obs   23. 0 in master; . in using
+                   obs   33. 0 in master; . in using
+                   obs   42. 0 in master; . in using
+                   obs   47. 0 in master; . in using
+                   obs   72. 0 in master; . in using
+                   obs   84. 0 in master; . in using
+                   obs  111. 0 in master; . in using
+                   obs  114. 0 in master; . in using
+                   obs  128. 0 in master; . in using
+                   obs  159. 0 in master; . in using
+                   obs  164. 0 in master; . in using
+                   obs  165. 0 in master; . in using
+                   obs  225. 0 in master; . in using
+                   obs  236. 0 in master; . in using
+                   obs  284. 0 in master; . in using
+                   obs  292. 0 in master; . in using
+                   obs  302. 0 in master; . in using
+                   obs  308. 0 in master; . in using
+                   obs  313. 0 in master; . in using
+                   obs  324. 0 in master; . in using
+                   obs  337. 0 in master; . in using
+                   obs  367. 0 in master; . in using
+                   obs  378. 0 in master; . in using
+                   obs  390. 0 in master; . in using
+                   obs  405. 0 in master; . in using
+                   obs  419. 0 in master; . in using
+                   obs  453. 0 in master; . in using
+                   obs  467. 0 in master; . in using
+                   obs  484. 0 in master; . in using
+                   obs  492. 0 in master; . in using
+                   obs  494. 0 in master; . in using
+                   obs  499. 0 in master; . in using
+                   obs  504. 0 in master; . in using
+                   obs  508. 0 in master; . in using
+                   obs  510. 0 in master; . in using
+                   obs  540. 0 in master; . in using
+                   obs  542. 0 in master; . in using
+                   obs  550. 0 in master; . in using
+                   obs  555. 0 in master; . in using
+                   obs  561. 0 in master; . in using
+                   obs  566. 0 in master; . in using
+                   obs  593. 0 in master; . in using
+                   obs  606. 0 in master; . in using
+                   obs  676. 0 in master; . in using
+                   obs  692. 0 in master; . in using
+                   obs  702. 0 in master; . in using
+                   obs  705. 0 in master; . in using
+                   obs  707. 0 in master; . in using
+                   obs  711. 0 in master; . in using
+                   obs  726. 0 in master; . in using
+                   obs  757. 0 in master; . in using
+                   obs  769. 0 in master; . in using
+                   obs  824. 0 in master; . in using
+                   obs  835. 0 in master; . in using
+                   obs  851. 0 in master; . in using
+                   obs  880. 0 in master; . in using
+                   obs  884. 0 in master; . in using
+                   obs  892. 0 in master; . in using
+                   obs  901. 0 in master; . in using
+                   obs  903. 0 in master; . in using
+                   obs  920. 0 in master; . in using
+                   obs  923. 0 in master; . in using
+                   obs  936. 0 in master; . in using
+                   obs  944. 0 in master; . in using
+                   obs  967. 0 in master; . in using
+                   obs  971. 0 in master; . in using
+                   obs 1015. 0 in master; . in using
+                   obs 1075. 0 in master; . in using
+                   obs 1081. 0 in master; . in using
+                   obs 1096. 0 in master; . in using
+                   obs 1115. 0 in master; . in using
+                   obs 1125. 0 in master; . in using
+                   obs 1130. 0 in master; . in using
+                   obs 1131. 0 in master; . in using
+                   obs 1135. 0 in master; . in using
+                   obs 1157. 0 in master; . in using
+                   obs 1159. 0 in master; . in using
+                   obs 1168. 0 in master; . in using
+                   obs 1175. 0 in master; . in using
+                   obs 1181. 0 in master; . in using
+                   obs 1182. 0 in master; . in using
+                   obs 1191. 0 in master; . in using
+                   obs 1203. 0 in master; . in using
+                   obs 1208. 0 in master; . in using
+                   obs 1217. 0 in master; . in using
+                   obs 1268. 0 in master; . in using
+                   obs 1272. 0 in master; . in using
+                   obs 1301. 0 in master; . in using
+                   obs 1304. 0 in master; . in using
+                   obs 1313. 0 in master; . in using
+                   obs 1321. 0 in master; . in using
+                   obs 1368. 0 in master; . in using
+                   obs 1436. 0 in master; . in using
+                   obs 1442. 0 in master; . in using
+                   obs 1447. 0 in master; . in using
+                   obs 1457. 0 in master; . in using
+                   obs 1465. 0 in master; . in using
+                   obs 1471. 0 in master; . in using
+                   obs 1472. 0 in master; . in using
+                   obs 1474. 0 in master; . in using
+                   obs 1476. 0 in master; . in using
+                   obs 1510. 0 in master; . in using
+                   obs 1527. 0 in master; . in using
+                   obs 1530. 0 in master; . in using
+                   obs 1534. 0 in master; . in using
+          region:  1 mismatches
+                   obs  236. . in master; 1 in using
+         reliten:  1 mismatches
+                   obs 1057. 4 in master; . in using
+         sexornt:  1 mismatches
+                   obs  716. . in master; 3 in using
+            size:  1 mismatches
+                   obs 1252. 26 in master; . in using
+         srcbelt:  1 mismatches
+                   obs 1252. 3 in master; . in using
+        xnorcsiz:  1 mismatches
+                   obs 1252. 5 in master; . in using
+           occ10:  1 mismatches
+                   obs 1242. 4210 in master; 920 in using
+        prestg10:  1 mismatches
+                   obs 1242. 36 in master; . in using
+   prestg105plus:  1 mismatches
+                   obs 1242. 27 in master; . in using
+           sei10:  1 mismatches
+                   obs 1242. 37.6 in master; 0 in using
+       sei10educ:  1 mismatches
+                   obs 1242. 42.6 in master; 0 in using
+        sei10inc:  1 mismatches
+                   obs 1242. 37 in master; 0 in using
+           indus:  does not exist in using
+r(9);
+
+. 
+. // Note: Run these commmands to ensure that the order of comparions
+. //          does not make a difference 
+. // *** compare panel to single year merged file
+. // use `p2006_w2_in_all_vars_file', clear
+. // cf _all using `panel_2006_w2_panel',  verbose
+. 
+. 
+. *** Re-interview 2 *************************************************************
+. 
+. *** extract the 3nd wave interview from the merged single year file
+. use `gss_2010_all_vars', clear
+( )
+
+. keep if samptype==2006
+(3,625 observations deleted)
+
+. do analysis/drop-not-aksed-and-replace-missing.do
+
+. qui ds 
+
+. local varlist `r(varlist)'
+
+. 
+. foreach var in `varlist' {
+  2.         qui sum `var'
+  3.                 if r(N)==0 | r(Var)==0 {
+  4.                         drop `var'
+  5. }               
+  6.                 else if r(N)!=0 & r(Var)!=0 {
+  7.                         qui replace `var' =. if `var' >=. | `var' < 0
+  8. } 
+  9. }
+
+. 
+. 
+end of do-file
+
+. sort id
+
+. save `p2006_w3_in_all_vars_file', replace
+(note: file /var/folders/m_/l1vkbxx13h37fq0k94zqcym80000gp/T//S_17549.00000n not found)
+file /var/folders/m_/l1vkbxx13h37fq0k94zqcym80000gp/T//S_17549.00000n saved
+
+. 
+. *** extract only the their interview responses in the panel data
+. use `gss_2006_panel', clear
+
+. keep if panstat_3==1
+(724 observations deleted)
+
+. keep  *_3
+
+. rename *_3 *
+
+. do analysis/drop-not-aksed-and-replace-missing.do
+
+. qui ds 
+
+. local varlist `r(varlist)'
+
+. 
+. foreach var in `varlist' {
+  2.         qui sum `var'
+  3.                 if r(N)==0 | r(Var)==0 {
+  4.                         drop `var'
+  5. }               
+  6.                 else if r(N)!=0 & r(Var)!=0 {
+  7.                         qui replace `var' =. if `var' >=. | `var' < 0
+  8. } 
+  9. }
+
+. 
+. 
+end of do-file
+
+. sort id
+
+. save `panel_2006_w3_panel', replace
+(note: file /var/folders/m_/l1vkbxx13h37fq0k94zqcym80000gp/T//S_17549.00000c not found)
+file /var/folders/m_/l1vkbxx13h37fq0k94zqcym80000gp/T//S_17549.00000c saved
+
+. 
+. *** compare single year merged file to panel
+. cf _all using `p2006_w3_in_all_vars_file', verbose
+
+. 
+. // Note: Run these commmands to ensure that the order of comparions
+. //          does not make a difference 
+. // *** compare panel to single year merged file
+. // use `p2006_w3_in_all_vars_file', clear
+. // cf _all using `panel_2006_w3_panel',  verbose
+. 
+. 
+. ********************************************************************************
+. *** GSS Panel 2008
+. ********************************************************************************
+. 
+. *** First interview ************************************************************
+. 
+. *** extract the first interview from the the cumulative cross-section file
+. use `gss_7218', clear
+( )
+
+. keep if year==2008
+(3,842 observations deleted)
+
+. do analysis/drop-not-aksed-and-replace-missing.do
+
+. qui ds 
+
+. local varlist `r(varlist)'
+
+. 
+. foreach var in `varlist' {
+  2.         qui sum `var'
+  3.                 if r(N)==0 | r(Var)==0 {
+  4.                         drop `var'
+  5. }               
+  6.                 else if r(N)!=0 & r(Var)!=0 {
+  7.                         qui replace `var' =. if `var' >=. | `var' < 0
+  8. } 
+  9. }
+
+. 
+. 
+end of do-file
+
+. sort id
+no variables defined
+r(111);
+
+. save `p2008_w1_in_cross_section', replace
+no variables defined
+r(111);
+
+. 
+. *** extract the first interview from the merged single year file
+. use `gss_2008_all_vars', clear
+( )
+
+. keep if samptype==2008
+(1,536 observations deleted)
+
+. do analysis/drop-not-aksed-and-replace-missing.do
+
+. qui ds 
+
+. local varlist `r(varlist)'
+
+. 
+. foreach var in `varlist' {
+  2.         qui sum `var'
+  3.                 if r(N)==0 | r(Var)==0 {
+  4.                         drop `var'
+  5. }               
+  6.                 else if r(N)!=0 & r(Var)!=0 {
+  7.                         qui replace `var' =. if `var' >=. | `var' < 0
+  8. } 
+  9. }
+
+. 
+. 
+end of do-file
+
+. sort id
+
+. save `p2008_w1_in_all_vars_file', replace
+(note: file /var/folders/m_/l1vkbxx13h37fq0k94zqcym80000gp/T//S_17549.00000o not found)
+file /var/folders/m_/l1vkbxx13h37fq0k94zqcym80000gp/T//S_17549.00000o saved
+
+. 
+. *** extract only the first interview responses in the panel data
+. use `gss_2008_panel', clear
+( )
+
+. keep  *_1
+
+. drop vetyear2 /* vetyear vars already included */
+
+. rename *_1 *
+
+. do analysis/drop-not-aksed-and-replace-missing.do
+
+. qui ds 
+
+. local varlist `r(varlist)'
+
+. 
+. foreach var in `varlist' {
+  2.         qui sum `var'
+  3.                 if r(N)==0 | r(Var)==0 {
+  4.                         drop `var'
+  5. }               
+  6.                 else if r(N)!=0 & r(Var)!=0 {
+  7.                         qui replace `var' =. if `var' >=. | `var' < 0
+  8. } 
+  9. }
+
+. 
+. 
+end of do-file
+
+. sort id
+
+. save `panel_2008_w1_panel', replace
+(note: file /var/folders/m_/l1vkbxx13h37fq0k94zqcym80000gp/T//S_17549.00000d not found)
+file /var/folders/m_/l1vkbxx13h37fq0k94zqcym80000gp/T//S_17549.00000d saved
+
+. 
+. *** compare cross-section to panel
+. cf _all using `p2008_w1_in_cross_section',  verbose
+file /var/folders/m_/l1vkbxx13h37fq0k94zqcym80000gp/T//S_17549.00000k not found
+r(601);
+
+. *** compare merged single year file to panel
+. cf _all using `p2008_w1_in_all_vars_file',  verbose
+         numemps:  142 mismatches
+                   obs   30. 0 in master; . in using
+                   obs   38. 0 in master; . in using
+                   obs   52. 0 in master; . in using
+                   obs   53. 0 in master; . in using
+                   obs   57. 0 in master; . in using
+                   obs   70. 0 in master; . in using
+                   obs   87. 0 in master; . in using
+                   obs   96. 0 in master; . in using
+                   obs  110. 0 in master; . in using
+                   obs  119. 0 in master; . in using
+                   obs  134. 0 in master; . in using
+                   obs  143. 0 in master; . in using
+                   obs  150. 0 in master; . in using
+                   obs  155. 0 in master; . in using
+                   obs  189. 0 in master; . in using
+                   obs  203. 0 in master; . in using
+                   obs  204. 0 in master; . in using
+                   obs  210. 0 in master; . in using
+                   obs  226. 0 in master; . in using
+                   obs  230. 0 in master; . in using
+                   obs  233. 0 in master; . in using
+                   obs  261. 0 in master; . in using
+                   obs  262. 0 in master; . in using
+                   obs  300. 0 in master; . in using
+                   obs  367. 0 in master; . in using
+                   obs  372. 0 in master; . in using
+                   obs  376. 0 in master; . in using
+                   obs  399. 0 in master; . in using
+                   obs  404. 0 in master; . in using
+                   obs  407. 0 in master; . in using
+                   obs  426. 0 in master; . in using
+                   obs  446. 0 in master; . in using
+                   obs  466. 0 in master; . in using
+                   obs  491. 0 in master; . in using
+                   obs  505. 0 in master; . in using
+                   obs  507. 0 in master; . in using
+                   obs  522. 0 in master; . in using
+                   obs  533. 0 in master; . in using
+                   obs  559. 0 in master; . in using
+                   obs  585. 0 in master; . in using
+                   obs  593. 0 in master; . in using
+                   obs  599. 0 in master; . in using
+                   obs  606. 0 in master; . in using
+                   obs  608. 0 in master; . in using
+                   obs  623. 0 in master; . in using
+                   obs  636. 0 in master; . in using
+                   obs  657. 0 in master; . in using
+                   obs  663. 0 in master; . in using
+                   obs  698. 0 in master; . in using
+                   obs  706. 0 in master; . in using
+                   obs  707. 0 in master; . in using
+                   obs  712. 0 in master; . in using
+                   obs  737. 0 in master; . in using
+                   obs  739. 0 in master; . in using
+                   obs  747. 0 in master; . in using
+                   obs  749. 0 in master; . in using
+                   obs  754. 0 in master; . in using
+                   obs  764. 0 in master; . in using
+                   obs  784. 0 in master; . in using
+                   obs  803. 0 in master; . in using
+                   obs  811. 0 in master; . in using
+                   obs  825. 0 in master; . in using
+                   obs  848. 0 in master; . in using
+                   obs  862. 0 in master; . in using
+                   obs  863. 0 in master; . in using
+                   obs  880. 0 in master; . in using
+                   obs  895. 0 in master; . in using
+                   obs  926. 0 in master; . in using
+                   obs  932. 0 in master; . in using
+                   obs  935. 0 in master; . in using
+                   obs  958. 0 in master; . in using
+                   obs  963. 0 in master; . in using
+                   obs  976. 0 in master; . in using
+                   obs  993. 0 in master; . in using
+                   obs 1036. 0 in master; . in using
+                   obs 1063. 0 in master; . in using
+                   obs 1110. 0 in master; . in using
+                   obs 1185. 0 in master; . in using
+                   obs 1188. 0 in master; . in using
+                   obs 1191. 0 in master; . in using
+                   obs 1217. 0 in master; . in using
+                   obs 1231. 0 in master; . in using
+                   obs 1250. 0 in master; . in using
+                   obs 1254. 0 in master; . in using
+                   obs 1259. 0 in master; . in using
+                   obs 1268. 0 in master; . in using
+                   obs 1274. 0 in master; . in using
+                   obs 1299. 0 in master; . in using
+                   obs 1306. 0 in master; . in using
+                   obs 1321. 0 in master; . in using
+                   obs 1334. 0 in master; . in using
+                   obs 1342. 0 in master; . in using
+                   obs 1347. 0 in master; . in using
+                   obs 1354. 0 in master; . in using
+                   obs 1355. 0 in master; . in using
+                   obs 1356. 0 in master; . in using
+                   obs 1359. 0 in master; . in using
+                   obs 1377. 0 in master; . in using
+                   obs 1393. 0 in master; . in using
+                   obs 1403. 0 in master; . in using
+                   obs 1424. 0 in master; . in using
+                   obs 1427. 0 in master; . in using
+                   obs 1428. 0 in master; . in using
+                   obs 1461. 0 in master; . in using
+                   obs 1483. 0 in master; . in using
+                   obs 1485. 0 in master; . in using
+                   obs 1493. 0 in master; . in using
+                   obs 1500. 0 in master; . in using
+                   obs 1523. 0 in master; . in using
+                   obs 1529. 0 in master; . in using
+                   obs 1547. 0 in master; . in using
+                   obs 1557. 0 in master; . in using
+                   obs 1567. 0 in master; . in using
+                   obs 1571. 0 in master; . in using
+                   obs 1572. 0 in master; . in using
+                   obs 1574. 0 in master; . in using
+                   obs 1610. 0 in master; . in using
+                   obs 1615. 0 in master; . in using
+                   obs 1656. 0 in master; . in using
+                   obs 1665. 0 in master; . in using
+                   obs 1690. 0 in master; . in using
+                   obs 1708. 0 in master; . in using
+                   obs 1730. 0 in master; . in using
+                   obs 1748. 0 in master; . in using
+                   obs 1783. 0 in master; . in using
+                   obs 1805. 0 in master; . in using
+                   obs 1811. 0 in master; . in using
+                   obs 1832. 0 in master; . in using
+                   obs 1858. 0 in master; . in using
+                   obs 1868. 0 in master; . in using
+                   obs 1876. 0 in master; . in using
+                   obs 1881. 0 in master; . in using
+                   obs 1891. 0 in master; . in using
+                   obs 1896. 0 in master; . in using
+                   obs 1898. 0 in master; . in using
+                   obs 1901. 0 in master; . in using
+                   obs 1937. 0 in master; . in using
+                   obs 1940. 0 in master; . in using
+                   obs 1957. 0 in master; . in using
+                   obs 1976. 0 in master; . in using
+                   obs 2001. 0 in master; . in using
+                   obs 2011. 0 in master; . in using
+r(9);
+
+. 
+. // Note: Run these commmands to ensure that the order of comparions
+. //          does not make a difference 
+. // *** compare panel to merged single year file
+. // use `p2008_w1_in_all_vars_file', clear
+. // cf _all using `panel_2008_w1_panel',  verbose
+. 
+. 
+. *** Re-interview 1 *************************************************************
+. 
+. *** extract the 2nd wave interview from the all variable and cases file
+. use `gss_2010_all_vars', clear
+( )
+
+. keep if samptype==2008
+(3,320 observations deleted)
+
+. do analysis/drop-not-aksed-and-replace-missing.do
+
+. qui ds 
+
+. local varlist `r(varlist)'
+
+. 
+. foreach var in `varlist' {
+  2.         qui sum `var'
+  3.                 if r(N)==0 | r(Var)==0 {
+  4.                         drop `var'
+  5. }               
+  6.                 else if r(N)!=0 & r(Var)!=0 {
+  7.                         qui replace `var' =. if `var' >=. | `var' < 0
+  8. } 
+  9. }
+
+. 
+. 
+end of do-file
+
+. sort id
+
+. save `p2008_w2_in_all_vars_file', replace
+(note: file /var/folders/m_/l1vkbxx13h37fq0k94zqcym80000gp/T//S_17549.00000p not found)
+file /var/folders/m_/l1vkbxx13h37fq0k94zqcym80000gp/T//S_17549.00000p saved
+
+. 
+. *** extract only the second interview responses in the panel data
+. use `gss_2008_panel', clear
+( )
+
+. keep if panstat_2==1
+(442 observations deleted)
+
+. keep  *_2
+
+. rename *_2 *
+
+. do analysis/drop-not-aksed-and-replace-missing.do
+
+. qui ds 
+
+. local varlist `r(varlist)'
+
+. 
+. foreach var in `varlist' {
+  2.         qui sum `var'
+  3.                 if r(N)==0 | r(Var)==0 {
+  4.                         drop `var'
+  5. }               
+  6.                 else if r(N)!=0 & r(Var)!=0 {
+  7.                         qui replace `var' =. if `var' >=. | `var' < 0
+  8. } 
+  9. }
+
+. 
+. 
+end of do-file
+
+. sort id
+
+. save `panel_2008_w2_panel', replace
+(note: file /var/folders/m_/l1vkbxx13h37fq0k94zqcym80000gp/T//S_17549.00000e not found)
+file /var/folders/m_/l1vkbxx13h37fq0k94zqcym80000gp/T//S_17549.00000e saved
+
+. 
+. *** compare merged single year file to panel
+. cf _all using `p2008_w2_in_all_vars_file', verbose
+         gasregs:  does not exist in using
+        scinews3:  1 mismatch
+                   obs  679. . in master; 8 in using
+         sprace2:  762 mismatches
+                   obs    2. 16 in master; . in using
+                   obs    3. 16 in master; . in using
+                   obs    6. 16 in master; . in using
+                   obs   10. 16 in master; . in using
+                   obs   15. 16 in master; . in using
+                   obs   17. 16 in master; . in using
+                   obs   18. 16 in master; . in using
+                   obs   21. 16 in master; . in using
+                   obs   23. 16 in master; . in using
+                   obs   24. 16 in master; . in using
+                   obs   25. 16 in master; . in using
+                   obs   26. 16 in master; . in using
+                   obs   28. 16 in master; . in using
+                   obs   29. 16 in master; . in using
+                   obs   30. 16 in master; . in using
+                   obs   31. 16 in master; . in using
+                   obs   32. 16 in master; . in using
+                   obs   33. 16 in master; . in using
+                   obs   35. 16 in master; . in using
+                   obs   37. 16 in master; . in using
+                   obs   38. 16 in master; . in using
+                   obs   40. 16 in master; . in using
+                   obs   42. 16 in master; . in using
+                   obs   44. 16 in master; . in using
+                   obs   48. 16 in master; . in using
+                   obs   51. 16 in master; . in using
+                   obs   54. 16 in master; . in using
+                   obs   55. 16 in master; . in using
+                   obs   56. 16 in master; . in using
+                   obs   58. 16 in master; . in using
+                   obs   66. 16 in master; . in using
+                   obs   67. 16 in master; . in using
+                   obs   69. 16 in master; . in using
+                   obs   70. 16 in master; . in using
+                   obs   71. 16 in master; . in using
+                   obs   74. 16 in master; . in using
+                   obs   75. 16 in master; . in using
+                   obs   76. 16 in master; . in using
+                   obs   80. 16 in master; . in using
+                   obs   82. 16 in master; . in using
+                   obs   84. 16 in master; . in using
+                   obs   85. 16 in master; . in using
+                   obs   86. 16 in master; . in using
+                   obs   87. 16 in master; . in using
+                   obs   91. 16 in master; . in using
+                   obs   92. 16 in master; . in using
+                   obs   94. 16 in master; . in using
+                   obs   98. 16 in master; . in using
+                   obs  100. 16 in master; . in using
+                   obs  102. 16 in master; . in using
+                   obs  108. 16 in master; . in using
+                   obs  109. 16 in master; . in using
+                   obs  110. 16 in master; . in using
+                   obs  111. 16 in master; . in using
+                   obs  115. 16 in master; . in using
+                   obs  123. 16 in master; . in using
+                   obs  124. 16 in master; . in using
+                   obs  128. 16 in master; . in using
+                   obs  139. 16 in master; . in using
+                   obs  140. 16 in master; . in using
+                   obs  141. 16 in master; . in using
+                   obs  142. 16 in master; . in using
+                   obs  145. 16 in master; . in using
+                   obs  146. 16 in master; . in using
+                   obs  151. 16 in master; . in using
+                   obs  153. 16 in master; . in using
+                   obs  158. 16 in master; . in using
+                   obs  160. 16 in master; . in using
+                   obs  164. 16 in master; . in using
+                   obs  168. 16 in master; . in using
+                   obs  173. 16 in master; . in using
+                   obs  175. 16 in master; . in using
+                   obs  176. 16 in master; . in using
+                   obs  178. 16 in master; . in using
+                   obs  179. 16 in master; . in using
+                   obs  180. 16 in master; . in using
+                   obs  181. 16 in master; . in using
+                   obs  182. 16 in master; . in using
+                   obs  183. 16 in master; . in using
+                   obs  186. 16 in master; . in using
+                   obs  187. 16 in master; . in using
+                   obs  188. 16 in master; . in using
+                   obs  191. 16 in master; . in using
+                   obs  192. 16 in master; . in using
+                   obs  193. 16 in master; . in using
+                   obs  194. 16 in master; . in using
+                   obs  195. 16 in master; . in using
+                   obs  198. 16 in master; . in using
+                   obs  199. 16 in master; . in using
+                   obs  202. 16 in master; . in using
+                   obs  203. 16 in master; . in using
+                   obs  204. 16 in master; . in using
+                   obs  206. 16 in master; . in using
+                   obs  207. 16 in master; . in using
+                   obs  209. 16 in master; . in using
+                   obs  210. 16 in master; . in using
+                   obs  213. 16 in master; . in using
+                   obs  220. 16 in master; . in using
+                   obs  221. 16 in master; . in using
+                   obs  222. 16 in master; . in using
+                   obs  223. 16 in master; . in using
+                   obs  226. 16 in master; . in using
+                   obs  231. 16 in master; . in using
+                   obs  233. 16 in master; . in using
+                   obs  234. 16 in master; . in using
+                   obs  235. 16 in master; . in using
+                   obs  236. 16 in master; . in using
+                   obs  237. 16 in master; . in using
+                   obs  238. 16 in master; . in using
+                   obs  240. 16 in master; . in using
+                   obs  244. 16 in master; . in using
+                   obs  245. 16 in master; . in using
+                   obs  251. 16 in master; . in using
+                   obs  254. 16 in master; . in using
+                   obs  255. 16 in master; . in using
+                   obs  256. 16 in master; . in using
+                   obs  258. 16 in master; . in using
+                   obs  260. 16 in master; . in using
+                   obs  263. 16 in master; . in using
+                   obs  265. 16 in master; . in using
+                   obs  266. 16 in master; . in using
+                   obs  269. 16 in master; . in using
+                   obs  270. 16 in master; . in using
+                   obs  271. 16 in master; . in using
+                   obs  272. 16 in master; . in using
+                   obs  274. 16 in master; . in using
+                   obs  276. 16 in master; . in using
+                   obs  280. 16 in master; . in using
+                   obs  283. 16 in master; . in using
+                   obs  286. 16 in master; . in using
+                   obs  287. 16 in master; . in using
+                   obs  288. 16 in master; . in using
+                   obs  289. 16 in master; . in using
+                   obs  290. 16 in master; . in using
+                   obs  293. 16 in master; . in using
+                   obs  298. 16 in master; . in using
+                   obs  301. 16 in master; . in using
+                   obs  302. 16 in master; . in using
+                   obs  311. 16 in master; . in using
+                   obs  313. 16 in master; . in using
+                   obs  315. 16 in master; . in using
+                   obs  317. 16 in master; . in using
+                   obs  318. 16 in master; . in using
+                   obs  319. 16 in master; . in using
+                   obs  321. 16 in master; . in using
+                   obs  322. 16 in master; . in using
+                   obs  323. 16 in master; . in using
+                   obs  324. 16 in master; . in using
+                   obs  325. 16 in master; . in using
+                   obs  326. 16 in master; . in using
+                   obs  328. 16 in master; . in using
+                   obs  329. 16 in master; . in using
+                   obs  333. 16 in master; . in using
+                   obs  340. 16 in master; . in using
+                   obs  344. 16 in master; . in using
+                   obs  345. 16 in master; . in using
+                   obs  348. 16 in master; . in using
+                   obs  351. 16 in master; . in using
+                   obs  352. 16 in master; . in using
+                   obs  354. 16 in master; . in using
+                   obs  355. 16 in master; . in using
+                   obs  357. 16 in master; . in using
+                   obs  358. 16 in master; . in using
+                   obs  359. 16 in master; . in using
+                   obs  361. 16 in master; . in using
+                   obs  363. 16 in master; . in using
+                   obs  364. 16 in master; . in using
+                   obs  367. 16 in master; . in using
+                   obs  368. 16 in master; . in using
+                   obs  370. 16 in master; . in using
+                   obs  375. 16 in master; . in using
+                   obs  376. 16 in master; . in using
+                   obs  381. 16 in master; . in using
+                   obs  382. 16 in master; . in using
+                   obs  383. 16 in master; . in using
+                   obs  384. 16 in master; . in using
+                   obs  385. 16 in master; . in using
+                   obs  392. 16 in master; . in using
+                   obs  393. 16 in master; . in using
+                   obs  394. 16 in master; . in using
+                   obs  395. 16 in master; . in using
+                   obs  397. 16 in master; . in using
+                   obs  398. 16 in master; . in using
+                   obs  402. 16 in master; . in using
+                   obs  403. 16 in master; . in using
+                   obs  404. 16 in master; . in using
+                   obs  406. 16 in master; . in using
+                   obs  411. 16 in master; . in using
+                   obs  413. 16 in master; . in using
+                   obs  415. 16 in master; . in using
+                   obs  417. 16 in master; . in using
+                   obs  418. 16 in master; . in using
+                   obs  420. 16 in master; . in using
+                   obs  426. 16 in master; . in using
+                   obs  427. 16 in master; . in using
+                   obs  428. 16 in master; . in using
+                   obs  429. 16 in master; . in using
+                   obs  435. 16 in master; . in using
+                   obs  438. 16 in master; . in using
+                   obs  439. 16 in master; . in using
+                   obs  442. 16 in master; . in using
+                   obs  451. 16 in master; . in using
+                   obs  452. 16 in master; . in using
+                   obs  454. 16 in master; . in using
+                   obs  455. 16 in master; . in using
+                   obs  456. 16 in master; . in using
+                   obs  459. 16 in master; . in using
+                   obs  460. 16 in master; . in using
+                   obs  461. 16 in master; . in using
+                   obs  462. 16 in master; . in using
+                   obs  463. 16 in master; . in using
+                   obs  464. 16 in master; . in using
+                   obs  467. 16 in master; . in using
+                   obs  469. 16 in master; . in using
+                   obs  472. 16 in master; . in using
+                   obs  473. 16 in master; . in using
+                   obs  475. 16 in master; . in using
+                   obs  477. 16 in master; . in using
+                   obs  478. 16 in master; . in using
+                   obs  479. 16 in master; . in using
+                   obs  480. 16 in master; . in using
+                   obs  482. 16 in master; . in using
+                   obs  483. 16 in master; . in using
+                   obs  485. 16 in master; . in using
+                   obs  486. 16 in master; . in using
+                   obs  487. 16 in master; . in using
+                   obs  488. 16 in master; . in using
+                   obs  490. 16 in master; . in using
+                   obs  491. 16 in master; . in using
+                   obs  493. 16 in master; . in using
+                   obs  494. 16 in master; . in using
+                   obs  495. 16 in master; . in using
+                   obs  496. 16 in master; . in using
+                   obs  497. 16 in master; . in using
+                   obs  499. 16 in master; . in using
+                   obs  500. 16 in master; . in using
+                   obs  504. 16 in master; . in using
+                   obs  507. 16 in master; . in using
+                   obs  510. 16 in master; . in using
+                   obs  511. 16 in master; . in using
+                   obs  513. 16 in master; . in using
+                   obs  515. 16 in master; . in using
+                   obs  516. 16 in master; . in using
+                   obs  522. 16 in master; . in using
+                   obs  528. 16 in master; . in using
+                   obs  531. 16 in master; . in using
+                   obs  532. 16 in master; . in using
+                   obs  538. 16 in master; . in using
+                   obs  539. 16 in master; . in using
+                   obs  545. 16 in master; . in using
+                   obs  550. 16 in master; . in using
+                   obs  553. 16 in master; . in using
+                   obs  558. 16 in master; . in using
+                   obs  560. 16 in master; . in using
+                   obs  562. 16 in master; . in using
+                   obs  567. 16 in master; . in using
+                   obs  568. 16 in master; . in using
+                   obs  569. 16 in master; . in using
+                   obs  570. 16 in master; . in using
+                   obs  573. 16 in master; . in using
+                   obs  574. 16 in master; . in using
+                   obs  575. 16 in master; . in using
+                   obs  577. 16 in master; . in using
+                   obs  582. 16 in master; . in using
+                   obs  585. 16 in master; . in using
+                   obs  588. 16 in master; . in using
+                   obs  589. 16 in master; . in using
+                   obs  590. 16 in master; . in using
+                   obs  594. 16 in master; . in using
+                   obs  595. 16 in master; . in using
+                   obs  596. 16 in master; . in using
+                   obs  597. 16 in master; . in using
+                   obs  598. 16 in master; . in using
+                   obs  599. 16 in master; . in using
+                   obs  600. 16 in master; . in using
+                   obs  602. 16 in master; . in using
+                   obs  607. 16 in master; . in using
+                   obs  609. 16 in master; . in using
+                   obs  614. 16 in master; . in using
+                   obs  618. 16 in master; . in using
+                   obs  622. 16 in master; . in using
+                   obs  623. 16 in master; . in using
+                   obs  624. 16 in master; . in using
+                   obs  625. 16 in master; . in using
+                   obs  626. 16 in master; . in using
+                   obs  629. 16 in master; . in using
+                   obs  630. 16 in master; . in using
+                   obs  631. 16 in master; . in using
+                   obs  633. 16 in master; . in using
+                   obs  638. 16 in master; . in using
+                   obs  641. 16 in master; . in using
+                   obs  647. 16 in master; . in using
+                   obs  648. 16 in master; . in using
+                   obs  649. 16 in master; . in using
+                   obs  651. 16 in master; . in using
+                   obs  652. 16 in master; . in using
+                   obs  653. 16 in master; . in using
+                   obs  656. 16 in master; . in using
+                   obs  657. 16 in master; . in using
+                   obs  660. 16 in master; . in using
+                   obs  661. 16 in master; . in using
+                   obs  662. 16 in master; . in using
+                   obs  663. 16 in master; . in using
+                   obs  665. 16 in master; . in using
+                   obs  666. 16 in master; . in using
+                   obs  667. 16 in master; . in using
+                   obs  675. 16 in master; . in using
+                   obs  678. 16 in master; . in using
+                   obs  679. 16 in master; . in using
+                   obs  681. 16 in master; . in using
+                   obs  682. 16 in master; . in using
+                   obs  687. 16 in master; . in using
+                   obs  688. 16 in master; . in using
+                   obs  691. 16 in master; . in using
+                   obs  692. 16 in master; . in using
+                   obs  693. 16 in master; . in using
+                   obs  694. 16 in master; . in using
+                   obs  696. 16 in master; . in using
+                   obs  697. 16 in master; . in using
+                   obs  700. 16 in master; . in using
+                   obs  704. 16 in master; . in using
+                   obs  705. 16 in master; . in using
+                   obs  707. 16 in master; . in using
+                   obs  709. 16 in master; . in using
+                   obs  712. 16 in master; . in using
+                   obs  713. 16 in master; . in using
+                   obs  715. 16 in master; . in using
+                   obs  720. 16 in master; . in using
+                   obs  723. 16 in master; . in using
+                   obs  730. 16 in master; . in using
+                   obs  731. 16 in master; . in using
+                   obs  734. 16 in master; . in using
+                   obs  736. 16 in master; . in using
+                   obs  737. 16 in master; . in using
+                   obs  738. 16 in master; . in using
+                   obs  744. 16 in master; . in using
+                   obs  746. 16 in master; . in using
+                   obs  752. 16 in master; . in using
+                   obs  753. 16 in master; . in using
+                   obs  754. 16 in master; . in using
+                   obs  755. 16 in master; . in using
+                   obs  756. 16 in master; . in using
+                   obs  758. 16 in master; . in using
+                   obs  759. 16 in master; . in using
+                   obs  760. 16 in master; . in using
+                   obs  761. 16 in master; . in using
+                   obs  762. 16 in master; . in using
+                   obs  766. 16 in master; . in using
+                   obs  768. 16 in master; . in using
+                   obs  770. 16 in master; . in using
+                   obs  775. 16 in master; . in using
+                   obs  776. 16 in master; . in using
+                   obs  777. 16 in master; . in using
+                   obs  778. 16 in master; . in using
+                   obs  779. 16 in master; . in using
+                   obs  780. 16 in master; . in using
+                   obs  781. 16 in master; . in using
+                   obs  782. 16 in master; . in using
+                   obs  786. 16 in master; . in using
+                   obs  789. 16 in master; . in using
+                   obs  790. 16 in master; . in using
+                   obs  791. 16 in master; . in using
+                   obs  792. 16 in master; . in using
+                   obs  796. 16 in master; . in using
+                   obs  798. 16 in master; . in using
+                   obs  800. 16 in master; . in using
+                   obs  802. 16 in master; . in using
+                   obs  804. 16 in master; . in using
+                   obs  812. 16 in master; . in using
+                   obs  817. 16 in master; . in using
+                   obs  820. 16 in master; . in using
+                   obs  827. 16 in master; . in using
+                   obs  832. 16 in master; . in using
+                   obs  833. 16 in master; . in using
+                   obs  834. 16 in master; . in using
+                   obs  837. 16 in master; . in using
+                   obs  838. 16 in master; . in using
+                   obs  841. 16 in master; . in using
+                   obs  845. 16 in master; . in using
+                   obs  847. 16 in master; . in using
+                   obs  849. 16 in master; . in using
+                   obs  851. 16 in master; . in using
+                   obs  852. 16 in master; . in using
+                   obs  853. 16 in master; . in using
+                   obs  855. 16 in master; . in using
+                   obs  856. 16 in master; . in using
+                   obs  857. 16 in master; . in using
+                   obs  860. 16 in master; . in using
+                   obs  861. 16 in master; . in using
+                   obs  862. 16 in master; . in using
+                   obs  864. 16 in master; . in using
+                   obs  867. 16 in master; . in using
+                   obs  869. 16 in master; . in using
+                   obs  870. 16 in master; . in using
+                   obs  871. 16 in master; . in using
+                   obs  879. 16 in master; . in using
+                   obs  882. 16 in master; . in using
+                   obs  887. 16 in master; . in using
+                   obs  888. 16 in master; . in using
+                   obs  889. 16 in master; . in using
+                   obs  893. 16 in master; . in using
+                   obs  900. 16 in master; . in using
+                   obs  901. 16 in master; . in using
+                   obs  902. 16 in master; . in using
+                   obs  903. 16 in master; . in using
+                   obs  905. 16 in master; . in using
+                   obs  909. 16 in master; . in using
+                   obs  910. 16 in master; . in using
+                   obs  913. 16 in master; . in using
+                   obs  915. 16 in master; . in using
+                   obs  920. 16 in master; . in using
+                   obs  922. 16 in master; . in using
+                   obs  923. 16 in master; . in using
+                   obs  925. 16 in master; . in using
+                   obs  928. 16 in master; . in using
+                   obs  929. 16 in master; . in using
+                   obs  930. 16 in master; . in using
+                   obs  931. 16 in master; . in using
+                   obs  932. 16 in master; . in using
+                   obs  933. 16 in master; . in using
+                   obs  935. 16 in master; . in using
+                   obs  937. 16 in master; . in using
+                   obs  938. 16 in master; . in using
+                   obs  939. 16 in master; . in using
+                   obs  940. 16 in master; . in using
+                   obs  941. 16 in master; . in using
+                   obs  943. 16 in master; . in using
+                   obs  944. 16 in master; . in using
+                   obs  945. 16 in master; . in using
+                   obs  946. 16 in master; . in using
+                   obs  948. 16 in master; . in using
+                   obs  949. 16 in master; . in using
+                   obs  950. 16 in master; . in using
+                   obs  951. 16 in master; . in using
+                   obs  952. 16 in master; . in using
+                   obs  956. 16 in master; . in using
+                   obs  960. 16 in master; . in using
+                   obs  962. 16 in master; . in using
+                   obs  964. 16 in master; . in using
+                   obs  965. 16 in master; . in using
+                   obs  966. 16 in master; . in using
+                   obs  967. 16 in master; . in using
+                   obs  970. 16 in master; . in using
+                   obs  971. 16 in master; . in using
+                   obs  974. 16 in master; . in using
+                   obs  976. 16 in master; . in using
+                   obs  980. 16 in master; . in using
+                   obs  981. 16 in master; . in using
+                   obs  982. 16 in master; . in using
+                   obs  985. 16 in master; . in using
+                   obs  986. 16 in master; . in using
+                   obs  988. 16 in master; . in using
+                   obs  989. 16 in master; . in using
+                   obs  990. 16 in master; . in using
+                   obs  991. 16 in master; . in using
+                   obs  992. 16 in master; . in using
+                   obs  996. 16 in master; . in using
+                   obs 1000. 16 in master; . in using
+                   obs 1007. 16 in master; . in using
+                   obs 1008. 16 in master; . in using
+                   obs 1009. 16 in master; . in using
+                   obs 1010. 16 in master; . in using
+                   obs 1012. 16 in master; . in using
+                   obs 1015. 16 in master; . in using
+                   obs 1017. 16 in master; . in using
+                   obs 1025. 16 in master; . in using
+                   obs 1026. 16 in master; . in using
+                   obs 1029. 16 in master; . in using
+                   obs 1030. 16 in master; . in using
+                   obs 1032. 16 in master; . in using
+                   obs 1033. 16 in master; . in using
+                   obs 1038. 16 in master; . in using
+                   obs 1039. 16 in master; . in using
+                   obs 1040. 16 in master; . in using
+                   obs 1041. 16 in master; . in using
+                   obs 1042. 16 in master; . in using
+                   obs 1044. 16 in master; . in using
+                   obs 1049. 16 in master; . in using
+                   obs 1053. 16 in master; . in using
+                   obs 1055. 16 in master; . in using
+                   obs 1060. 16 in master; . in using
+                   obs 1062. 16 in master; . in using
+                   obs 1063. 16 in master; . in using
+                   obs 1065. 16 in master; . in using
+                   obs 1068. 16 in master; . in using
+                   obs 1069. 16 in master; . in using
+                   obs 1070. 16 in master; . in using
+                   obs 1072. 16 in master; . in using
+                   obs 1073. 16 in master; . in using
+                   obs 1074. 16 in master; . in using
+                   obs 1077. 16 in master; . in using
+                   obs 1078. 16 in master; . in using
+                   obs 1082. 16 in master; . in using
+                   obs 1083. 16 in master; . in using
+                   obs 1084. 16 in master; . in using
+                   obs 1085. 16 in master; . in using
+                   obs 1086. 16 in master; . in using
+                   obs 1090. 16 in master; . in using
+                   obs 1091. 16 in master; . in using
+                   obs 1093. 16 in master; . in using
+                   obs 1094. 16 in master; . in using
+                   obs 1097. 16 in master; . in using
+                   obs 1100. 16 in master; . in using
+                   obs 1101. 16 in master; . in using
+                   obs 1106. 16 in master; . in using
+                   obs 1107. 16 in master; . in using
+                   obs 1110. 16 in master; . in using
+                   obs 1111. 16 in master; . in using
+                   obs 1116. 16 in master; . in using
+                   obs 1122. 16 in master; . in using
+                   obs 1124. 16 in master; . in using
+                   obs 1125. 16 in master; . in using
+                   obs 1126. 16 in master; . in using
+                   obs 1128. 16 in master; . in using
+                   obs 1130. 16 in master; . in using
+                   obs 1133. 16 in master; . in using
+                   obs 1134. 16 in master; . in using
+                   obs 1135. 16 in master; . in using
+                   obs 1137. 16 in master; . in using
+                   obs 1142. 16 in master; . in using
+                   obs 1143. 16 in master; . in using
+                   obs 1144. 16 in master; . in using
+                   obs 1146. 16 in master; . in using
+                   obs 1149. 16 in master; . in using
+                   obs 1150. 16 in master; . in using
+                   obs 1157. 16 in master; . in using
+                   obs 1158. 16 in master; . in using
+                   obs 1159. 16 in master; . in using
+                   obs 1160. 16 in master; . in using
+                   obs 1161. 16 in master; . in using
+                   obs 1163. 16 in master; . in using
+                   obs 1164. 16 in master; . in using
+                   obs 1165. 16 in master; . in using
+                   obs 1166. 16 in master; . in using
+                   obs 1170. 16 in master; . in using
+                   obs 1171. 16 in master; . in using
+                   obs 1172. 16 in master; . in using
+                   obs 1173. 16 in master; . in using
+                   obs 1176. 16 in master; . in using
+                   obs 1180. 16 in master; . in using
+                   obs 1181. 16 in master; . in using
+                   obs 1182. 16 in master; . in using
+                   obs 1183. 16 in master; . in using
+                   obs 1184. 16 in master; . in using
+                   obs 1185. 16 in master; . in using
+                   obs 1186. 16 in master; . in using
+                   obs 1187. 16 in master; . in using
+                   obs 1188. 16 in master; . in using
+                   obs 1190. 16 in master; . in using
+                   obs 1191. 16 in master; . in using
+                   obs 1193. 16 in master; . in using
+                   obs 1200. 16 in master; . in using
+                   obs 1201. 16 in master; . in using
+                   obs 1202. 16 in master; . in using
+                   obs 1203. 16 in master; . in using
+                   obs 1204. 16 in master; . in using
+                   obs 1205. 16 in master; . in using
+                   obs 1206. 16 in master; . in using
+                   obs 1207. 16 in master; . in using
+                   obs 1211. 16 in master; . in using
+                   obs 1214. 16 in master; . in using
+                   obs 1215. 16 in master; . in using
+                   obs 1216. 16 in master; . in using
+                   obs 1217. 16 in master; . in using
+                   obs 1218. 16 in master; . in using
+                   obs 1220. 16 in master; . in using
+                   obs 1221. 16 in master; . in using
+                   obs 1222. 16 in master; . in using
+                   obs 1223. 16 in master; . in using
+                   obs 1224. 16 in master; . in using
+                   obs 1225. 16 in master; . in using
+                   obs 1226. 16 in master; . in using
+                   obs 1227. 16 in master; . in using
+                   obs 1229. 16 in master; . in using
+                   obs 1230. 16 in master; . in using
+                   obs 1239. 16 in master; . in using
+                   obs 1240. 16 in master; . in using
+                   obs 1242. 16 in master; . in using
+                   obs 1243. 16 in master; . in using
+                   obs 1244. 16 in master; . in using
+                   obs 1246. 16 in master; . in using
+                   obs 1250. 16 in master; . in using
+                   obs 1251. 16 in master; . in using
+                   obs 1252. 16 in master; . in using
+                   obs 1253. 16 in master; . in using
+                   obs 1255. 16 in master; . in using
+                   obs 1256. 16 in master; . in using
+                   obs 1257. 16 in master; . in using
+                   obs 1258. 16 in master; . in using
+                   obs 1259. 16 in master; . in using
+                   obs 1260. 16 in master; . in using
+                   obs 1261. 16 in master; . in using
+                   obs 1266. 16 in master; . in using
+                   obs 1267. 16 in master; . in using
+                   obs 1268. 16 in master; . in using
+                   obs 1270. 16 in master; . in using
+                   obs 1273. 16 in master; . in using
+                   obs 1274. 16 in master; . in using
+                   obs 1277. 16 in master; . in using
+                   obs 1278. 16 in master; . in using
+                   obs 1280. 16 in master; . in using
+                   obs 1281. 16 in master; . in using
+                   obs 1286. 16 in master; . in using
+                   obs 1287. 16 in master; . in using
+                   obs 1288. 16 in master; . in using
+                   obs 1292. 16 in master; . in using
+                   obs 1293. 16 in master; . in using
+                   obs 1294. 16 in master; . in using
+                   obs 1295. 16 in master; . in using
+                   obs 1296. 16 in master; . in using
+                   obs 1301. 16 in master; . in using
+                   obs 1304. 16 in master; . in using
+                   obs 1305. 16 in master; . in using
+                   obs 1307. 16 in master; . in using
+                   obs 1308. 16 in master; . in using
+                   obs 1309. 16 in master; . in using
+                   obs 1310. 16 in master; . in using
+                   obs 1311. 16 in master; . in using
+                   obs 1317. 16 in master; . in using
+                   obs 1318. 16 in master; . in using
+                   obs 1319. 16 in master; . in using
+                   obs 1320. 16 in master; . in using
+                   obs 1322. 16 in master; . in using
+                   obs 1323. 16 in master; . in using
+                   obs 1331. 16 in master; . in using
+                   obs 1332. 16 in master; . in using
+                   obs 1333. 16 in master; . in using
+                   obs 1335. 16 in master; . in using
+                   obs 1338. 16 in master; . in using
+                   obs 1341. 16 in master; . in using
+                   obs 1342. 16 in master; . in using
+                   obs 1344. 16 in master; . in using
+                   obs 1345. 16 in master; . in using
+                   obs 1346. 16 in master; . in using
+                   obs 1347. 16 in master; . in using
+                   obs 1348. 16 in master; . in using
+                   obs 1350. 16 in master; . in using
+                   obs 1351. 16 in master; . in using
+                   obs 1354. 16 in master; . in using
+                   obs 1355. 16 in master; . in using
+                   obs 1356. 16 in master; . in using
+                   obs 1357. 16 in master; . in using
+                   obs 1358. 16 in master; . in using
+                   obs 1359. 16 in master; . in using
+                   obs 1360. 16 in master; . in using
+                   obs 1362. 16 in master; . in using
+                   obs 1363. 16 in master; . in using
+                   obs 1365. 16 in master; . in using
+                   obs 1367. 16 in master; . in using
+                   obs 1368. 16 in master; . in using
+                   obs 1372. 16 in master; . in using
+                   obs 1375. 16 in master; . in using
+                   obs 1376. 16 in master; . in using
+                   obs 1378. 16 in master; . in using
+                   obs 1380. 16 in master; . in using
+                   obs 1381. 16 in master; . in using
+                   obs 1384. 16 in master; . in using
+                   obs 1385. 16 in master; . in using
+                   obs 1387. 16 in master; . in using
+                   obs 1389. 16 in master; . in using
+                   obs 1390. 16 in master; . in using
+                   obs 1393. 16 in master; . in using
+                   obs 1394. 16 in master; . in using
+                   obs 1395. 16 in master; . in using
+                   obs 1396. 16 in master; . in using
+                   obs 1397. 16 in master; . in using
+                   obs 1404. 16 in master; . in using
+                   obs 1405. 16 in master; . in using
+                   obs 1406. 16 in master; . in using
+                   obs 1408. 16 in master; . in using
+                   obs 1409. 16 in master; . in using
+                   obs 1412. 16 in master; . in using
+                   obs 1413. 16 in master; . in using
+                   obs 1414. 16 in master; . in using
+                   obs 1417. 16 in master; . in using
+                   obs 1423. 16 in master; . in using
+                   obs 1430. 16 in master; . in using
+                   obs 1431. 16 in master; . in using
+                   obs 1432. 16 in master; . in using
+                   obs 1433. 16 in master; . in using
+                   obs 1434. 16 in master; . in using
+                   obs 1435. 16 in master; . in using
+                   obs 1436. 16 in master; . in using
+                   obs 1438. 16 in master; . in using
+                   obs 1441. 16 in master; . in using
+                   obs 1446. 16 in master; . in using
+                   obs 1449. 16 in master; . in using
+                   obs 1455. 16 in master; . in using
+                   obs 1456. 16 in master; . in using
+                   obs 1457. 16 in master; . in using
+                   obs 1458. 16 in master; . in using
+                   obs 1459. 16 in master; . in using
+                   obs 1462. 16 in master; . in using
+                   obs 1464. 16 in master; . in using
+                   obs 1465. 16 in master; . in using
+                   obs 1466. 16 in master; . in using
+                   obs 1467. 16 in master; . in using
+                   obs 1468. 16 in master; . in using
+                   obs 1469. 16 in master; . in using
+                   obs 1470. 16 in master; . in using
+                   obs 1471. 16 in master; . in using
+                   obs 1472. 16 in master; . in using
+                   obs 1473. 16 in master; . in using
+                   obs 1474. 16 in master; . in using
+                   obs 1475. 16 in master; . in using
+                   obs 1480. 16 in master; . in using
+                   obs 1481. 16 in master; . in using
+                   obs 1483. 16 in master; . in using
+                   obs 1484. 16 in master; . in using
+                   obs 1485. 16 in master; . in using
+                   obs 1486. 16 in master; . in using
+                   obs 1487. 16 in master; . in using
+                   obs 1488. 16 in master; . in using
+                   obs 1491. 16 in master; . in using
+                   obs 1492. 16 in master; . in using
+                   obs 1493. 16 in master; . in using
+                   obs 1495. 16 in master; . in using
+                   obs 1497. 16 in master; . in using
+                   obs 1498. 16 in master; . in using
+                   obs 1500. 16 in master; . in using
+                   obs 1501. 16 in master; . in using
+                   obs 1502. 16 in master; . in using
+                   obs 1504. 16 in master; . in using
+                   obs 1506. 16 in master; . in using
+                   obs 1507. 16 in master; . in using
+                   obs 1508. 16 in master; . in using
+                   obs 1509. 16 in master; . in using
+                   obs 1512. 16 in master; . in using
+                   obs 1513. 16 in master; . in using
+                   obs 1514. 16 in master; . in using
+                   obs 1515. 16 in master; . in using
+                   obs 1518. 16 in master; . in using
+                   obs 1521. 16 in master; . in using
+                   obs 1522. 16 in master; . in using
+                   obs 1523. 16 in master; . in using
+                   obs 1525. 16 in master; . in using
+                   obs 1526. 16 in master; . in using
+                   obs 1533. 16 in master; . in using
+                   obs 1534. 16 in master; . in using
+                   obs 1535. 16 in master; . in using
+                   obs 1538. 16 in master; . in using
+                   obs 1542. 16 in master; . in using
+                   obs 1546. 16 in master; . in using
+                   obs 1548. 16 in master; . in using
+                   obs 1549. 16 in master; . in using
+                   obs 1551. 16 in master; . in using
+                   obs 1553. 16 in master; . in using
+                   obs 1555. 16 in master; . in using
+                   obs 1557. 16 in master; . in using
+                   obs 1558. 16 in master; . in using
+                   obs 1561. 16 in master; . in using
+                   obs 1563. 16 in master; . in using
+                   obs 1564. 16 in master; . in using
+                   obs 1565. 16 in master; . in using
+                   obs 1567. 16 in master; . in using
+                   obs 1568. 16 in master; . in using
+                   obs 1570. 16 in master; . in using
+                   obs 1571. 16 in master; . in using
+                   obs 1572. 16 in master; . in using
+                   obs 1574. 16 in master; . in using
+                   obs 1580. 16 in master; . in using
+                   obs 1581. 16 in master; . in using
+         sprace3:  36 mismatches
+                   obs  201. 16 in master; . in using
+                   obs  261. 16 in master; . in using
+                   obs  267. 16 in master; . in using
+                   obs  282. 16 in master; . in using
+                   obs  299. 16 in master; . in using
+                   obs  353. 16 in master; . in using
+                   obs  471. 16 in master; . in using
+                   obs  489. 16 in master; . in using
+                   obs  520. 16 in master; . in using
+                   obs  551. 16 in master; . in using
+                   obs  559. 16 in master; . in using
+                   obs  628. 16 in master; . in using
+                   obs  671. 16 in master; . in using
+                   obs  683. 16 in master; . in using
+                   obs  757. 16 in master; . in using
+                   obs  763. 16 in master; . in using
+                   obs  787. 16 in master; . in using
+                   obs  805. 16 in master; . in using
+                   obs  815. 16 in master; . in using
+                   obs  850. 16 in master; . in using
+                   obs  868. 16 in master; . in using
+                   obs  936. 16 in master; . in using
+                   obs 1043. 16 in master; . in using
+                   obs 1112. 16 in master; . in using
+                   obs 1115. 16 in master; . in using
+                   obs 1119. 16 in master; . in using
+                   obs 1129. 16 in master; . in using
+                   obs 1192. 16 in master; . in using
+                   obs 1282. 16 in master; . in using
+                   obs 1283. 16 in master; . in using
+                   obs 1326. 16 in master; . in using
+                   obs 1327. 16 in master; . in using
+                   obs 1329. 16 in master; . in using
+                   obs 1442. 16 in master; . in using
+                   obs 1450. 16 in master; . in using
+                   obs 1511. 16 in master; . in using
+r(9);
+
+. 
+. // Note: Run these commmands to ensure that the order of comparions
+. //          does not make a difference 
+. // *** compare panel to single year merged file
+. // use `p2008_w2_in_all_vars_file', clear
+. // cf _all using `panel_2008_w2_panel',  verbose
+. 
+. 
+. *** Re-interview 2 *************************************************************
+. 
+. *** extract the 3nd wave interview from the merged single year file
+. use `gss_2012_all_vars', clear
+( )
+
+. keep if samptype==2008
+(3,525 observations deleted)
+
+. do analysis/drop-not-aksed-and-replace-missing.do
+
+. qui ds 
+
+. local varlist `r(varlist)'
+
+. 
+. foreach var in `varlist' {
+  2.         qui sum `var'
+  3.                 if r(N)==0 | r(Var)==0 {
+  4.                         drop `var'
+  5. }               
+  6.                 else if r(N)!=0 & r(Var)!=0 {
+  7.                         qui replace `var' =. if `var' >=. | `var' < 0
+  8. } 
+  9. }
+
+. 
+. 
+end of do-file
+
+. sort id
+
+. save `p2008_w3_in_all_vars_file', replace
+(note: file /var/folders/m_/l1vkbxx13h37fq0k94zqcym80000gp/T//S_17549.00000q not found)
+file /var/folders/m_/l1vkbxx13h37fq0k94zqcym80000gp/T//S_17549.00000q saved
+
+. 
+. *** extract only the third interview responses in the panel data
+. use `gss_2008_panel', clear
+( )
+
+. keep if panstat_3==1
+(728 observations deleted)
+
+. keep  *_3
+
+. rename *_3 *
+
+. do analysis/drop-not-aksed-and-replace-missing.do
+
+. qui ds 
+
+. local varlist `r(varlist)'
+
+. 
+. foreach var in `varlist' {
+  2.         qui sum `var'
+  3.                 if r(N)==0 | r(Var)==0 {
+  4.                         drop `var'
+  5. }               
+  6.                 else if r(N)!=0 & r(Var)!=0 {
+  7.                         qui replace `var' =. if `var' >=. | `var' < 0
+  8. } 
+  9. }
+
+. 
+. 
+end of do-file
+
+. sort id
+
+. save `panel_2008_w3_panel', replace
+(note: file /var/folders/m_/l1vkbxx13h37fq0k94zqcym80000gp/T//S_17549.00000f not found)
+file /var/folders/m_/l1vkbxx13h37fq0k94zqcym80000gp/T//S_17549.00000f saved
+
+. 
+. *** compare merged single year file to panel
+. cf _all using `p2008_w3_in_all_vars_file', verbose
+            nogo:  does not exist in using
+           nogo1:  does not exist in using
+        scinews3:  4 mismatches
+                   obs  832. . in master; 8 in using
+                   obs  894. . in master; 8 in using
+                   obs  947. . in master; 8 in using
+                   obs 1062. . in master; 8 in using
+r(9);
+
+. 
+. // Note: Run these commmands to ensure that the order of comparions
+. //          does not make a difference 
+. // *** compare panel to single year merged file
+. // use `panel_2008_w3_panel', clear
+. // cf _all using `p2008_w3_in_all_vars_file',  verbose
+. 
+. 
+. ********************************************************************************
+. *** GSS Panel 2010
+. ********************************************************************************
+. 
+. *** First interview ************************************************************
+. 
+. *** extract the first interview from the the cumulative cross-section file
+. use `gss_7218', clear
+( )
+
+. keep if year==2010
+(3,842 observations deleted)
+
+. do analysis/drop-not-aksed-and-replace-missing.do
+
+. qui ds 
+
+. local varlist `r(varlist)'
+
+. 
+. foreach var in `varlist' {
+  2.         qui sum `var'
+  3.                 if r(N)==0 | r(Var)==0 {
+  4.                         drop `var'
+  5. }               
+  6.                 else if r(N)!=0 & r(Var)!=0 {
+  7.                         qui replace `var' =. if `var' >=. | `var' < 0
+  8. } 
+  9. }
+
+. 
+. 
+end of do-file
+
+. sort id
+no variables defined
+r(111);
+
+. save `p2010_w1_in_cross_section', replace
+no variables defined
+r(111);
+
+. 
+. *** extract the first interview from the merged single year file
+. use `gss_2010_all_vars', clear
+( )
+
+. keep if samptype==2010
+(2,857 observations deleted)
+
+. do analysis/drop-not-aksed-and-replace-missing.do
+
+. qui ds 
+
+. local varlist `r(varlist)'
+
+. 
+. foreach var in `varlist' {
+  2.         qui sum `var'
+  3.                 if r(N)==0 | r(Var)==0 {
+  4.                         drop `var'
+  5. }               
+  6.                 else if r(N)!=0 & r(Var)!=0 {
+  7.                         qui replace `var' =. if `var' >=. | `var' < 0
+  8. } 
+  9. }
+
+. 
+. 
+end of do-file
+
+. sort id
+
+. save `p2010_w1_in_all_vars_file', replace
+(note: file /var/folders/m_/l1vkbxx13h37fq0k94zqcym80000gp/T//S_17549.00000r not found)
+file /var/folders/m_/l1vkbxx13h37fq0k94zqcym80000gp/T//S_17549.00000r saved
+
+. 
+. *** extract only the first interview responses in the panel data
+. use `gss_2010_panel', clear
+( )
+
+. keep  *_1
+
+. rename *_1 *
+
+. do analysis/drop-not-aksed-and-replace-missing.do
+
+. qui ds 
+
+. local varlist `r(varlist)'
+
+. 
+. foreach var in `varlist' {
+  2.         qui sum `var'
+  3.                 if r(N)==0 | r(Var)==0 {
+  4.                         drop `var'
+  5. }               
+  6.                 else if r(N)!=0 & r(Var)!=0 {
+  7.                         qui replace `var' =. if `var' >=. | `var' < 0
+  8. } 
+  9. }
+
+. 
+. 
+end of do-file
+
+. sort id
+
+. save `panel_2010_w1_panel', replace
+(note: file /var/folders/m_/l1vkbxx13h37fq0k94zqcym80000gp/T//S_17549.00000g not found)
+file /var/folders/m_/l1vkbxx13h37fq0k94zqcym80000gp/T//S_17549.00000g saved
+
+. 
+. *** compare cross-section to panel
+. cf _all using `p2010_w1_in_cross_section',  verbose
+file /var/folders/m_/l1vkbxx13h37fq0k94zqcym80000gp/T//S_17549.00000l not found
+r(601);
+
+. *** compare merged single year file to panel
+. cf _all using `p2010_w1_in_all_vars_file',  verbose
+        prestg80:  1 mismatch
+                   obs  493. . in master; 42 in using
+         preteen:  1 mismatch
+                   obs 2037. . in master; 8 in using
+         waypaid:  2 mismatches
+                   obs  192. . in master; 8 in using
+                   obs  682. . in master; 8 in using
+r(9);
+
+. 
+. // Note: Run these commmands to ensure that the order of comparions
+. //          does not make a difference 
+. // *** compare panel to merged single year file
+. // use `p2010_w1_in_all_vars_file', clear
+. // cf _all using `panel_2010_w1_panel',  verbose
+. 
+. 
+. *** Re-interview 1 *************************************************************
+. 
+. *** extract the 2nd wave interview from the merged single year file
+. use `gss_2012_all_vars', clear
+( )
+
+. keep if samptype==2010
+(3,269 observations deleted)
+
+. do analysis/drop-not-aksed-and-replace-missing.do
+
+. qui ds 
+
+. local varlist `r(varlist)'
+
+. 
+. foreach var in `varlist' {
+  2.         qui sum `var'
+  3.                 if r(N)==0 | r(Var)==0 {
+  4.                         drop `var'
+  5. }               
+  6.                 else if r(N)!=0 & r(Var)!=0 {
+  7.                         qui replace `var' =. if `var' >=. | `var' < 0
+  8. } 
+  9. }
+
+. 
+. 
+end of do-file
+
+. sort id
+
+. save `p2010_w2_in_all_vars_file', replace
+(note: file /var/folders/m_/l1vkbxx13h37fq0k94zqcym80000gp/T//S_17549.00000s not found)
+file /var/folders/m_/l1vkbxx13h37fq0k94zqcym80000gp/T//S_17549.00000s saved
+
+. 
+. *** extract only the second interview responses in the panel data
+. use `gss_2010_panel', clear
+( )
+
+. keep if panstat_2==1
+(493 observations deleted)
+
+. keep  *_2
+
+. rename *_2 *
+
+. do analysis/drop-not-aksed-and-replace-missing.do
+
+. qui ds 
+
+. local varlist `r(varlist)'
+
+. 
+. foreach var in `varlist' {
+  2.         qui sum `var'
+  3.                 if r(N)==0 | r(Var)==0 {
+  4.                         drop `var'
+  5. }               
+  6.                 else if r(N)!=0 & r(Var)!=0 {
+  7.                         qui replace `var' =. if `var' >=. | `var' < 0
+  8. } 
+  9. }
+
+. 
+. 
+end of do-file
+
+. sort id
+
+. save `panel_2010_w2_panel', replace
+(note: file /var/folders/m_/l1vkbxx13h37fq0k94zqcym80000gp/T//S_17549.00000h not found)
+file /var/folders/m_/l1vkbxx13h37fq0k94zqcym80000gp/T//S_17549.00000h saved
+
+. 
+. *** compare merged single year file to panel
+. cf _all using `p2010_w2_in_all_vars_file', verbose
+          adults:  1 mismatch
+                   obs   48. . in master; 8 in using
+          artgst:  1 mismatch
+                   obs  427. . in master; 1 in using
+          cohort:  11 mismatches
+                   obs  292. 1921 in master; . in using
+                   obs  384. 1921 in master; 1923 in using
+                   obs  414. 1921 in master; 1923 in using
+                   obs  633. 1921 in master; 1923 in using
+                   obs  814. 1921 in master; 1923 in using
+                   obs  858. 1921 in master; 1923 in using
+                   obs  868. 1921 in master; 1923 in using
+                   obs  928. 1921 in master; 1923 in using
+                   obs  970. 1921 in master; 1923 in using
+                   obs 1320. 1921 in master; 1923 in using
+                   obs 1418. 1921 in master; 1923 in using
+        prfmwhy6:  1 mismatches
+                   obs  683. . in master; 1 in using
+        scinews3:  3 mismatches
+                   obs  226. . in master; 8 in using
+                   obs  518. . in master; 8 in using
+                   obs  812. . in master; 8 in using
+r(9);
+
+. 
+. // Note: Run these commmands to ensure that the order of comparions
+. //          does not make a difference 
+. // *** compare panel to single year merged file
+. // use `panel_2010_w2_panel', clear
+. // cf _all using `p2010_w2_in_all_vars_file',  verbose
+. 
+. *** Re-interview 2 *************************************************************
+. 
+. *** extract the 3nd wave interview from the merged single year file
+. use `gss_2014_all_vars', clear
+( )
+
+. keep if samptype==2010
+(2,538 observations deleted)
+
+. do analysis/drop-not-aksed-and-replace-missing.do
+
+. qui ds 
+
+. local varlist `r(varlist)'
+
+. 
+. foreach var in `varlist' {
+  2.         qui sum `var'
+  3.                 if r(N)==0 | r(Var)==0 {
+  4.                         drop `var'
+  5. }               
+  6.                 else if r(N)!=0 & r(Var)!=0 {
+  7.                         qui replace `var' =. if `var' >=. | `var' < 0
+  8. } 
+  9. }
+
+. 
+. 
+end of do-file
+
+. sort id
+
+. save `p2010_w3_in_all_vars_file', replace
+(note: file /var/folders/m_/l1vkbxx13h37fq0k94zqcym80000gp/T//S_17549.00000t not found)
+file /var/folders/m_/l1vkbxx13h37fq0k94zqcym80000gp/T//S_17549.00000t saved
+
+. 
+. *** extract only the third interview responses in the panel data
+. use `gss_2010_panel', clear
+( )
+
+. keep if panstat_3==1
+(740 observations deleted)
+
+. keep  *_3
+
+. rename *_3 *
+
+. do analysis/drop-not-aksed-and-replace-missing.do
+
+. qui ds 
+
+. local varlist `r(varlist)'
+
+. 
+. foreach var in `varlist' {
+  2.         qui sum `var'
+  3.                 if r(N)==0 | r(Var)==0 {
+  4.                         drop `var'
+  5. }               
+  6.                 else if r(N)!=0 & r(Var)!=0 {
+  7.                         qui replace `var' =. if `var' >=. | `var' < 0
+  8. } 
+  9. }
+
+. 
+. 
+end of do-file
+
+. sort id
+
+. save `panel_2010_w3_panel', replace
+(note: file /var/folders/m_/l1vkbxx13h37fq0k94zqcym80000gp/T//S_17549.00000i not found)
+file /var/folders/m_/l1vkbxx13h37fq0k94zqcym80000gp/T//S_17549.00000i saved
+
+. 
+. *** compare merged single year file to panel
+. cf _all using `p2010_w3_in_all_vars_file', verbose
+          adults:  3 mismatches
+                   obs   44. . in master; 8 in using
+                   obs   68. . in master; 8 in using
+                   obs  612. . in master; 8 in using
+          cohort:  5 mismatches
+                   obs  343. 1921 in master; 1925 in using
+                   obs  530. 1921 in master; 1925 in using
+                   obs  685. 1921 in master; 1925 in using
+                   obs  720. 1921 in master; 1925 in using
+                   obs  730. 1921 in master; 1925 in using
+        scinews3:  7 mismatches
+                   obs  259. . in master; 8 in using
+                   obs  607. . in master; 8 in using
+                   obs  761. . in master; 8 in using
+                   obs  944. . in master; 8 in using
+                   obs  978. . in master; 8 in using
+                   obs 1034. . in master; 8 in using
+                   obs 1160. . in master; 8 in using
+r(9);
+
+. 
+. // Note: Run these commmands to ensure that the order of comparions
+. //          does not make a difference 
+. // *** compare panel to single year merged file
+. // use `panel_2010_w3_panel', clear
+. // cf _all using `p2010_w3_in_all_vars_file',  verbose
+. 
+. log close
+      name:  <unnamed>
+       log:  /Users/smorgan/Documents/GitHub/gss-panel-weights/log/compare-panel-and-merged-single-year-files.log
+  log type:  text
+ closed on:  24 Dec 2019, 14:27:18
+------------------------------------------------------------------------------------------------------------------------

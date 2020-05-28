@@ -1,0 +1,392 @@
+------------------------------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  /Users/smorgan/Documents/GitHub/gss-panel-weights/log/graph-probabilities-and-weights.log
+  log type:  text
+ opened on:  28 Jan 2020, 18:25:41
+
+. 
+. use data/gss-panel-allyears-fill-in-and-recoded-panel-merged-wt.dta, clear
+
+. 
+. *** Change scheme and font for figures
+. include code/settings-graph-s1-palatino.do
+
+. ********************************************************************************
+. *** Graph Settings, Scheme S1 and Palatino
+. ********************************************************************************
+. 
+. set scheme s1color
+
+. 
+. graph set window fontface "Palatino-Roman"
+
+. graph set window fontfacemono "Palatino-Roman"
+
+. graph set window fontfacesans "Palatino-Roman"
+
+. graph set window fontfaceserif "Palatino-Roman"
+
+. graph set window fontfacesymbol "Palatino-Roman"
+
+. 
+. graph set ps fontface "Palatino-Roman"
+
+. graph set ps fontfacemono "Palatino-Romane"
+
+. graph set ps fontfacesans "Palatino-Roman"
+
+. graph set ps fontfaceserif "Palatino-Roman"
+
+. graph set ps fontfacesymbol "Palatino-Roman"
+
+. 
+. graph set eps fontface "Palatino-Roman"
+
+. graph set eps fontfacemono "Palatino-Roman"
+
+. graph set eps fontfacesans "Palatino-Roman"
+
+. graph set eps fontfaceserif "Palatino-Roman"
+
+. graph set eps fontfacesymbol "Palatino-Roman"
+
+. 
+. 
+. ********************************************************************************
+. *** Graph probabilities
+. ********************************************************************************
+. 
+. *** All
+. 
+. forval i = 2006(2)2010 { 
+  2. 
+. local yvar pr_`i'
+  3. local xvar pr_all
+  4. 
+. summ `yvar' `xvar' if year == `i'
+  5. summ `yvar' `xvar'[aweight = wtpannr123] if year == `i'
+  6. 
+. preserve
+  7. keep if year == `i'
+  8. 
+.     twoway ///
+>            (scatter `yvar' `xvar' if attr_w23 == 0 [aweight=wtpannr123], /// 
+>         msymbol(o) msize(tiny) mcolor(gs8) mfcolor(white) mlcolor(eltblue) ///
+>                 ylabel(0 .2 .4 .6 .8 1, grid) xlabel(0 .2 .4 .6 .8 1, nogrid)) ///
+>         || /* (line `xvar' `xvar' , lcolor(navy)) */ ///
+>         ,   ///
+>            title("") ytitle("`yvar'") xtitle("`xvar'") note("") legend(off) ///
+>            saving(tmp/`yvar'_`xvar', replace)
+  9. 
+.         restore
+ 10. 
+. }
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     pr_2006 |      2,000    .3550029    .1581936   .0499729   .9401075
+      pr_all |      2,000    .3654834    .1344864    .142818   .9520279
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+     pr_2006 |   1,276        1276    .3125625   .1327047   .0499729   .8458453
+      pr_all |   1,276        1276    .3395854   .1114183    .142818   .8126841
+(12,610 observations deleted)
+(file tmp/pr_2006_pr_all.gph saved)
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     pr_2008 |      2,023    .3611741    .1351834   .0878717   .9500549
+      pr_all |      3,559    .3513688    .1248485   .1404807   .9520279
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+     pr_2008 |   1,295        1295    .3404718   .1093638   .0878717   .8991994
+      pr_all |   2,571        2571    .3345771   .1073545   .1404807   .9261153
+(11,051 observations deleted)
+(file tmp/pr_2008_pr_all.gph saved)
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     pr_2010 |      2,044    .3617305    .1597246   .0520254   .9907178
+      pr_all |      4,901    .3492737    .1227447   .1404807   .9577196
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+     pr_2010 |   1,304        1304    .3229476   .1286851   .0520254   .8565191
+      pr_all |   3,875        3875    .3336361   .1066295   .1404807   .9261153
+(9,709 observations deleted)
+(file tmp/pr_2010_pr_all.gph saved)
+
+. 
+. forval i = 2006(2)2010 { 
+  2. 
+. local yvar pr_shr_`i'
+  3. local xvar pr_all
+  4. 
+. preserve
+  5. keep if year == `i'
+  6. 
+.     twoway ///
+>            (scatter `yvar' `xvar' if attr_w23 == 0 [aweight=wtpannr123], /// 
+>         msymbol(o) msize(tiny) mcolor(gs8) mfcolor(white) mlcolor(eltblue) ///
+>                 ylabel(0 .2 .4 .6 .8 1, grid) xlabel(0 .2 .4 .6 .8 1, nogrid)) ///
+>            || /* (line `xvar' `xvar' , lcolor(navy)) */ ///
+>            ,        ///
+>            title("") ytitle("`yvar'") xtitle("`xvar'") note("") legend(off) ///
+>            saving(tmp/`yvar'_`xvar', replace)
+  7. 
+.         restore
+  8. 
+. }
+(12,610 observations deleted)
+(file tmp/pr_shr_2006_pr_all.gph saved)
+(11,051 observations deleted)
+(file tmp/pr_shr_2008_pr_all.gph saved)
+(9,709 observations deleted)
+(file tmp/pr_shr_2010_pr_all.gph saved)
+
+. 
+.  graph combine ///
+>     tmp/pr_2006_pr_all.gph          ///
+>         tmp/pr_2008_pr_all.gph          ///
+>         tmp/pr_2010_pr_all.gph          ///
+>         tmp/pr_shr_2006_pr_all.gph          ///
+>         tmp/pr_shr_2008_pr_all.gph          ///
+>         tmp/pr_shr_2010_pr_all.gph, cols(2) colf xcommon ycommon ///
+>         saving(graph/fig-1-probabilities-all.gph, replace)
+(file graph/fig-1-probabilities-all.gph saved)
+
+.         
+. graph export graph/fig-1-probabilities-all.pdf, replace
+(file /Users/smorgan/Documents/GitHub/gss-panel-weights/graph/fig-1-probabilities-all.pdf written in PDF format)
+
+. graph export graph/fig-1-probabilities-all-1650-by-1200.png, ///
+>   width(1650) height(1200) replace
+(file graph/fig-1-probabilities-all-1650-by-1200.png written in PNG format)
+
+. 
+. *** In-scope
+. 
+. forval i = 2006(2)2010 { 
+  2. 
+. local yvar pr_`i'_insc
+  3. local xvar pr_all_insc
+  4. 
+. summ `yvar' `xvar' if year == `i'
+  5. summ `yvar' `xvar'[aweight = wtpannr123] if year == `i'
+  6. 
+. preserve
+  7. keep if year == `i'
+  8. 
+.     twoway ///
+>            (scatter `yvar' `xvar' if attr_w23 == 0 [aweight=wtpannr123], /// 
+>         msymbol(o) msize(tiny) mcolor(gs8) mfcolor(white) mlcolor(eltblue) ///
+>                 ylabel(0 .2 .4 .6 .8 1, grid) xlabel(0 .2 .4 .6 .8 1, nogrid)) ///
+>         || /* (line `xvar' `xvar' , lcolor(navy)) */ ///
+>         ,   ///
+>            title("") ytitle("`yvar'") xtitle("`xvar'") note("") legend(off) ///
+>            saving(tmp/`yvar'_`xvar', replace)
+  9. 
+.         restore
+ 10. 
+. }
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+pr_2006_insc |      1,891     .314567    .1424614   .0396861   .8652723
+ pr_all_insc |      1,891    .3298551     .119229   .1303249   .8829269
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+pr_2006_insc |   1,276        1276    .2862488   .1249956   .0396861   .7792463
+ pr_all_insc |   1,276        1276    .3149423   .1028965   .1303249   .7568287
+(12,610 observations deleted)
+(file tmp/pr_2006_insc_pr_all_insc.gph saved)
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+pr_2008_insc |      1,918    .3280391    .1251172   .0558458   .9313959
+ pr_all_insc |      3,405    .3156783    .1084986   .1121957   .8834836
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+pr_2008_insc |   1,295        1295     .317715   .1060176   .0558458   .8038941
+ pr_all_insc |   2,571        2571     .309658   .0983706   .1297491   .8417821
+(11,051 observations deleted)
+(file tmp/pr_2008_insc_pr_all_insc.gph saved)
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+pr_2010_insc |      1,923    .3211122    .1449054   .0355898   .9805461
+ pr_all_insc |      4,738    .3129808    .1052819   .1121957   .9042338
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+pr_2010_insc |   1,304        1304    .2948761   .1211415   .0355898   .8306182
+ pr_all_insc |   3,875        3875    .3077671   .0970137   .1263522    .850028
+(9,709 observations deleted)
+(file tmp/pr_2010_insc_pr_all_insc.gph saved)
+
+. 
+. forval i = 2006(2)2010 { 
+  2. 
+. local yvar pr_shr_`i'_insc
+  3. local xvar pr_all_insc
+  4. 
+. preserve
+  5. keep if year == `i'
+  6. 
+.     twoway ///
+>            (scatter `yvar' `xvar' if attr_w23 == 0 [aweight=wtpannr123], /// 
+>         msymbol(o) msize(tiny) mcolor(gs8) mfcolor(white) mlcolor(eltblue) ///
+>                 ylabel(0 .2 .4 .6 .8 1, grid) xlabel(0 .2 .4 .6 .8 1, nogrid)) ///
+>            || /* (line `xvar' `xvar' , lcolor(navy)) */ ///
+>            ,        ///
+>            title("") ytitle("`yvar'") xtitle("`xvar'") note("") legend(off) ///
+>            saving(tmp/`yvar'_`xvar', replace)
+  7. 
+.         restore
+  8. 
+. }
+(12,610 observations deleted)
+(file tmp/pr_shr_2006_insc_pr_all_insc.gph saved)
+(11,051 observations deleted)
+(file tmp/pr_shr_2008_insc_pr_all_insc.gph saved)
+(9,709 observations deleted)
+(file tmp/pr_shr_2010_insc_pr_all_insc.gph saved)
+
+. 
+.  graph combine ///
+>     tmp/pr_2006_insc_pr_all_insc.gph          ///
+>         tmp/pr_2008_insc_pr_all_insc.gph          ///
+>         tmp/pr_2010_insc_pr_all_insc.gph          ///
+>         tmp/pr_shr_2006_insc_pr_all_insc.gph          ///
+>         tmp/pr_shr_2008_insc_pr_all_insc.gph          ///
+>         tmp/pr_shr_2010_insc_pr_all_insc.gph, cols(2) colf xcommon ycommon ///
+>         saving(graph/fig-2-probabilities-insc.gph, replace)
+(file graph/fig-2-probabilities-insc.gph saved)
+
+.         
+. graph export graph/fig-2-probabilities-insc.pdf, replace
+(file /Users/smorgan/Documents/GitHub/gss-panel-weights/graph/fig-2-probabilities-insc.pdf written in PDF format)
+
+. graph export graph/fig-2-probabilities-insc-1650-by-1200.png, ///
+>   width(1650) height(1200) replace
+(file graph/fig-2-probabilities-insc-1650-by-1200.png written in PNG format)
+
+. 
+. ********************************************************************************
+. *** Graph weights
+. ********************************************************************************
+. 
+. local wt_list ///
+>         wtpannr123 ///
+>         wt_no_pooling wt_pooled wt_shrunken ///
+>         wt_no_pooling_insc wt_pooled_insc wt_shrunken_insc
+
+. 
+. foreach var of varlist `wt_list' {
+  2. 
+.         gen l`var' = ln(`var')
+  3. 
+. }
+(2,985 missing values generated)
+(2,985 missing values generated)
+(2,985 missing values generated)
+(2,985 missing values generated)
+(2,985 missing values generated)
+(2,985 missing values generated)
+(2,985 missing values generated)
+
+.         
+. local yvarlist wt_no_pooling wt_pooled wt_shrunken ///
+>         wt_no_pooling_insc wt_pooled_insc wt_shrunken_insc
+
+. 
+. local yvarlistl lwt_no_pooling lwt_pooled lwt_shrunken ///
+>         lwt_no_pooling_insc lwt_pooled_insc lwt_shrunken_insc
+
+.  
+. local xvar wtpannr123
+
+. local xvarl lwtpannr123 
+
+. 
+. foreach yvar of varlist `yvarlist' {
+  2.  twoway ///
+>            (scatter `yvar' `xvar', /// 
+>         msymbol(o) msize(vsmall) mcolor(gs8) mfcolor(white) mlcolor(eltblue) ///
+>                 ylabel(0 4 8 12 16, grid) xlabel(1 2 3 4 5 6, grid)) ///
+>            || (line `xvar' `xvar' , lcolor(navy)) ,   ///
+>            title("") ytitle("`yvar'") xtitle("`xvar'") note("") legend(off) ///
+>            saving(tmp/`yvar'_`xvar', replace)
+  3. }
+(file tmp/wt_no_pooling_wtpannr123.gph saved)
+(file tmp/wt_pooled_wtpannr123.gph saved)
+(file tmp/wt_shrunken_wtpannr123.gph saved)
+(file tmp/wt_no_pooling_insc_wtpannr123.gph saved)
+(file tmp/wt_pooled_insc_wtpannr123.gph saved)
+(file tmp/wt_shrunken_insc_wtpannr123.gph saved)
+
+. 
+. graph combine ///
+>     tmp/wt_no_pooling_wtpannr123.gph          ///
+>         tmp/wt_pooled_wtpannr123.gph          ///
+>         tmp/wt_shrunken_wtpannr123.gph          ///
+>         tmp/wt_no_pooling_insc_wtpannr123.gph          ///
+>         tmp/wt_pooled_insc_wtpannr123.gph          ///
+>         tmp/wt_shrunken_insc_wtpannr123.gph, cols(2) colf xcommon ycommon   ///
+>         saving(graph/fig-3-weights.gph, replace)
+(file graph/fig-3-weights.gph saved)
+
+.         
+. graph export graph/fig-3-weights.pdf, replace
+(file /Users/smorgan/Documents/GitHub/gss-panel-weights/graph/fig-3-weights.pdf written in PDF format)
+
+. graph export graph/fig-3-weights-1650-by-1200.png, width(1650) height(1200) replace
+(file graph/fig-3-weights-1650-by-1200.png written in PNG format)
+
+. 
+. foreach yvar of varlist `yvarlistl' {
+  2.  twoway ///
+>            (scatter `yvar' `xvarl', /// 
+>         msymbol(o) msize(vsmall) mcolor(gs8) mfcolor(white) mlcolor(eltblue) ///
+>                 ylabel(-1 0 1 2 3, grid) xlabel(-1 0 1 2, grid)) ///
+>            || (line `xvarl' `xvarl' , lcolor(navy)) ,   ///
+>            title("") ytitle("`yvar'") xtitle("`xvarl'") note("") legend(off) ///
+>            saving(tmp/`yvar'_`xvarl', replace)
+  3. }
+(file tmp/lwt_no_pooling_lwtpannr123.gph saved)
+(file tmp/lwt_pooled_lwtpannr123.gph saved)
+(file tmp/lwt_shrunken_lwtpannr123.gph saved)
+(file tmp/lwt_no_pooling_insc_lwtpannr123.gph saved)
+(file tmp/lwt_pooled_insc_lwtpannr123.gph saved)
+(file tmp/lwt_shrunken_insc_lwtpannr123.gph saved)
+
+. 
+. graph combine ///
+>     tmp/lwt_no_pooling_lwtpannr123.gph          ///
+>         tmp/lwt_pooled_lwtpannr123.gph          ///
+>         tmp/lwt_shrunken_lwtpannr123.gph          ///
+>         tmp/lwt_no_pooling_insc_lwtpannr123.gph          ///
+>         tmp/lwt_pooled_insc_lwtpannr123.gph          ///
+>         tmp/lwt_shrunken_insc_lwtpannr123.gph, cols(2) colf xcommon ycommon   ///
+>         saving(graph/fig-4-weights-logged.gph, replace)
+(file graph/fig-4-weights-logged.gph saved)
+
+.         
+. graph export graph/fig-4-weights-logged.pdf, replace
+(file /Users/smorgan/Documents/GitHub/gss-panel-weights/graph/fig-4-weights-logged.pdf written in PDF format)
+
+. graph export graph/fig-4-weights-logged-1650-by-1200.png, ///
+>   width(1650) height(1200) replace
+(file graph/fig-4-weights-logged-1650-by-1200.png written in PNG format)
+
+. 
+. log close
+      name:  <unnamed>
+       log:  /Users/smorgan/Documents/GitHub/gss-panel-weights/log/graph-probabilities-and-weights.log
+  log type:  text
+ closed on:  28 Jan 2020, 18:27:04
+------------------------------------------------------------------------------------------------------------------------

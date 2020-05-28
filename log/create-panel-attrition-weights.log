@@ -1,0 +1,1580 @@
+----------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  /Users/smorgan/Documents/GitHub/gss-panel-weights/log/create-panel-attrition-weights.lo
+> g
+  log type:  text
+ opened on:  28 Jan 2020, 17:46:48
+
+. 
+. use data/gss-panel-2006-2014-attrition-pr.dta, replace
+(Written by R.              )
+
+. 
+. ********************************************************************************
+. *** Merge the estimated attrition probabilities with the panel respondents 
+. ***   from the original data
+. ********************************************************************************
+. 
+. use data/gss-2006-2014-fill-in-and-recoded-panel-merged.dta, clear
+
+. keep if panelr==1
+(7,022 observations deleted)
+
+. summ wt*
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+        wtss |      6,067    1.000387    .5949031        .43   6.406021
+      wtssnr |      6,067    1.000508     .622874   .3194206   6.702612
+     wtpan12 |     13,211    1.000506    .6125467   .3219388   6.755452
+    wtpan123 |     11,625           1    .6221072   .3064633   6.771621
+   wtpannr12 |     13,211    .9998891    .6163369   .3091119   6.666435
+-------------+---------------------------------------------------------
+  wtpannr123 |     11,625           1    .6269736   .3072024   6.322945
+
+. drop wt*
+
+. 
+. merge 1:1 panelid panelwave using data/gss-panel-2006-2014-attrition-pr.dta
+(label WTPAN12 already defined)
+(label WTPAN123 already defined)
+(label WTPANNR1 already defined)
+(label V4_A already defined)
+(label PANSTAT already defined)
+(label V6_A already defined)
+(label LABVB already defined)
+
+    Result                           # of obs.
+    -----------------------------------------
+    not matched                             0
+    matched                            14,610  (_merge==3)
+    -----------------------------------------
+
+. drop _merge panelid_str panelr samptype_str
+
+. order samptype year panelwave panelid  
+
+. order wtss-pr_shr_2010_insc, after(panelsamp)
+
+. sort panelid panelwave
+
+. 
+. ********************************************************************************
+. *** Check scaling of NORC weights, as well as rescaled weights created to
+. ***   estimate attrition probabilities
+. ********************************************************************************
+. 
+. *** Set up by broadcasting base year weights across all waves
+. 
+. local wt_vars wtss wtssnr wtssnr_rs pool_wt wtpannr123
+
+. 
+. *** Add labels
+. 
+. la var wtss "NORC base weight, sum to yearly N for cross-section sample" 
+
+. la var wtssnr "NORC wtss base weight with NR adjustment"
+
+. la var wtpan12 "NORC base weight, panel waves 1 and 2"
+
+. la var wtpan123 "NORC base weight, all panel waves"
+
+. la var wtpannr12 "NORC base weight, panel waves 1 and 2, NR adjustment"
+
+. la var wtpannr123 "NORC base weight, all panel waves, NR adjustment"
+
+. la var wtssnr_rs ///
+>   "Rescaled NORC base weight with NR, sum to base-year N for each panel"
+
+. la var pool_wt ///
+>   "Rescaled NORC base weight with NR, sum to base-year N for all panels"
+
+. 
+. *** Broadcast weights
+. 
+. summ panelid wtss-attr_w23
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     panelid |     14,610    1.28e+07     8940563      20069   2.01e+07
+        wtss |      6,067    1.000387    .5949031        .43   6.406021
+      wtssnr |      6,067    1.000508     .622874   .3194206   6.702612
+   wtssnr_rs |      6,067           1    .6225352   .3194206   6.702611
+     pool_wt |      6,067           1    .6231013   .3193154   6.700403
+-------------+---------------------------------------------------------
+     wtpan12 |     13,211    1.000506    .6125467   .3219388   6.755452
+    wtpan123 |     11,625           1    .6221072   .3064633   6.771621
+   wtpannr12 |     13,211    .9998891    .6163369   .3091119   6.666435
+  wtpannr123 |     11,625           1    .6269736   .3072024   6.322945
+          w2 |     14,610    .9042437    .2942669          0          1
+-------------+---------------------------------------------------------
+          w3 |     14,610    .7956879    .4032119          0          1
+    attr_w23 |     14,610    .2043121    .4032119          0          1
+
+. desc panelid wtss-attr_w23
+
+              storage   display    value
+variable name   type    format     label      variable label
+----------------------------------------------------------------------------------------------------
+panelid         long    %10.0g                
+wtss            double  %12.0g     LABVB      NORC base weight, sum to yearly N for cross-section
+                                                sample
+wtssnr          double  %12.0g     LABVB      NORC wtss base weight with NR adjustment
+wtssnr_rs       float   %9.0g                 Rescaled NORC base weight with NR, sum to base-year N
+                                                for each panel
+pool_wt         float   %9.0g                 Rescaled NORC base weight with NR, sum to base-year N
+                                                for all panels
+wtpan12         double  %12.0g     WTPAN12    NORC base weight, panel waves 1 and 2
+wtpan123        double  %12.0g     WTPAN123   NORC base weight, all panel waves
+wtpannr12       double  %12.0g     WTPANNR1   NORC base weight, panel waves 1 and 2, NR adjustment
+wtpannr123      double  %12.0g     V4_A       NORC base weight, all panel waves, NR adjustment
+w2              byte    %9.0g                 
+w3              byte    %9.0g                 
+attr_w23        byte    %9.0g      YESNO      Panel Attrition Indicator
+
+. 
+.  foreach var in  `wt_vars' {
+  2.         quietly bysort panelid (`var'): replace `var' = `var'[1]
+  3. }
+
+. 
+. sort panelid panelwave
+
+. summ panelid wtss-attr_w23
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     panelid |     14,610    1.28e+07     8940563      20069   2.01e+07
+        wtss |     14,610     1.00387    .5970088        .43   6.406021
+      wtssnr |     14,610    1.002797     .622738   .3194206   6.702612
+   wtssnr_rs |     14,610    1.002285    .6223949   .3194206   6.702611
+     pool_wt |     14,610    1.002327    .6229686   .3193154   6.700403
+-------------+---------------------------------------------------------
+     wtpan12 |     13,211    1.000506    .6125467   .3219388   6.755452
+    wtpan123 |     11,625           1    .6221072   .3064633   6.771621
+   wtpannr12 |     13,211    .9998891    .6163369   .3091119   6.666435
+  wtpannr123 |     11,625           1    .6269736   .3072024   6.322945
+          w2 |     14,610    .9042437    .2942669          0          1
+-------------+---------------------------------------------------------
+          w3 |     14,610    .7956879    .4032119          0          1
+    attr_w23 |     14,610    .2043121    .4032119          0          1
+
+. 
+. *** Examine scaling of weights
+. 
+. bys samptype: summ panelid wtss-attr_w23 if panelwave==1
+
+----------------------------------------------------------------------------------------------------
+-> samptype = 2006
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     panelid |      2,000    1.59e+07     7658279      20069   2.01e+07
+        wtss |      2,000    1.001175    .6151972        .43       5.73
+      wtssnr |      2,000     1.00154    .6451265        .36       6.59
+   wtssnr_rs |      2,000           1    .6441345   .3594465   6.579867
+     pool_wt |      2,000    1.011167    .6513274   .3634603   6.653342
+-------------+---------------------------------------------------------
+     wtpan12 |      1,536           1    .6058341   .3540025    5.66404
+    wtpan123 |      1,276           1    .6363118   .3064633   5.211864
+   wtpannr12 |      1,536           1    .5985572    .327221   5.948337
+  wtpannr123 |      1,276           1    .6526971   .3098931   5.928037
+          w2 |      2,000        .768    .4222146          0          1
+-------------+---------------------------------------------------------
+          w3 |      2,000        .638     .480699          0          1
+    attr_w23 |      2,000        .362     .480699          0          1
+
+----------------------------------------------------------------------------------------------------
+-> samptype = 2008
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     panelid |      2,023    1.11e+07     9136468      20081   2.01e+07
+        wtss |      2,023           1    .6235919   .4377448   6.406021
+      wtssnr |      2,023           1    .6463332   .3194206   6.702612
+   wtssnr_rs |      2,023           1    .6463332   .3194206   6.702611
+     pool_wt |      2,023    .9996705    .6461202   .3193154   6.700403
+-------------+---------------------------------------------------------
+     wtpan12 |      1,581           1    .6405184   .3219388   6.755452
+    wtpan123 |      1,295           1    .6515006   .3227094   6.771621
+   wtpannr12 |      1,581           1    .6466911   .3091119   6.666435
+  wtpannr123 |      1,295           1    .6476443   .3072024   6.322945
+          w2 |      2,023    .7815126     .413322          0          1
+-------------+---------------------------------------------------------
+          w3 |      2,023    .6401384    .4800783          0          1
+    attr_w23 |      2,023    .3598616    .4800783          0          1
+
+----------------------------------------------------------------------------------------------------
+-> samptype = 2010
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     panelid |      2,044    1.12e+07     9143852      20101   2.01e+07
+        wtss |      2,044           1    .5437172   .4631277   4.210252
+      wtssnr |      2,044           1    .5755635   .3369696   4.733329
+   wtssnr_rs |      2,044           1    .5755635   .3369696   4.733329
+     pool_wt |      2,044    .9893999    .5694625   .3333977   4.683155
+-------------+---------------------------------------------------------
+     wtpan12 |      1,551           1    .5863349   .3348296   4.703269
+    wtpan123 |      1,304           1     .577184   .3365385   4.727273
+   wtpannr12 |      1,551           1    .6007495   .3232505   4.775845
+  wtpannr123 |      1,304           1    .5792452   .3170063   4.830731
+          w2 |      2,044    .7588063    .4279123          0          1
+-------------+---------------------------------------------------------
+          w3 |      2,044    .6379648    .4807065          0          1
+    attr_w23 |      2,044    .3620352    .4807065          0          1
+
+
+. 
+. *** Confirm that wtpannr123 sums to n for non-attriters in each year
+. 
+. forval i = 2006(2)2010 {
+  2.         display " "
+  3.         display "Year: `i'"
+  4.         summ wtpannr123 if samptype == `i' & panelwave == 1, detail
+  5.         display " "
+  6.         display "Number of respondents: `r(N)'"
+  7.         display "Sum of weights: `r(sum)'"
+  8. }
+ 
+Year: 2006
+
+      NORC base weight, all panel waves, NR adjustment
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%     .3341604       .3098931
+ 5%     .3939933       .3127012
+10%      .432321       .3165659       Obs               1,276
+25%     .6032381       .3165659       Sum of Wgt.       1,276
+
+50%     .8016451                      Mean                  1
+                        Largest       Std. Dev.      .6526971
+75%     1.161141       4.659532
+90%     1.846109       4.866525       Variance       .4260135
+95%     2.249687       5.911598       Skewness       2.465835
+99%     3.543906       5.928037       Kurtosis        12.4623
+ 
+Number of respondents: 1276
+Sum of weights: 1276.000000000001
+ 
+Year: 2008
+
+      NORC base weight, all panel waves, NR adjustment
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%     .3234977       .3072024
+ 5%     .3583917       .3072024
+10%     .4124296       .3072024       Obs               1,295
+25%     .5364953       .3072024       Sum of Wgt.       1,295
+
+50%     .8753405                      Mean                  1
+                        Largest       Std. Dev.      .6476443
+75%     1.129777       4.752699
+90%     1.826832       5.369308       Variance       .4194431
+95%     2.295274       5.560252       Skewness       2.461115
+99%     3.459007       6.322945       Kurtosis        13.1902
+ 
+Number of respondents: 1295
+Sum of weights: 1295
+ 
+Year: 2010
+
+      NORC base weight, all panel waves, NR adjustment
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%     .3630841       .3170063
+ 5%     .4075273       .3170063
+10%     .4334837       .3170063       Obs               1,304
+25%     .5623752       .3170063       Sum of Wgt.       1,304
+
+50%     .8700842                      Mean                  1
+                        Largest       Std. Dev.      .5792452
+75%     1.199775         3.8727
+90%     1.664776       4.362819       Variance        .335525
+95%     2.181996       4.389714       Skewness       2.001118
+99%     3.083574       4.830731       Kurtosis       9.069069
+ 
+Number of respondents: 1304
+Sum of weights: 1304.000000000001
+
+. 
+. ********************************************************************************
+. *** Tabulation
+. ********************************************************************************
+. 
+. *** Table 1 for report
+. 
+. tab samptype panelwave
+
+           |            panelwave
+  samptype |         1          2          3 |     Total
+-----------+---------------------------------+----------
+      2006 |     2,000      1,536      1,276 |     4,812 
+      2008 |     2,023      1,581      1,295 |     4,899 
+      2010 |     2,044      1,551      1,304 |     4,899 
+-----------+---------------------------------+----------
+     Total |     6,067      4,668      3,875 |    14,610 
+
+. bys samptype: tab w3 if panelwave == 1 [aw = wtssnr]
+
+----------------------------------------------------------------------------------------------------
+-> samptype = 2006
+
+         w3 |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 | 692.843022       34.64       34.64
+          1 |  1,307.157       65.36      100.00
+------------+-----------------------------------
+      Total |      2,000      100.00
+
+----------------------------------------------------------------------------------------------------
+-> samptype = 2008
+
+         w3 |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 | 741.197378       36.64       36.64
+          1 | 1,281.8026       63.36      100.00
+------------+-----------------------------------
+      Total |      2,023      100.00
+
+----------------------------------------------------------------------------------------------------
+-> samptype = 2010
+
+         w3 |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 | 738.329535       36.12       36.12
+          1 | 1,305.6705       63.88      100.00
+------------+-----------------------------------
+      Total |      2,044      100.00
+
+
+. mean w3 if panelwave == 1 [pw = wtssnr], over(samptype)
+
+Mean estimation                   Number of obs   =      6,067
+
+         2006: samptype = 2006
+         2008: samptype = 2008
+         2010: samptype = 2010
+
+--------------------------------------------------------------
+        Over |       Mean   Std. Err.     [95% Conf. Interval]
+-------------+------------------------------------------------
+w3           |
+        2006 |   .6535785   .0125659      .6289449    .6782121
+        2008 |   .6336147   .0127812      .6085591    .6586704
+        2010 |    .638782   .0122469      .6147737    .6627903
+--------------------------------------------------------------
+
+. 
+. *** Table 2 for report
+. 
+. tab samptype panelwave if outsc_w23 == 0
+
+           |            panelwave
+  samptype |         1          2          3 |     Total
+-----------+---------------------------------+----------
+      2006 |     1,891      1,487      1,276 |     4,654 
+      2008 |     1,918      1,539      1,295 |     4,752 
+      2010 |     1,923      1,504      1,304 |     4,731 
+-----------+---------------------------------+----------
+     Total |     5,732      4,530      3,875 |    14,137 
+
+. bys samptype: tab w3 if panelwave == 1 & outsc_w23==0 [aw = wtssnr]
+
+----------------------------------------------------------------------------------------------------
+-> samptype = 2006
+
+         w3 |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 | 593.508113       31.39       31.39
+          1 | 1,297.4919       68.61      100.00
+------------+-----------------------------------
+      Total |      1,891      100.00
+
+----------------------------------------------------------------------------------------------------
+-> samptype = 2008
+
+         w3 |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 | 650.100177       33.89       33.89
+          1 | 1,267.8998       66.11      100.00
+------------+-----------------------------------
+      Total |      1,918      100.00
+
+----------------------------------------------------------------------------------------------------
+-> samptype = 2010
+
+         w3 |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 | 624.215385       32.46       32.46
+          1 | 1,298.7846       67.54      100.00
+------------+-----------------------------------
+      Total |      1,923      100.00
+
+
+. mean w3 [pw=wtssnr] if panelwave == 1  & outsc_w23 == 0, over(samptype)
+
+Mean estimation                   Number of obs   =      5,732
+
+         2006: samptype = 2006
+         2008: samptype = 2008
+         2010: samptype = 2010
+
+--------------------------------------------------------------
+        Over |       Mean   Std. Err.     [95% Conf. Interval]
+-------------+------------------------------------------------
+w3           |
+        2006 |   .6861406   .0126076       .661425    .7108562
+        2008 |   .6610531   .0129332      .6356991     .686407
+        2010 |    .675395   .0123083      .6512661    .6995239
+--------------------------------------------------------------
+
+. 
+. ********************************************************************************
+. *** Construct new weights
+. ********************************************************************************
+. 
+. **** weights for all panels combined
+. 
+. *** macros
+. local pooled pr_all pr_all_insc 
+
+. local pooled_stem pr_all 
+
+. 
+. 
+. foreach var in `pooled_stem' {
+  2. 
+.         qui gen tmp_invp_`var' = (1/(1 - `var')) if attr_w23==0
+  3.         qui gen tmp_invp_`var'_insc = (1/(1 - `var'_insc)) if attr_w23==0
+  4.         qui gen invp_`var' = .
+  5.         qui gen invp_`var'_insc = .
+  6.         qui gen wt_`var' = .    
+  7.         qui gen wt_`var'_insc = .       
+  8. 
+.         forval i = 2006(2)2010 {
+  9. 
+.         display " "     
+ 10.                 display "############################"
+ 11.                 display "Panel Base Year: `i'"
+ 12.                 display "############################"
+ 13.                 display " "
+ 14. 
+.                 qui summ attr_w23 if samptype == `i' & panelwave == 1 [aw = wtssnr_rs]
+ 15.                 display "Panel N: `r(N)'"
+ 16.                 scalar panel_N = `r(N)'
+ 17.                 
+.                 qui summ attr_w23 if samptype == `i' & panelwave == 1 & ///
+>                         outsc_w23 == 0 [aw = wtssnr_rs]
+ 18.                 display "Panel N in scope: `r(N)'"
+ 19.                 scalar panel_N_insc = `r(N)'
+ 20.                 
+.                 qui summ tmp_invp_`var' if samptype == `i' &  ///
+>                         panelwave == 1 & attr_w23 == 0 [aw = wtpannr123]
+ 21.                 display "Unadjusted sum of inverse prob of remaining: `r(sum)'"
+ 22.                 scalar sum_invp = `r(sum)'
+ 23. 
+.                 qui summ tmp_invp_`var'_insc if samptype == `i' &  ///
+>                         panelwave == 1 & attr_w23 == 0 & outsc_w23 == 0 [aw = wtpannr123]
+ 24.                 display "Unadjusted sum of inverse prob of remaining (and in scope): `r(sum)'"
+ 25.                 scalar sum_invp_insc = `r(sum)'
+ 26. 
+.                 qui replace invp_`var' = (panel_N/sum_invp)*tmp_invp_`var' ///
+>                         if samptype == `i' & attr_w23 == 0
+ 27. 
+.                 qui replace invp_`var'_insc = ///
+>                         (panel_N_insc/sum_invp_insc)*tmp_invp_`var'_insc ///
+>                         if samptype == `i' & attr_w23 == 0 & outsc_w23 == 0
+ 28. 
+.                 qui replace wt_`var' = invp_`var' * wtpannr123 ///
+>                         if samptype == `i' & attr_w23 == 0
+ 29. 
+.                 qui replace wt_`var'_insc = invp_`var'_insc * wtpannr123 ///
+>                         if samptype == `i' & attr_w23 == 0 & outsc_w23 == 0
+ 30.                 
+.                 display ""
+ 31.                 display "After adjustments to inverse probs, descriptives weighted by wtpannr:"
+ 32.                 display ""
+ 33.                 
+.                 summ invp_`var' if samptype==`i' & attr_w23 == 0 & ///
+>                         panelwave == 1 [aw = wtpannr123]
+ 34.                 display "Sum of inverse prob of remaining: `r(sum)'"
+ 35. 
+.                 summ invp_`var'_insc if samptype==`i' & attr_w23 == 0 & ///
+>                         outsc_w23 == 0 & panelwave == 1  [aw = wtpannr123]
+ 36.                 display "Sum of inverse prob of remaining (and in scope): `r(sum)'"
+ 37. 
+.         
+.                 summ wt_`var' if samptype==`i' & attr_w23 == 0 & ///
+>                         panelwave == 1 [aw = wtpannr123], d
+ 38. 
+.                 summ wt_`var'_insc if samptype==`i' & attr_w23 == 0 & ///
+>                         outsc_w23 == 0 & panelwave == 1  [aw = wtpannr123], d
+ 39.         }
+ 40.         drop tmp_invp_`var' tmp_invp_`var'_insc
+ 41. }
+ 
+############################
+Panel Base Year: 2006
+############################
+ 
+Panel N: 2000
+Panel N in scope: 1891
+Unadjusted sum of inverse prob of remaining: 2015.273034913873
+Unadjusted sum of inverse prob of remaining (and in scope): 1924.052257472877
+
+After adjustments to inverse probs, descriptives weighted by wtpannr:
+
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+ invp_pr_all |   1,276        1276    1.567398    .405278   1.157772   5.298117
+Sum of inverse prob of remaining: 1999.999997246136
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+invp_pr_al~c |   1,276        1276    1.481975   .3300669   1.130102   4.041683
+Sum of inverse prob of remaining (and in scope): 1890.999999439096
+
+                          wt_pr_all
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%     .5182359       .4169763
+ 5%     .6651981       .4357376
+10%     .8636984       .4421584       Obs               1,276
+25%      1.10008       .4447015       Sum of Wgt.       1,276
+
+50%     1.700509                      Mean           2.258046
+                        Largest       Std. Dev.        1.7153
+75%     2.748929       8.434598
+90%     4.500205       8.760344       Variance       2.942256
+95%     5.817884       10.81409       Skewness       2.132471
+99%     8.434598       12.00962       Kurtosis        8.90249
+
+                       wt_pr_all_insc
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%     .4966828       .3870352
+ 5%     .6211247       .4209513
+10%     .8002328       .4239932       Obs               1,276
+25%       1.0639       .4254501       Sum of Wgt.       1,276
+
+50%     1.611663                      Mean           2.150083
+                        Largest       Std. Dev.      1.626326
+75%     2.624649       8.004693
+90%     4.202198       8.045069       Variance       2.644936
+95%     5.519069       9.905768       Skewness       2.041265
+99%     8.045069       10.99003       Kurtosis       8.174558
+ 
+############################
+Panel Base Year: 2008
+############################
+ 
+Panel N: 2023
+Panel N in scope: 1918
+Unadjusted sum of inverse prob of remaining: 2011.776827966152
+Unadjusted sum of inverse prob of remaining (and in scope): 1913.890932194076
+
+After adjustments to inverse probs, descriptives weighted by wtpannr:
+
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+ invp_pr_all |   1,295        1295    1.562162   .5160118   1.169932   13.61011
+Sum of inverse prob of remaining: 2023.000001291316
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+invp_pr_al~c |   1,295        1295    1.481081   .3319414   1.151561   6.333967
+Sum of inverse prob of remaining (and in scope): 1918.000000559356
+
+                          wt_pr_all
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%     .5041996       .3969225
+ 5%     .6451811       .4101846
+10%     .8267567       .4354133       Obs               1,295
+25%     1.205788       .4388142       Sum of Wgt.       1,295
+
+50%     1.640968                      Mean           2.198665
+                        Largest       Std. Dev.      1.557166
+75%     2.838367       7.968248
+90%     4.152477       8.365733       Variance       2.424764
+95%      5.31639       9.782104       Skewness       2.179319
+99%     8.365733        14.8637       Kurtosis       10.50228
+
+                       wt_pr_all_insc
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%     .4787923        .378843
+ 5%     .6089566       .3882126
+10%     .7753139       .4186946       Obs               1,295
+25%     1.157253       .4187365       Sum of Wgt.       1,295
+
+50%     1.562312                      Mean           2.102406
+                        Largest       Std. Dev.      1.454387
+75%     2.733898       7.104581
+90%     3.953577       8.077145       Variance       2.115241
+95%     5.050484       8.289345       Skewness       1.817027
+99%     8.077145       8.675069       Kurtosis       7.069255
+ 
+############################
+Panel Base Year: 2010
+############################
+ 
+Panel N: 2044
+Panel N in scope: 1923
+Unadjusted sum of inverse prob of remaining: 2033.519872137129
+Unadjusted sum of inverse prob of remaining (and in scope): 1927.771866272312
+
+After adjustments to inverse probs, descriptives weighted by wtpannr:
+
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+ invp_pr_all |   1,304        1304    1.567485   .4476625   1.181964   7.176962
+Sum of inverse prob of remaining: 2043.999999628732
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+invp_pr_al~c |   1,304        1304    1.474693   .3430971   1.141793   6.651408
+Sum of inverse prob of remaining (and in scope): 1923.00000302979
+
+                          wt_pr_all
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%     .5452324       .4106926
+ 5%     .6696988       .4289645
+10%     .8837951       .4420896       Obs               1,304
+25%     1.187659       .4621251       Sum of Wgt.       1,304
+
+50%     1.630562                      Mean           2.089435
+                        Largest       Std. Dev.      1.351488
+75%     2.527652       7.311103
+90%     3.808609       7.890944       Variance       1.826519
+95%     5.060937       8.300147       Skewness       1.793145
+99%     7.250949       8.725655       Kurtosis       6.794167
+
+                       wt_pr_all_insc
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%      .518508       .3866114
+ 5%     .6232197        .405037
+10%     .7939925       .4099624       Obs               1,304
+25%     1.144759       .4300528       Sum of Wgt.       1,304
+
+50%       1.5448                      Mean           1.975838
+                        Largest       Std. Dev.      1.246967
+75%     2.424668       6.491269
+90%     3.603743       6.942723       Variance       1.554927
+95%      4.63027       7.039024       Skewness       1.635847
+99%     6.450404       7.085673       Kurtosis       5.879035
+
+. 
+. **** panel-specific weights
+. 
+. *** macros
+. 
+. local single_panels pr_2006 pr_2008 pr_2010 ///
+>                                         pr_shr_2006 pr_shr_2008 pr_shr_2010
+
+. 
+. local single_panels_insc pr_2006_insc pr_2008_insc pr_2010_insc ///
+>                                         pr_shr_2006_insc pr_shr_2008_insc pr_shr_2010_insc 
+
+. 
+. foreach var in `single_panels' {
+  2. 
+.         qui gen tmp_invp_`var' = (1/(1 - `var')) if attr_w23==0
+  3.         qui gen invp_`var' = .
+  4.         qui gen wt_`var' = .    
+  5. 
+.         display " "     
+  6.         display "##############################################"
+  7.         display "Probability:  `var'"
+  8.         display "##############################################"
+  9.         display " "
+ 10. 
+.         qui summ `var' if panelwave == 1 [aw = wtssnr_rs]
+ 11.         display "Panel N: `r(N)'"
+ 12.         scalar panel_N = `r(N)'
+ 13. 
+.         qui summ tmp_invp_`var'  ///
+>                 if panelwave == 1 & attr_w23 == 0 [aw = wtpannr123]
+ 14.         display "Unadjusted sum of inverse prob of remaining: `r(sum)'"
+ 15.         scalar sum_invp = `r(sum)'
+ 16. 
+.         qui replace invp_`var' = (panel_N/sum_invp)*tmp_invp_`var' ///
+>                 if attr_w23 == 0
+ 17. 
+.         qui replace wt_`var' = invp_`var' * wtpannr123 ///
+>                 if attr_w23 == 0
+ 18. 
+.         display ""
+ 19.         display "After adjustments to inverse probs, descriptives weighted by wtpannr:"
+ 20.         display ""
+ 21.                 
+.         summ invp_`var' if attr_w23 == 0 & ///
+>                         panelwave == 1 [aw = wtpannr123]
+ 22.         display "Sum of inverse prob of remaining: `r(sum)'"
+ 23. 
+.         summ wt_`var' if attr_w23 == 0 & ///
+>                         panelwave == 1 [aw = wtpannr123], d
+ 24. 
+.         drop tmp_invp_`var'
+ 25. }
+ 
+##############################################
+Probability:  pr_2006
+##############################################
+ 
+Panel N: 2000
+Unadjusted sum of inverse prob of remaining: 1963.475767426482
+
+After adjustments to inverse probs, descriptives weighted by wtpannr:
+
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+invp_pr_2006 |   1,276        1276    1.567398   .4880813   1.072182   6.607659
+Sum of inverse prob of remaining: 1999.999998575773
+
+                         wt_pr_2006
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%     .5298801       .4195347
+ 5%      .678932       .4203839
+10%     .8734367        .424476       Obs               1,276
+25%     1.099183       .4279106       Sum of Wgt.       1,276
+
+50%     1.703822                      Mean           2.224447
+                        Largest       Std. Dev.       1.69453
+75%     2.653822       9.310531
+90%      4.44399       10.11567       Variance       2.871431
+95%     5.568022       10.27566       Skewness       2.429056
+99%      8.96726       13.53567       Kurtosis       11.65833
+ 
+##############################################
+Probability:  pr_2008
+##############################################
+ 
+Panel N: 2023
+Unadjusted sum of inverse prob of remaining: 2043.48878536911
+
+After adjustments to inverse probs, descriptives weighted by wtpannr:
+
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+invp_pr_2008 |   1,295        1295    1.562162   .4423607   1.085345   9.821111
+Sum of inverse prob of remaining: 2022.999998235774
+
+                         wt_pr_2008
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%     .4785284       .3797988
+ 5%     .6188743       .3810978
+10%     .7897713       .3877786       Obs               1,295
+25%     1.193972       .3922262       Sum of Wgt.       1,295
+
+50%     1.663982                      Mean           2.215204
+                        Largest       Std. Dev.      1.551312
+75%     2.861461       8.173919
+90%     4.178535       8.287114       Variance       2.406569
+95%     5.448348       8.961302       Skewness       1.807413
+99%     8.173919        10.7257       Kurtosis       6.976603
+ 
+##############################################
+Probability:  pr_2010
+##############################################
+ 
+Panel N: 2044
+Unadjusted sum of inverse prob of remaining: 2052.306598842449
+
+After adjustments to inverse probs, descriptives weighted by wtpannr:
+
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+invp_pr_2010 |   1,304        1304    1.567485   .5720807   1.050611    6.94136
+Sum of inverse prob of remaining: 2043.99999967116
+
+                         wt_pr_2010
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%     .5234003         .39014
+ 5%     .6525717        .418692
+10%     .8652469       .4225931       Obs               1,304
+25%     1.161343       .4536087       Sum of Wgt.       1,304
+
+50%     1.641749                      Mean           2.085567
+                        Largest       Std. Dev.      1.427136
+75%     2.587097       8.284097
+90%     3.773815         9.4669       Variance       2.036718
+95%      4.89615       9.510017       Skewness        2.07688
+99%     7.634772       9.547765       Kurtosis       8.689106
+ 
+##############################################
+Probability:  pr_shr_2006
+##############################################
+ 
+Panel N: 2000
+Unadjusted sum of inverse prob of remaining: 1994.697061037256
+
+After adjustments to inverse probs, descriptives weighted by wtpannr:
+
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+invp_pr_sh~6 |   1,276        1276    1.567398   .3962601   1.155449   4.265651
+Sum of inverse prob of remaining: 1999.999999440297
+
+                       wt_pr_shr_2006
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%      .528326       .4212598
+ 5%     .6738708       .4337537
+10%     .8707541       .4465054       Obs               1,276
+25%     1.109671       .4475356       Sum of Wgt.       1,276
+
+50%     1.706252                      Mean           2.250433
+                        Largest       Std. Dev.      1.697503
+75%     2.749352       8.599656
+90%     4.403457       9.094357       Variance       2.881516
+95%     5.562801       11.44138       Skewness       2.171373
+99%     8.599656        11.5909       Kurtosis       9.235504
+ 
+##############################################
+Probability:  pr_shr_2008
+##############################################
+ 
+Panel N: 2023
+Unadjusted sum of inverse prob of remaining: 2012.06915093116
+
+After adjustments to inverse probs, descriptives weighted by wtpannr:
+
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+invp_pr_sh~8 |   1,295        1295    1.562162   .4736659   1.176742    12.5472
+Sum of inverse prob of remaining: 2022.999997919779
+
+                       wt_pr_shr_2008
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%     .4989972       .3939344
+ 5%     .6483424       .4059972
+10%      .817007       .4289562       Obs               1,295
+25%      1.20816       .4323702       Sum of Wgt.       1,295
+
+50%     1.644564                      Mean            2.20355
+                        Largest       Std. Dev.      1.544279
+75%     2.814331       8.079613
+90%     4.169319       8.544404       Variance       2.384798
+95%     5.400086       9.264809       Skewness       2.045852
+99%     8.544404       13.70289       Kurtosis       9.153356
+ 
+##############################################
+Probability:  pr_shr_2010
+##############################################
+ 
+Panel N: 2044
+Unadjusted sum of inverse prob of remaining: 2030.643630806703
+
+After adjustments to inverse probs, descriptives weighted by wtpannr:
+
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+invp_pr_sh~0 |   1,304        1304    1.567485   .4527231   1.187153   6.008824
+Sum of inverse prob of remaining: 2044.000000792542
+
+                       wt_pr_shr_2010
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%      .549796       .4068952
+ 5%     .6632541       .4280366
+10%     .8831173       .4383475       Obs               1,304
+25%     1.184509       .4652207       Sum of Wgt.       1,304
+
+50%      1.63475                      Mean             2.0887
+                        Largest       Std. Dev.      1.356222
+75%     2.536289       7.495837
+90%     3.788358       8.209543       Variance       1.839339
+95%     5.133378       8.553695       Skewness       1.829206
+99%     7.403775       8.933228       Kurtosis       7.104187
+
+.                                 
+. foreach var in `single_panels_insc' {
+  2. 
+.         qui gen tmp_invp_`var' = (1/(1 - `var')) if attr_w23==0
+  3.         qui gen invp_`var' = .
+  4.         qui gen wt_`var' = .    
+  5. 
+.         display " "     
+  6.         display "##############################################"
+  7.         display "Probability:  `var'"
+  8.         display "##############################################"
+  9.         display " "
+ 10.                 
+.         qui summ `var' if panelwave == 1 & outsc_w23 == 0 [aw = wtssnr_rs]
+ 11.         display "Panel N in scope: `r(N)'"
+ 12.         scalar panel_N = `r(N)'
+ 13.                 
+.         qui summ tmp_invp_`var'  ///
+>                         if panelwave == 1 & attr_w23 == 0 & outsc_w23 == 0 [aw = wtpannr123]
+ 14.         display "Unadjusted sum of inverse prob of remaining (and in scope): `r(sum)'"
+ 15.         scalar sum_invp = `r(sum)'
+ 16. 
+.         qui replace invp_`var' = (panel_N/sum_invp)*tmp_invp_`var' ///
+>                 if attr_w23 == 0 & outsc_w23 == 0
+ 17. 
+.         qui replace wt_`var' = invp_`var' * wtpannr123 ///
+>                 if attr_w23 == 0 & outsc_w23 == 0
+ 18. 
+.         display ""
+ 19.         display "After adjustments to inverse probs, descriptives weighted by wtpannr:"
+ 20.         display ""
+ 21. 
+.         summ invp_`var' if attr_w23 == 0 & ///
+>                 outsc_w23 == 0 & panelwave == 1  [aw = wtpannr123]
+ 22.         display "Sum of inverse prob of remaining (and in scope): `r(sum)'"
+ 23. 
+.         summ wt_`var' if attr_w23 == 0 & ///
+>                 outsc_w23 == 0 & panelwave == 1  [aw = wtpannr123], d
+ 24. 
+.         drop tmp_invp_`var'
+ 25. }
+ 
+##############################################
+Probability:  pr_2006_insc
+##############################################
+ 
+Panel N in scope: 1891
+Unadjusted sum of inverse prob of remaining (and in scope): 1869.332156691567
+
+After adjustments to inverse probs, descriptives weighted by wtpannr:
+
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+invp_pr_20~c |   1,276        1276    1.481975   .3978621   1.053396   4.582443
+Sum of inverse prob of remaining (and in scope): 1891.00000150242
+
+                       wt_pr_2006_insc
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%     .5014099       .3861519
+ 5%     .6306168       .4124782
+10%     .8045439       .4131994       Obs               1,276
+25%     1.058984        .414178       Sum of Wgt.       1,276
+
+50%     1.594998                      Mean           2.128055
+                        Largest       Std. Dev.      1.621771
+75%     2.608296       8.690242
+90%     4.076186       9.320283       Variance       2.630142
+95%     5.385756       10.04579       Skewness       2.246745
+99%     8.475274       11.84643       Kurtosis       9.836711
+ 
+##############################################
+Probability:  pr_2008_insc
+##############################################
+ 
+Panel N in scope: 1918
+Unadjusted sum of inverse prob of remaining (and in scope): 1959.446347682779
+
+After adjustments to inverse probs, descriptives weighted by wtpannr:
+
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+invp_~8_insc |   1,295        1295    1.481081   .3280065   1.036746   4.991425
+Sum of inverse prob of remaining (and in scope): 1918.000002315958
+
+                       wt_pr_2008_insc
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%     .4501775       .3593284
+ 5%     .5807829       .3599693
+10%     .7440731        .367464       Obs               1,295
+25%     1.136814       .3675891       Sum of Wgt.       1,295
+
+50%     1.598664                      Mean           2.117452
+                        Largest       Std. Dev.      1.480411
+75%     2.782995        7.37381
+90%     4.079426       7.441884       Variance       2.191615
+95%     5.169489        8.25598       Skewness       1.727242
+99%     7.441884       8.803192       Kurtosis        6.50125
+ 
+##############################################
+Probability:  pr_2010_insc
+##############################################
+ 
+Panel N in scope: 1923
+Unadjusted sum of inverse prob of remaining (and in scope): 1938.397877443071
+
+After adjustments to inverse probs, descriptives weighted by wtpannr:
+
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+invp_~0_insc |   1,304        1304    1.474693   .4387256   1.028666   5.856924
+Sum of inverse prob of remaining (and in scope): 1923.000000673603
+
+                       wt_pr_2010_insc
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%     .4945115       .3656163
+ 5%     .6117617       .3876465
+10%     .8126429       .3930323       Obs               1,304
+25%     1.118688       .4256597       Sum of Wgt.       1,304
+
+50%      1.53501                      Mean           1.970505
+                        Largest       Std. Dev.      1.293832
+75%     2.459996       7.031281
+90%     3.621001       7.462306       Variance       1.674001
+95%     4.594084       8.031883       Skewness       1.850823
+99%     6.747056       9.027815       Kurtosis       7.372745
+ 
+##############################################
+Probability:  pr_shr_2006_insc
+##############################################
+ 
+Panel N in scope: 1891
+Unadjusted sum of inverse prob of remaining (and in scope): 1905.762389916756
+
+After adjustments to inverse probs, descriptives weighted by wtpannr:
+
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+invp_pr_sh~c |   1,276        1276    1.481975   .3271372   1.129241   3.747849
+Sum of inverse prob of remaining (and in scope): 1890.999998794749
+
+                     wt_pr_shr_2006_insc
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%     .5006705       .3873765
+ 5%     .6253266       .4225482
+10%      .799392       .4297542       Obs               1,276
+25%      1.06444        .430949       Sum of Wgt.       1,276
+
+50%     1.604978                      Mean           2.145256
+                        Largest       Std. Dev.      1.617304
+75%     2.630685       7.878402
+90%     4.238904        8.14238       Variance       2.615672
+95%     5.365198       10.36809       Skewness       2.072309
+99%      8.14238       10.77767       Kurtosis       8.418279
+ 
+##############################################
+Probability:  pr_shr_2008_insc
+##############################################
+ 
+Panel N in scope: 1918
+Unadjusted sum of inverse prob of remaining (and in scope): 1918.562589470841
+
+After adjustments to inverse probs, descriptives weighted by wtpannr:
+
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+invp_pr_sh.. |   1,295        1295    1.481081   .3047781   1.136073   5.983823
+Sum of inverse prob of remaining (and in scope): 1918.000000753441
+
+                     wt_pr_shr_2008_insc
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%     .4710791        .375239
+ 5%     .6037362       .3842621
+10%     .7763467       .4078742       Obs               1,295
+25%     1.163251       .4163764       Sum of Wgt.       1,295
+
+50%     1.559985                      Mean           2.106604
+                        Largest       Std. Dev.      1.451548
+75%      2.73607        7.21423
+90%     3.966707       8.152341       Variance       2.106992
+95%      4.97052       8.348498       Skewness       1.788175
+99%     8.152341       8.446258       Kurtosis       6.926652
+ 
+##############################################
+Probability:  pr_shr_2010_insc
+##############################################
+ 
+Panel N in scope: 1923
+Unadjusted sum of inverse prob of remaining (and in scope): 1924.125619112183
+
+After adjustments to inverse probs, descriptives weighted by wtpannr:
+
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+invp_pr_sh.. |   1,304        1304    1.474693   .3426386   1.149788   5.532474
+Sum of inverse prob of remaining (and in scope): 1923.000000311433
+
+                     wt_pr_shr_2010_insc
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%     .5167352       .3824537
+ 5%     .6244718       .4020866
+10%     .8023406         .40661       Obs               1,304
+25%     1.138848       .4352673       Sum of Wgt.       1,304
+
+50%     1.541744                      Mean             1.9747
+                        Largest       Std. Dev.      1.247314
+75%     2.399116       6.668257
+90%     3.591061        7.06024       Variance       1.555792
+95%     4.774685       7.314773       Skewness        1.65418
+99%     6.320025       7.315249       Kurtosis       6.050683
+
+. 
+. sort panelid panelwave
+
+. 
+. summ panelid wtss-attr_w23 wt*
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     panelid |     14,610    1.28e+07     8940563      20069   2.01e+07
+        wtss |     14,610     1.00387    .5970088        .43   6.406021
+      wtssnr |     14,610    1.002797     .622738   .3194206   6.702612
+   wtssnr_rs |     14,610    1.002285    .6223949   .3194206   6.702611
+     pool_wt |     14,610    1.002327    .6229686   .3193154   6.700403
+-------------+---------------------------------------------------------
+     wtpan12 |     13,211    1.000506    .6125467   .3219388   6.755452
+    wtpan123 |     11,625           1    .6221072   .3064633   6.771621
+   wtpannr12 |     13,211    .9998891    .6163369   .3091119   6.666435
+  wtpannr123 |     11,625           1    .6269736   .3072024   6.322945
+          w2 |     14,610    .9042437    .2942669          0          1
+-------------+---------------------------------------------------------
+          w3 |     14,610    .7956879    .4032119          0          1
+    attr_w23 |     14,610    .2043121    .4032119          0          1
+        wtss |     14,610     1.00387    .5970088        .43   6.406021
+      wtssnr |     14,610    1.002797     .622738   .3194206   6.702612
+   wtssnr_rs |     14,610    1.002285    .6223949   .3194206   6.702611
+-------------+---------------------------------------------------------
+     wtpan12 |     13,211    1.000506    .6125467   .3219388   6.755452
+    wtpan123 |     11,625           1    .6221072   .3064633   6.771621
+   wtpannr12 |     13,211    .9998891    .6163369   .3091119   6.666435
+  wtpannr123 |     11,625           1    .6269736   .3072024   6.322945
+   wt_pr_all |     11,625    1.565677    1.109665   .3969225    14.8637
+-------------+---------------------------------------------------------
+wt_pr_all_~c |     11,625    1.479226    1.028717    .378843   10.99003
+  wt_pr_2006 |      3,828    1.567398     1.16767   .4195347   13.53567
+  wt_pr_2008 |      3,885    1.562162    1.114147   .3797988    10.7257
+  wt_pr_2010 |      3,912    1.567485     1.09747     .39014   9.547765
+wt_pr_s~2006 |      3,828    1.567398    1.159421   .4212598    11.5909
+-------------+---------------------------------------------------------
+wt_pr_s~2008 |      3,885    1.562162    1.111366   .3939344   13.70289
+wt_pr_s~2010 |      3,912    1.567485    1.032225   .4068952   8.933228
+wt_pr_2006~c |      3,828    1.481975    1.114655   .3861519   11.84643
+wt_pr_2008~c |      3,885    1.481081    1.046721   .3593284   8.803192
+wt_pr_2010~c |      3,912    1.474693    .9876164   .3656163   9.027815
+-------------+---------------------------------------------------------
+wt_pr_shr_.. |      3,828    1.481975    1.102839   .3873765   10.77767
+wt_pr_shr_.. |      3,885    1.481081    1.023132    .375239   8.446258
+wt_pr_shr_.. |      3,912    1.474693    .9455019   .3824537   7.315249
+
+. bys samptype: summ panelid wtss-attr_w23 wt*
+
+----------------------------------------------------------------------------------------------------
+-> samptype = 2006
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     panelid |      4,812    1.61e+07     7516324      20069   2.01e+07
+        wtss |      4,812    1.011793    .6154165        .43       5.73
+      wtssnr |      4,812    1.011399    .6434687        .36       6.59
+   wtssnr_rs |      4,812    1.009843    .6424793   .3594465   6.579867
+     pool_wt |      4,812     1.02112    .6496537   .3634603   6.653342
+-------------+---------------------------------------------------------
+     wtpan12 |      4,348    1.003772    .6100877   .3540025    5.66404
+    wtpan123 |      3,828           1    .6361455   .3064633   5.211864
+   wtpannr12 |      4,348    1.002925    .6025077    .327221   5.948337
+  wtpannr123 |      3,828           1    .6525265   .3098931   5.928037
+          w2 |      4,812    .9035744    .2952047          0          1
+-------------+---------------------------------------------------------
+          w3 |      4,812    .7955112    .4033695          0          1
+    attr_w23 |      4,812    .2044888    .4033695          0          1
+        wtss |      4,812    1.011793    .6154165        .43       5.73
+      wtssnr |      4,812    1.011399    .6434687        .36       6.59
+   wtssnr_rs |      4,812    1.009843    .6424793   .3594465   6.579867
+-------------+---------------------------------------------------------
+     wtpan12 |      4,348    1.003772    .6100877   .3540025    5.66404
+    wtpan123 |      3,828           1    .6361455   .3064633   5.211864
+   wtpannr12 |      4,348    1.002925    .6025077    .327221   5.948337
+  wtpannr123 |      3,828           1    .6525265   .3098931   5.928037
+   wt_pr_all |      3,828    1.567398    1.172155   .4169763   12.00962
+-------------+---------------------------------------------------------
+wt_pr_all_~c |      3,828    1.481975    1.108566   .3870352   10.99003
+  wt_pr_2006 |      3,828    1.567398     1.16767   .4195347   13.53567
+  wt_pr_2008 |          0
+  wt_pr_2010 |          0
+wt_pr_s~2006 |      3,828    1.567398    1.159421   .4212598    11.5909
+-------------+---------------------------------------------------------
+wt_pr_s~2008 |          0
+wt_pr_s~2010 |          0
+wt_pr_2006~c |      3,828    1.481975    1.114655   .3861519   11.84643
+wt_pr_2008~c |          0
+wt_pr_2010~c |          0
+-------------+---------------------------------------------------------
+wt_pr_shr_.. |      3,828    1.481975    1.102839   .3873765   10.77767
+wt_pr_shr_.. |          0
+wt_pr_shr_.. |          0
+
+----------------------------------------------------------------------------------------------------
+-> samptype = 2008
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     panelid |      4,899    1.11e+07     9131739      20081   2.01e+07
+        wtss |      4,899     .995438    .6232192   .4377448   6.406021
+      wtssnr |      4,899    .9947818    .6423533   .3194206   6.702612
+   wtssnr_rs |      4,899    .9947818    .6423533   .3194206   6.702611
+     pool_wt |      4,899     .994454    .6421416   .3193154   6.700403
+-------------+---------------------------------------------------------
+     wtpan12 |      4,457    .9993062    .6431278   .3219388   6.755452
+    wtpan123 |      3,885           1    .6513328   .3227094   6.771621
+   wtpannr12 |      4,457    .9990377    .6487611   .3091119   6.666435
+  wtpannr123 |      3,885           1    .6474775   .3072024   6.322945
+          w2 |      4,899    .9097775    .2865295          0          1
+-------------+---------------------------------------------------------
+          w3 |      4,899     .793019    .4051832          0          1
+    attr_w23 |      4,899     .206981    .4051832          0          1
+   wt_pr_all |      3,885    1.562162    1.125246   .3969225    14.8637
+wt_pr_all_~c |      3,885    1.481081    1.027409    .378843   8.675069
+  wt_pr_2006 |          0
+-------------+---------------------------------------------------------
+  wt_pr_2008 |      3,885    1.562162    1.114147   .3797988    10.7257
+  wt_pr_2010 |          0
+wt_pr_s~2006 |          0
+wt_pr_s~2008 |      3,885    1.562162    1.111366   .3939344   13.70289
+wt_pr_s~2010 |          0
+-------------+---------------------------------------------------------
+wt_pr_2006~c |          0
+wt_pr_2008~c |      3,885    1.481081    1.046721   .3593284   8.803192
+wt_pr_2010~c |          0
+wt_pr_shr_.. |          0
+wt_pr_shr_.. |      3,885    1.481081    1.023132    .375239   8.446258
+-------------+---------------------------------------------------------
+wt_pr_shr_.. |          0
+
+----------------------------------------------------------------------------------------------------
+-> samptype = 2010
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     panelid |      4,899    1.13e+07     9144731      20101   2.01e+07
+        wtss |      4,899     1.00452     .550025   .4631277   4.210252
+      wtssnr |      4,899    1.002364    .5807113   .3369696   4.733329
+   wtssnr_rs |      4,899    1.002364    .5807113   .3369696   4.733329
+     pool_wt |      4,899    .9917392    .5745557   .3333977   4.683155
+-------------+---------------------------------------------------------
+     wtpan12 |      4,406    .9984972    .5826579   .3348296   4.703269
+    wtpan123 |      3,912           1    .5770364   .3365385   4.727273
+   wtpannr12 |      4,406    .9977539    .5959601   .3232505   4.775845
+  wtpannr123 |      3,912           1    .5790971   .3170063   4.830731
+          w2 |      4,899    .8993672    .3008726          0          1
+-------------+---------------------------------------------------------
+          w3 |      4,899    .7985303     .401139          0          1
+    attr_w23 |      4,899    .2014697     .401139          0          1
+   wt_pr_all |      3,912    1.567485    1.028524   .4106926   8.725655
+wt_pr_all_~c |      3,912    1.474693    .9457493   .3866114   7.085673
+  wt_pr_2006 |          0
+-------------+---------------------------------------------------------
+  wt_pr_2008 |          0
+  wt_pr_2010 |      3,912    1.567485     1.09747     .39014   9.547765
+wt_pr_s~2006 |          0
+wt_pr_s~2008 |          0
+wt_pr_s~2010 |      3,912    1.567485    1.032225   .4068952   8.933228
+-------------+---------------------------------------------------------
+wt_pr_2006~c |          0
+wt_pr_2008~c |          0
+wt_pr_2010~c |      3,912    1.474693    .9876164   .3656163   9.027815
+wt_pr_shr_.. |          0
+wt_pr_shr_.. |          0
+-------------+---------------------------------------------------------
+wt_pr_shr_.. |      3,912    1.474693    .9455019   .3824537   7.315249
+
+
+. 
+. *** Rename and combine single-year panel weights
+. 
+. rename invp_pr_* invp_*
+
+. rename wt_pr_* wt_*
+
+. 
+. summ panelid wtss-attr_w23 invp* wt*
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     panelid |     14,610    1.28e+07     8940563      20069   2.01e+07
+        wtss |     14,610     1.00387    .5970088        .43   6.406021
+      wtssnr |     14,610    1.002797     .622738   .3194206   6.702612
+   wtssnr_rs |     14,610    1.002285    .6223949   .3194206   6.702611
+     pool_wt |     14,610    1.002327    .6229686   .3193154   6.700403
+-------------+---------------------------------------------------------
+     wtpan12 |     13,211    1.000506    .6125467   .3219388   6.755452
+    wtpan123 |     11,625           1    .6221072   .3064633   6.771621
+   wtpannr12 |     13,211    .9998891    .6163369   .3091119   6.666435
+  wtpannr123 |     11,625           1    .6269736   .3072024   6.322945
+          w2 |     14,610    .9042437    .2942669          0          1
+-------------+---------------------------------------------------------
+          w3 |     14,610    .7956879    .4032119          0          1
+    attr_w23 |     14,610    .2043121    .4032119          0          1
+    invp_all |     11,625    1.567426    .4616162   1.157772   13.61011
+invp_all_i~c |     11,625    1.467874    .3258813   1.130102   6.651408
+   invp_2006 |      3,828      1.5798     .491597   1.072182   6.607659
+-------------+---------------------------------------------------------
+   invp_2008 |      3,885    1.557641    .4669739   1.085345   9.821111
+   invp_2010 |      3,912    1.574902    .5879381   1.050611    6.94136
+invp_sh~2006 |      3,828    1.562197    .3819145   1.155449   4.265651
+invp_sh~2008 |      3,885    1.568218    .4870502   1.176742    12.5472
+invp_sh~2010 |      3,912    1.572921    .4565352   1.187153   6.008824
+-------------+---------------------------------------------------------
+invp_2006_~c |      3,828    1.472685    .3656183   1.053396   4.582443
+invp_2008_~c |      3,885    1.463961    .3498783   1.036746   4.991425
+invp_2010_~c |      3,912    1.472424    .4408262   1.028666   5.856924
+invp_shr_2.. |      3,828    1.462786    .2949402   1.129241   3.747849
+invp_shr_2.. |      3,885    1.472355    .3127373   1.136073   5.983823
+-------------+---------------------------------------------------------
+invp_shr_2.. |      3,912    1.468994    .3355544   1.149788   5.532474
+        wtss |     14,610     1.00387    .5970088        .43   6.406021
+      wtssnr |     14,610    1.002797     .622738   .3194206   6.702612
+   wtssnr_rs |     14,610    1.002285    .6223949   .3194206   6.702611
+     wtpan12 |     13,211    1.000506    .6125467   .3219388   6.755452
+-------------+---------------------------------------------------------
+    wtpan123 |     11,625           1    .6221072   .3064633   6.771621
+   wtpannr12 |     13,211    .9998891    .6163369   .3091119   6.666435
+  wtpannr123 |     11,625           1    .6269736   .3072024   6.322945
+      wt_all |     11,625    1.565677    1.109665   .3969225    14.8637
+ wt_all_insc |     11,625    1.479226    1.028717    .378843   10.99003
+-------------+---------------------------------------------------------
+     wt_2006 |      3,828    1.567398     1.16767   .4195347   13.53567
+     wt_2008 |      3,885    1.562162    1.114147   .3797988    10.7257
+     wt_2010 |      3,912    1.567485     1.09747     .39014   9.547765
+ wt_shr_2006 |      3,828    1.567398    1.159421   .4212598    11.5909
+ wt_shr_2008 |      3,885    1.562162    1.111366   .3939344   13.70289
+-------------+---------------------------------------------------------
+ wt_shr_2010 |      3,912    1.567485    1.032225   .4068952   8.933228
+wt_2006_insc |      3,828    1.481975    1.114655   .3861519   11.84643
+wt_2008_insc |      3,885    1.481081    1.046721   .3593284   8.803192
+wt_2010_insc |      3,912    1.474693    .9876164   .3656163   9.027815
+wt_sh~6_insc |      3,828    1.481975    1.102839   .3873765   10.77767
+-------------+---------------------------------------------------------
+wt_sh~8_insc |      3,885    1.481081    1.023132    .375239   8.446258
+wt_shr_201~c |      3,912    1.474693    .9455019   .3824537   7.315249
+
+. 
+. clonevar wt_pooled = wt_all
+(2,985 missing values generated)
+
+. clonevar wt_pooled_insc = wt_all_insc
+(2,985 missing values generated)
+
+. 
+. gen wt_no_pooling = .
+(14,610 missing values generated)
+
+. gen wt_no_pooling_insc = .
+(14,610 missing values generated)
+
+. gen wt_shrunken = .
+(14,610 missing values generated)
+
+. gen wt_shrunken_insc = .
+(14,610 missing values generated)
+
+. 
+. forval i = 2006(2)2010 {
+  2.         replace wt_no_pooling           = wt_`i' if samptype == `i'
+  3.         replace wt_no_pooling_insc  = wt_`i'_insc if samptype == `i'
+  4.         replace wt_shrunken             = wt_shr_`i' if samptype == `i'
+  5.         replace wt_shrunken_insc        = wt_shr_`i'_insc if samptype == `i'
+  6. }
+(3,828 real changes made)
+(3,828 real changes made)
+(3,828 real changes made)
+(3,828 real changes made)
+(3,885 real changes made)
+(3,885 real changes made)
+(3,885 real changes made)
+(3,885 real changes made)
+(3,912 real changes made)
+(3,912 real changes made)
+(3,912 real changes made)
+(3,912 real changes made)
+
+. 
+. summ panelid wtss-attr_w23 wt*
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     panelid |     14,610    1.28e+07     8940563      20069   2.01e+07
+        wtss |     14,610     1.00387    .5970088        .43   6.406021
+      wtssnr |     14,610    1.002797     .622738   .3194206   6.702612
+   wtssnr_rs |     14,610    1.002285    .6223949   .3194206   6.702611
+     pool_wt |     14,610    1.002327    .6229686   .3193154   6.700403
+-------------+---------------------------------------------------------
+     wtpan12 |     13,211    1.000506    .6125467   .3219388   6.755452
+    wtpan123 |     11,625           1    .6221072   .3064633   6.771621
+   wtpannr12 |     13,211    .9998891    .6163369   .3091119   6.666435
+  wtpannr123 |     11,625           1    .6269736   .3072024   6.322945
+          w2 |     14,610    .9042437    .2942669          0          1
+-------------+---------------------------------------------------------
+          w3 |     14,610    .7956879    .4032119          0          1
+    attr_w23 |     14,610    .2043121    .4032119          0          1
+        wtss |     14,610     1.00387    .5970088        .43   6.406021
+      wtssnr |     14,610    1.002797     .622738   .3194206   6.702612
+   wtssnr_rs |     14,610    1.002285    .6223949   .3194206   6.702611
+-------------+---------------------------------------------------------
+     wtpan12 |     13,211    1.000506    .6125467   .3219388   6.755452
+    wtpan123 |     11,625           1    .6221072   .3064633   6.771621
+   wtpannr12 |     13,211    .9998891    .6163369   .3091119   6.666435
+  wtpannr123 |     11,625           1    .6269736   .3072024   6.322945
+      wt_all |     11,625    1.565677    1.109665   .3969225    14.8637
+-------------+---------------------------------------------------------
+ wt_all_insc |     11,625    1.479226    1.028717    .378843   10.99003
+     wt_2006 |      3,828    1.567398     1.16767   .4195347   13.53567
+     wt_2008 |      3,885    1.562162    1.114147   .3797988    10.7257
+     wt_2010 |      3,912    1.567485     1.09747     .39014   9.547765
+ wt_shr_2006 |      3,828    1.567398    1.159421   .4212598    11.5909
+-------------+---------------------------------------------------------
+ wt_shr_2008 |      3,885    1.562162    1.111366   .3939344   13.70289
+ wt_shr_2010 |      3,912    1.567485    1.032225   .4068952   8.933228
+wt_2006_insc |      3,828    1.481975    1.114655   .3861519   11.84643
+wt_2008_insc |      3,885    1.481081    1.046721   .3593284   8.803192
+wt_2010_insc |      3,912    1.474693    .9876164   .3656163   9.027815
+-------------+---------------------------------------------------------
+wt_sh~6_insc |      3,828    1.481975    1.102839   .3873765   10.77767
+wt_sh~8_insc |      3,885    1.481081    1.023132    .375239   8.446258
+wt_shr_201~c |      3,912    1.474693    .9455019   .3824537   7.315249
+   wt_pooled |     11,625    1.565677    1.109665   .3969225    14.8637
+wt_pooled_~c |     11,625    1.479226    1.028717    .378843   10.99003
+-------------+---------------------------------------------------------
+wt_no_pool~g |     11,625    1.565677    1.126462   .3797988   13.53567
+wt_no_pool~c |     11,625    1.479226    1.050397   .3593284   11.84643
+ wt_shrunken |     11,625    1.565677    1.101715   .3939344   13.70289
+wt_shrunke~c |     11,625    1.479226    1.025183    .375239   10.77767
+
+. 
+. *** labels *********************************************************************
+. la var wt_all "All panels pooled"
+
+. la var wt_all_insc "All panels pooled (in scope all waves)"
+
+. la var wt_2006 "2006 panel"
+
+. la var wt_2008 "2008 panel"
+
+. la var wt_2010 "2010 panel"
+
+. la var wt_2006_insc "2006 panel (in scope all waves)"
+
+. la var wt_2008_insc "2008 panel (in scope all waves)"
+
+. la var wt_2010_insc "2010 panel (in scope all waves)"
+
+. la var wt_shr_2006 "2006 panel (shrunk to pooled)"
+
+. la var wt_shr_2008 "2008 panel (shrunk to pooled)"
+
+. la var wt_shr_2010 "2010 panel (shrunk to pooled)"
+
+. la var wt_shr_2006_insc "2006 panel (shrunk to pooled, in scope all waves)"
+
+. la var wt_shr_2008_insc "2008 panel (shrunk to pooled, in scope all waves)"
+
+. la var wt_shr_2010_insc "2010 panel (shrunk to pooled, in scope all waves)"
+
+. la var wt_pooled "Estimated with panels pooled"
+
+. la var wt_pooled_insc "Estimated with panels pooled (in scope all waves)"
+
+. la var wt_no_pooling "Estimated separately by panel"
+
+. la var wt_no_pooling_insc "Estimated separately by panel (in scope all waves)"
+
+. la var wt_shrunken "Shrunk to pooled estimates"
+
+. la var wt_shrunken_insc "Shrunk to pooled estimates (in scope all waves)"
+
+. 
+. ********************************************************************************
+. *** Save dataset with weights
+. ********************************************************************************
+. 
+. sort panelid panelwave
+
+. compress
+  variable samptype was float now int
+  variable panelwave was float now byte
+  variable racehisp was float now byte
+  variable racehisp_pl was float now byte
+  variable ethhisp was float now byte
+  variable ethhisp_pl was float now byte
+  variable racehisp_ay was float now byte
+  variable racehisp_ay_pl was float now byte
+  variable asian1 was float now byte
+  variable asian2 was float now byte
+  variable asian3 was float now byte
+  variable white was float now byte
+  variable black was float now byte
+  variable aian was float now byte
+  variable asian was float now byte
+  variable nhpi was float now byte
+  variable othr was float now byte
+  variable hispr was float now byte
+  variable white_o was float now byte
+  variable black_o was float now byte
+  variable aian_o was float now byte
+  variable asian_o was float now byte
+  variable nhpi_o was float now byte
+  variable othr_o was float now byte
+  variable hispr_o was float now byte
+  variable white_o_nh was float now byte
+  variable white_nh was float now byte
+  variable black_o_nh was float now byte
+  variable black_nh was float now byte
+  variable aian_o_nh was float now byte
+  variable aian_nh was float now byte
+  variable asian_o_nh was float now byte
+  variable asian_nh was float now byte
+  variable nhpi_o_nh was float now byte
+  variable nhpi_nh was float now byte
+  variable othr_o_nh was float now byte
+  variable othr_nh was float now byte
+  variable hispr_o_nh was float now byte
+  variable hispr_nh was float now byte
+  variable white_o_h was float now byte
+  variable white_h was float now byte
+  variable black_o_h was float now byte
+  variable black_h was float now byte
+  variable aian_o_h was float now byte
+  variable aian_h was float now byte
+  variable asian_o_h was float now byte
+  variable asian_h was float now byte
+  variable nhpi_o_h was float now byte
+  variable nhpi_h was float now byte
+  variable othr_o_h was float now byte
+  variable othr_h was float now byte
+  variable hispr_o_h was float now byte
+  variable hispr_h was float now byte
+  variable egp10_11 was float now byte
+  variable egp10_12 was float now byte
+  variable spegp10_11 was float now byte
+  variable paegp10_11 was float now byte
+  variable maegp10_11 was float now byte
+  (2,527,530 bytes saved)
+
+. save data/gss-panel-allyears-fill-in-and-recoded-panel-merged-wt.dta, replace
+file data/gss-panel-allyears-fill-in-and-recoded-panel-merged-wt.dta saved
+
+. 
+. log close
+      name:  <unnamed>
+       log:  /Users/smorgan/Documents/GitHub/gss-panel-weights/log/create-panel-attrition-weights.lo
+> g
+  log type:  text
+ closed on:  28 Jan 2020, 17:46:49
+----------------------------------------------------------------------------------------------------

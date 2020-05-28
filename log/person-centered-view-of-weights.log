@@ -1,0 +1,233 @@
+----------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  /Users/smorgan/Documents/GitHub/gss-panel-weights/log/person-centered-view-of-weights.l
+> og
+  log type:  text
+ opened on:  28 Jan 2020, 18:25:41
+
+. 
+. use data/gss-panel-allyears-fill-in-and-recoded-panel-merged-wt.dta, clear
+
+. 
+. ********************************************************************************
+. *** Calculate indvidual values and output them to an excel spreadsheet
+. ********************************************************************************
+. 
+. *** macros
+. 
+. #delimit ;
+delimiter now ;
+. local first_list 
+>         year id wtpannr123 
+>         invp_no_pooling      invp_pooled      invp_shrunken 
+>         invp_no_pooling_insc invp_pooled_insc invp_shrunken_insc        
+>         wt_no_pooling      wt_pooled      wt_shrunken 
+>         wt_no_pooling_insc wt_pooled_insc wt_shrunken_insc ;
+
+.         local second_list
+>         age sex racehisp degree realinc dwelown marital born uscitzn
+>         region wordsum  intage intsex intethn intyrs lngthinv
+>     mode feeused coop comprend spaneng ;
+
+.         #delimit cr
+delimiter now cr
+. 
+. local both `first_list' `second_list'
+
+. 
+. *** select non-attriters
+. 
+. keep if panelwave == 1 & attr_w23 == 0
+(10,735 observations deleted)
+
+. 
+. *** combine year-specific
+. 
+. clonevar invp_pooled = wt_all
+
+. clonevar invp_pooled_insc = wt_all_insc
+
+. 
+. gen invp_no_pooling = .
+(3,875 missing values generated)
+
+. gen invp_no_pooling_insc = .
+(3,875 missing values generated)
+
+. gen invp_shrunken = .
+(3,875 missing values generated)
+
+. gen invp_shrunken_insc = .
+(3,875 missing values generated)
+
+. 
+. forval i = 2006(2)2010 {
+  2.         replace invp_no_pooling                 = invp_`i' if samptype == `i'
+  3.         replace invp_no_pooling_insc  = invp_`i'_insc if samptype == `i'
+  4.         replace invp_shrunken           = invp_shr_`i' if samptype == `i'
+  5.         replace invp_shrunken_insc      = invp_shr_`i'_insc if samptype == `i'
+  6. }
+(1,276 real changes made)
+(1,276 real changes made)
+(1,276 real changes made)
+(1,276 real changes made)
+(1,295 real changes made)
+(1,295 real changes made)
+(1,295 real changes made)
+(1,295 real changes made)
+(1,304 real changes made)
+(1,304 real changes made)
+(1,304 real changes made)
+(1,304 real changes made)
+
+. 
+. *** select individuals based on the distribtion of inverse probabilities for
+. ***  the shrunken probs
+. 
+. summ invp_shrunken, d
+
+                        invp_shrunken
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%     1.224848       1.155449
+ 5%      1.27351        1.17013
+10%     1.300931       1.176742       Obs               3,875
+25%     1.356502       1.180124       Sum of Wgt.       3,875
+
+50%     1.452074                      Mean           1.567818
+                        Largest       Std. Dev.      .4443692
+75%     1.603521        5.14492
+90%     1.907184       5.358827       Variance        .197464
+95%     2.253139       6.008824       Skewness       7.060504
+99%     3.493884        12.5472       Kurtosis       115.3165
+
+. return list 
+
+scalars:
+                  r(N) =  3875
+              r(sum_w) =  3875
+               r(mean) =  1.567818257670249
+                r(Var) =  .197464011292139
+                 r(sd) =  .4443692285612709
+           r(skewness) =  7.060503899562557
+           r(kurtosis) =  115.3165248326705
+                r(sum) =  6075.295748472214
+                r(min) =  1.155449032783508
+                r(max) =  12.54720401763916
+                 r(p1) =  1.224847555160522
+                 r(p5) =  1.273510456085205
+                r(p10) =  1.300930738449097
+                r(p25) =  1.356502175331116
+                r(p50) =  1.452073931694031
+                r(p75) =  1.603521347045898
+                r(p90) =  1.907183647155762
+                r(p95) =  2.253139495849609
+                r(p99) =  3.493884086608887
+
+. 
+. /*
+>                                   r(N) =  3875
+>               r(sum_w) =  3875
+>                r(mean) =  1.567818257670249
+>                 r(Var) =  .197464011292139
+>                  r(sd) =  .4443692285612709
+>            r(skewness) =  7.060503899562557
+>            r(kurtosis) =  115.3165248326705
+>                 r(sum) =  6075.295748472214
+>                 r(min) =  1.155449032783508
+>                 r(max) =  12.54720401763916
+>                  r(p1) =  1.224847555160522
+>                  r(p5) =  1.273510456085205
+>                 r(p10) =  1.300930738449097
+>                 r(p25) =  1.356502175331116
+>                 r(p50) =  1.452073931694031
+>                 r(p75) =  1.603521347045898
+>                 r(p90) =  1.907183647155762
+>                 r(p95) =  2.253139495849609
+>                 r(p99) =  3.493884086608887
+> */
+. gen focus = .
+(3,875 missing values generated)
+
+. replace focus = 1 if invp_shrunken < 1.15545 
+(1 real change made)
+
+. replace focus = 2 if invp_shrunken > 1.30093 & invp_shrunken < 1.30094 
+(1 real change made)
+
+. replace focus = 3 if invp_shrunken > 1.35650 & invp_shrunken < 1.35651 
+(1 real change made)
+
+. replace focus = 4 if invp_shrunken > 1.45207 & invp_shrunken < 1.45208 
+(1 real change made)
+
+. replace focus = 5 if invp_shrunken > 1.60352 & invp_shrunken < 1.60353 
+(1 real change made)
+
+. replace focus = 6 if invp_shrunken > 1.90718 & invp_shrunken < 1.90719  
+(1 real change made)
+
+. replace focus = 7 if invp_shrunken > 2.25313 & invp_shrunken < 2.25314  
+(1 real change made)
+
+. replace focus = 8 if invp_shrunken > 3.49388 & invp_shrunken < 3.49389 
+(1 real change made)
+
+. replace focus = 9 if invp_shrunken > 12.5472 & invp_shrunken < .      
+(1 real change made)
+
+. 
+. *** identify another 30 (approx) additional cases at random 
+. generate random = runiform() if focus==.
+(9 missing values generated)
+
+. replace focus = 99 if random < 30/3886 & focus == .
+(34 real changes made)
+
+. la def focus 1 "min" 2 "10th ptile"     3 "25th ptile" 4 "median" ///
+>   5 "75th ptile" 6 "90th ptile" 7 "95th ptile" 8 "99th ptile" 9 "max" ///
+>   99 "random"
+
+. la val focus focus
+
+. tab focus, miss
+
+      focus |      Freq.     Percent        Cum.
+------------+-----------------------------------
+        min |          1        0.03        0.03
+ 10th ptile |          1        0.03        0.05
+ 25th ptile |          1        0.03        0.08
+     median |          1        0.03        0.10
+ 75th ptile |          1        0.03        0.13
+ 90th ptile |          1        0.03        0.15
+ 95th ptile |          1        0.03        0.18
+ 99th ptile |          1        0.03        0.21
+        max |          1        0.03        0.23
+     random |         34        0.88        1.11
+          . |      3,832       98.89      100.00
+------------+-----------------------------------
+      Total |      3,875      100.00
+
+. 
+. *** order and save selected variables for csv output
+. 
+. keep if focus != .
+(3,832 observations deleted)
+
+. sort focus invp_shrunken
+
+. keep focus xb_* pr_* `both'
+
+. order focus year id xb_* pr_* `both'
+
+. 
+. outsheet using docs/person-centered-view.csv, comma replace
+
+. 
+. log close
+      name:  <unnamed>
+       log:  /Users/smorgan/Documents/GitHub/gss-panel-weights/log/person-centered-view-of-weights.l
+> og
+  log type:  text
+ closed on:  28 Jan 2020, 18:25:41
+----------------------------------------------------------------------------------------------------

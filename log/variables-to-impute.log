@@ -1,0 +1,1267 @@
+----------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  /Users/smorgan/Documents/GitHub/gss-panel-weights/log/variables-to-impute.log
+  log type:  text
+ opened on:  21 Jan 2020, 14:23:29
+
+. 
+. use data/gss-2006-2014-fill-in-and-recoded-panel-merged.dta, clear
+
+. 
+. ********************************************************************************
+. *** Keep only the panel respondents and fix up panel filled in variables
+. ********************************************************************************
+. 
+. keep if panelr==1 // keep only panel respondents, all three waves
+(7,022 observations deleted)
+
+. 
+. *** fill in values for _pl variables in 2nd and 3rd wave based on value for _pl
+. ***   in the 1st wave
+. 
+. //  Note: In the current data setting, '_pl' variables are filled only for the 
+. //        first wave hence they are missing for the 2nd and 3rd waves. I
+. 
+. foreach var in age sex racehisp born parborn marital degree relig marital ///
+>         incom16 spdeg madeg padeg family16 reg16 uscitzn realinc realrinc ///
+>         wordsum dwelown {       
+  2.         
+.                 if `var' == age {
+  3.                   sort samptype panelid panelwave
+  4.                   replace `var'_pl = `var' if !missing(`var') & panelwave >= 2
+  5.                   replace `var'_pl = `var'_pl[_n-1] + 2 if `var'_pl >= . & panelwave==2
+  6.                   replace `var'_pl = `var'_pl[_n-2] + 4 if `var'_pl >= . & panelwave==3
+  7.                   }
+  8.                   
+.                 else if `var' != age {
+  9.                   sort samptype panelid panelwave
+ 10.                   replace `var'_pl = `var' if !missing(`var') & panelwave >= 2
+ 11.                   replace `var'_pl = `var'_pl[_n-1] if `var'_pl >= . & panelwave==2
+ 12.                   replace `var'_pl = `var'_pl[_n-2] if `var'_pl >= . & panelwave==3
+ 13.                 }
+ 14. }
+(0 real changes made)
+(4 real changes made, 4 to missing)
+(3 real changes made, 3 to missing)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(3 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+
+. 
+. ********************************************************************************
+. *** Code selected variables for the analysis
+. ********************************************************************************
+. 
+. *** more detailed classification of U.S born and citizenship status
+. gen uscitizen = .
+(14,610 missing values generated)
+
+. replace uscitizen = 1 if born_pl == 1 
+(12,951 real changes made)
+
+. replace uscitizen = 2 if born_pl == 2 & (uscitzn_pl == 1 | uscitzn_pl == 3 | ///
+>                                                                              uscitzn_pl == 4)
+(838 real changes made)
+
+. replace uscitizen = 3 if born_pl == 2 & uscitzn_pl == 2 
+(725 real changes made)
+
+. replace uscitizen = 4 if born_pl == 2 & uscitzn_pl >= .
+(96 real changes made)
+
+.  
+. bys uscitizen: tab born_pl uscitzn_pl if panelwave == 1, m              
+
+----------------------------------------------------------------------------------------------------
+-> uscitizen = 1
+
+           |                       uscitzn_pl
+   born_pl |         1          2          3         .d         .i |     Total
+-----------+-------------------------------------------------------+----------
+         1 |        21          4          2          1      5,259 |     5,287 
+-----------+-------------------------------------------------------+----------
+     Total |        21          4          2          1      5,259 |     5,287 
+
+----------------------------------------------------------------------------------------------------
+-> uscitizen = 2
+
+           |            uscitzn_pl
+   born_pl |         1          3          4 |     Total
+-----------+---------------------------------+----------
+         2 |       320          6         14 |       340 
+-----------+---------------------------------+----------
+     Total |       320          6         14 |       340 
+
+----------------------------------------------------------------------------------------------------
+-> uscitizen = 3
+
+           | uscitzn_pl
+   born_pl |         2 |     Total
+-----------+-----------+----------
+         2 |       346 |       346 
+-----------+-----------+----------
+     Total |       346 |       346 
+
+----------------------------------------------------------------------------------------------------
+-> uscitizen = 4
+
+           |      uscitzn_pl
+   born_pl |        .i         .n |     Total
+-----------+----------------------+----------
+         2 |        93          1 |        94 
+-----------+----------------------+----------
+     Total |        93          1 |        94 
+
+
+.                 
+. la def USCITIZEN 1 "Born in US" 2 "Citizen born outside of US" ///
+>         3 "Non-citizen Born Outside" 4 "Born outside citizenship unclear"
+
+. la val uscitizen USCITIZEN
+
+. 
+. *** date of interview: convert into days from Jan 1 ****************************
+. clonevar daysint = dateintv
+(1 missing value generated)
+
+. replace daysint = . if daysint >= .
+(1 real change made, 1 to missing)
+
+. cap drop  __00*  // drop any temporary variables //
+
+. tostring daysint, replace force
+daysint was int now str3
+
+. 
+. * extract only the days
+. replace daysint = substr(daysint, -2, 2) 
+(14,610 real changes made)
+
+. destring daysint, replace
+daysint: all characters numeric; replaced as byte
+(1 missing value generated)
+
+. 
+. replace daysint = daysint + 31 if dateintv >= 200 & dateintv <= 231
+(0 real changes made)
+
+. replace daysint = daysint + 59 if dateintv >= 300 & dateintv <= 331
+(1,857 real changes made)
+
+. replace daysint = daysint + 90 if dateintv >= 400 & dateintv <= 431
+variable daysint was byte now int
+(4,472 real changes made)
+
+. replace daysint = daysint + 120 if dateintv >= 500 & dateintv <= 531
+(3,632 real changes made)
+
+. replace daysint = daysint + 151 if dateintv >= 600 & dateintv <= 631
+(2,381 real changes made)
+
+. replace daysint = daysint + 181 if dateintv >= 700 & dateintv <= 731
+(1,581 real changes made)
+
+. replace daysint = daysint + 212 if dateintv >= 800 & dateintv <= 831
+(639 real changes made)
+
+. replace daysint = daysint + 243 if dateintv >= 900 & dateintv <= 931
+(47 real changes made)
+
+. replace daysint = daysint + 273 if dateintv >= 1000 & dateintv <= 1031
+(0 real changes made)
+
+. replace daysint = daysint + 304 if dateintv >= 1100 & dateintv <= 1131
+(0 real changes made)
+
+. replace daysint = daysint + 334 if dateintv >= 1200 & dateintv <= 1231
+(0 real changes made)
+
+. 
+. * replace ones where only the month is available (will impute to the 15th)
+. replace daysint = 15 if daysint==99 & dateintv == 199
+(0 real changes made)
+
+. replace daysint = 46 if daysint==99 & dateintv == 299
+(0 real changes made)
+
+. replace daysint = 74 if daysint==99 & dateintv == 399
+(0 real changes made)
+
+. replace daysint = 105 if daysint==99 & dateintv == 499
+(0 real changes made)
+
+. replace daysint = 135 if daysint==99 & dateintv == 599
+(0 real changes made)
+
+. replace daysint = 166 if daysint==99 & dateintv == 699
+(0 real changes made)
+
+. 
+. * replace for leap-day years
+. forval i = 2008(4)2012 {
+  2.         replace daysint= daysint + 1 if year==`i' & dateintv >=300
+  3. }
+(3,559 real changes made)
+(2,846 real changes made)
+
+. 
+. * calculate the first day of interview for all years
+. gen firstday = .
+(14,610 missing values generated)
+
+. 
+. forval i = 2006(2)2014 {
+  2.         sum daysint if year == `i'
+  3.         replace firstday = `r(min)' if year == `i'
+  4. }
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     daysint |      2,000    123.0245    40.01179         66        219
+(2,000 real changes made)
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     daysint |      3,559    158.2161    35.72019        107        259
+(3,559 real changes made)
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     daysint |      4,900    123.2886    37.49192         74        224
+(4,901 real changes made)
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     daysint |      2,846    132.8746    37.49675         79        236
+(2,846 real changes made)
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     daysint |      1,304    147.7929    40.95231         90        246
+(1,304 real changes made)
+
+. 
+. replace daysint = daysint - firstday 
+(14,609 real changes made)
+
+. 
+. tab daysint
+
+    date of |
+  interview |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 |         11        0.08        0.08
+          1 |         40        0.27        0.35
+          2 |         65        0.44        0.79
+          3 |        101        0.69        1.49
+          4 |        124        0.85        2.33
+          5 |        130        0.89        3.22
+          6 |        105        0.72        3.94
+          7 |        203        1.39        5.33
+          8 |        220        1.51        6.84
+          9 |        218        1.49        8.33
+         10 |        238        1.63        9.96
+         11 |        177        1.21       11.17
+         12 |        193        1.32       12.49
+         13 |        138        0.94       13.44
+         14 |        237        1.62       15.06
+         15 |        226        1.55       16.61
+         16 |        234        1.60       18.21
+         17 |        223        1.53       19.73
+         18 |        207        1.42       21.15
+         19 |        160        1.10       22.25
+         20 |         92        0.63       22.88
+         21 |        201        1.38       24.25
+         22 |        209        1.43       25.68
+         23 |        231        1.58       27.26
+         24 |        233        1.59       28.86
+         25 |        177        1.21       30.07
+         26 |        182        1.25       31.32
+         27 |        121        0.83       32.14
+         28 |        205        1.40       33.55
+         29 |        203        1.39       34.94
+         30 |        211        1.44       36.38
+         31 |        208        1.42       37.81
+         32 |        156        1.07       38.87
+         33 |        192        1.31       40.19
+         34 |        141        0.97       41.15
+         35 |        193        1.32       42.47
+         36 |        172        1.18       43.65
+         37 |        180        1.23       44.88
+         38 |        166        1.14       46.02
+         39 |        130        0.89       46.91
+         40 |        114        0.78       47.69
+         41 |         97        0.66       48.35
+         42 |        137        0.94       49.29
+         43 |        174        1.19       50.48
+         44 |        166        1.14       51.62
+         45 |        166        1.14       52.76
+         46 |        133        0.91       53.67
+         47 |        155        1.06       54.73
+         48 |        114        0.78       55.51
+         49 |        155        1.06       56.57
+         50 |        149        1.02       57.59
+         51 |        182        1.25       58.83
+         52 |        111        0.76       59.59
+         53 |        142        0.97       60.57
+         54 |        121        0.83       61.39
+         55 |         67        0.46       61.85
+         56 |        116        0.79       62.65
+         57 |        137        0.94       63.58
+         58 |        110        0.75       64.34
+         59 |        110        0.75       65.09
+         60 |         88        0.60       65.69
+         61 |         96        0.66       66.35
+         62 |         91        0.62       66.97
+         63 |        102        0.70       67.67
+         64 |        118        0.81       68.48
+         65 |        116        0.79       69.27
+         66 |        101        0.69       69.96
+         67 |         88        0.60       70.57
+         68 |         85        0.58       71.15
+         69 |         74        0.51       71.65
+         70 |        116        0.79       72.45
+         71 |        102        0.70       73.15
+         72 |         56        0.38       73.53
+         73 |         76        0.52       74.05
+         74 |         54        0.37       74.42
+         75 |         37        0.25       74.67
+         76 |         50        0.34       75.02
+         77 |         44        0.30       75.32
+         78 |         42        0.29       75.60
+         79 |         46        0.31       75.92
+         80 |         30        0.21       76.12
+         81 |         32        0.22       76.34
+         82 |         49        0.34       76.68
+         83 |         35        0.24       76.92
+         84 |         54        0.37       77.29
+         85 |         83        0.57       77.86
+         86 |         55        0.38       78.23
+         87 |         58        0.40       78.63
+         88 |         61        0.42       79.05
+         89 |         83        0.57       79.62
+         90 |         57        0.39       80.01
+         91 |        100        0.68       80.69
+         92 |         97        0.66       81.35
+         93 |         88        0.60       81.96
+         94 |         86        0.59       82.55
+         95 |         63        0.43       82.98
+         96 |         62        0.42       83.40
+         97 |         40        0.27       83.67
+         98 |         76        0.52       84.19
+         99 |         72        0.49       84.69
+        100 |         75        0.51       85.20
+        101 |         62        0.42       85.63
+        102 |         68        0.47       86.09
+        103 |         62        0.42       86.52
+        104 |         47        0.32       86.84
+        105 |         74        0.51       87.34
+        106 |         65        0.44       87.79
+        107 |         49        0.34       88.12
+        108 |         62        0.42       88.55
+        109 |         55        0.38       88.92
+        110 |         38        0.26       89.18
+        111 |         40        0.27       89.46
+        112 |         72        0.49       89.95
+        113 |         67        0.46       90.41
+        114 |         43        0.29       90.70
+        115 |         52        0.36       91.06
+        116 |         36        0.25       91.31
+        117 |         68        0.47       91.77
+        118 |         35        0.24       92.01
+        119 |         49        0.34       92.35
+        120 |         65        0.44       92.79
+        121 |         43        0.29       93.09
+        122 |         50        0.34       93.43
+        123 |         42        0.29       93.72
+        124 |         40        0.27       93.99
+        125 |         33        0.23       94.22
+        126 |         59        0.40       94.62
+        127 |         47        0.32       94.94
+        128 |         42        0.29       95.23
+        129 |         42        0.29       95.52
+        130 |         34        0.23       95.75
+        131 |         33        0.23       95.98
+        132 |         39        0.27       96.24
+        133 |         49        0.34       96.58
+        134 |         45        0.31       96.89
+        135 |         30        0.21       97.09
+        136 |         40        0.27       97.36
+        137 |         37        0.25       97.62
+        138 |         28        0.19       97.81
+        139 |         28        0.19       98.00
+        140 |         46        0.31       98.32
+        141 |         34        0.23       98.55
+        142 |         32        0.22       98.77
+        143 |         25        0.17       98.94
+        144 |         21        0.14       99.08
+        145 |         21        0.14       99.23
+        146 |         20        0.14       99.36
+        147 |         22        0.15       99.51
+        148 |         21        0.14       99.66
+        149 |         10        0.07       99.73
+        150 |         16        0.11       99.84
+        151 |         10        0.07       99.90
+        152 |          2        0.01       99.92
+        153 |          4        0.03       99.95
+        154 |          2        0.01       99.96
+        155 |          2        0.01       99.97
+        156 |          2        0.01       99.99
+        157 |          2        0.01      100.00
+------------+-----------------------------------
+      Total |     14,609      100.00
+
+. 
+. *** log-transformation of income ***********************************************
+. replace realinc = ln(realinc) 
+(14,610 real changes made, 1,475 to missing)
+
+. replace realrinc = ln(realrinc) 
+(14,610 real changes made, 5,927 to missing)
+
+. 
+. ********************************************************************************
+. *** Select variables to impute, treating variables differently based on whether
+. ***   they are likely to change across waves of the panel
+. ********************************************************************************
+. 
+. //  Note2: We decided to use later observations carried backward as a method for 
+. //         imputation of missing values when (1) the variable is time-invaraint 
+. //                 or (2) the variable is not invariant but the respondent is over the 
+. //         age of 30 (except for income).  This is the fill-in procedure 
+. //         deployed in prior do files.
+. 
+. * define lists of variables
+. global id_type_vars id year panelid samptype panelwave 
+
+. 
+. global interview_vars intage intsex intethn intyrs lngthinv coop comprend ///
+>                 daysint spaneng mode feeused   
+
+. 
+. global class_vars egp10_11 spegp10_11 paegp10_11 maegp10_11
+
+. 
+. global back_vars_invariant parborn family16 reg16 incom16 
+
+. 
+. global pred_vars_invariant age sex racehisp born     
+
+. 
+. global back_vars_varying relig class spdeg madeg padeg wrkstat   
+
+. 
+. global pred_vars_varying degree uscitzn realinc realrinc region wordsum ///
+>                 dwelown size xnorcsiz marital
+
+. 
+. *** interview-related and class variables (do not use _pl versions)
+. 
+. foreach var in $interview_vars $class_vars {
+  2. 
+.         gen `var'_im = `var'
+  3. }
+(80 missing values generated)
+(205 missing values generated)
+(338 missing values generated)
+(80 missing values generated)
+(9 missing values generated)
+(40 missing values generated)
+(42 missing values generated)
+(1 missing value generated)
+(10 missing values generated)
+(64 missing values generated)
+(250 missing values generated)
+(7,056 missing values generated)
+(1,911 missing values generated)
+(3,617 missing values generated)
+
+. 
+. *** time-invariant variables (use _pl version)
+. 
+. foreach var in $back_vars_invariant $pred_vars_invariant  {
+  2. 
+.         gen `var'_im = `var'_pl 
+  3. 
+. }
+(11 missing values generated)
+(58 missing values generated)
+(15 missing values generated)
+
+. 
+. ***  mixed, based on age
+. 
+. foreach var in $back_vars_varying $pred_vars_varying  {
+  2. 
+.         if `var' == realinc | realrinc {
+  3.         
+.                 gen `var'_im = `var'
+  4.         
+.         }
+  5.                 
+.         else if `var' != realinc | realrinc {
+  6. 
+.                 gen `var'_im = `var'
+  7.                 replace `var'_im = `var'_pl if age >= 30
+  8.                 
+.                 }
+  9. }
+(70 missing values generated)
+(89 missing values generated)
+(7,688 missing values generated)
+(1,097 missing values generated)
+(3,151 missing values generated)
+(12 missing values generated)
+(2 missing values generated)
+(13,238 missing values generated)
+(1,475 missing values generated)
+(5,927 missing values generated)
+(3 missing values generated)
+(4,958 missing values generated)
+(4,460 missing values generated)
+(3 missing values generated)
+(3 missing values generated)
+(15 missing values generated)
+
+. 
+. ********************************************************************************
+. *** Recode some final variables
+. ********************************************************************************
+. 
+. *** more detailed coding of race ***********************************************
+. clonevar racehisp5_im = racehisp_im
+
+. recode racehisp5_im 4 = 5
+(racehisp5_im: 566 changes made)
+
+. replace racehisp5_im = 4 if asian == 1 & racehisp5 == 5
+(413 real changes made)
+
+. 
+. tab racehisp_im racehisp5_im
+
+racehisp_i |                      racehisp5_im
+         m |         1          2          3          4          5 |     Total
+-----------+-------------------------------------------------------+----------
+         1 |    10,418          0          0          0          0 |    10,418 
+         2 |         0      2,114          0          0          0 |     2,114 
+         3 |         0          0      1,512          0          0 |     1,512 
+         4 |         0          0          0        413        153 |       566 
+-----------+-------------------------------------------------------+----------
+     Total |    10,418      2,114      1,512        413        153 |    14,610 
+
+. drop racehisp racehisp_im racehisp_pl
+
+. 
+. *** recode citizen variable
+. bys panelid: egen evercitzn_im = total(uscitzn_pl == 1 | uscitzn_pl == 3 | ///
+>                uscitzn_pl == 4) 
+
+. replace evercitzn_im = 1 if evercitzn_im >= 1 | born_pl == 1
+(13,690 real changes made)
+
+. 
+. *** recode mode so that na and dk from 2010 onward are classified as missing
+. tab mode_im year, miss
+
+           |             gss year for this respondent 
+   mode_im |      2006       2008       2010       2012       2014 |     Total
+-----------+-------------------------------------------------------+----------
+         1 |     1,867      3,029      4,036      2,335      1,051 |    12,318 
+         2 |       133        530        851        506        253 |     2,273 
+         8 |         0          0          1          0          0 |         1 
+         9 |         0          0          8          0          0 |         8 
+        .d |         0          0          0          1          0 |         1 
+        .n |         0          0          5          4          0 |         9 
+-----------+-------------------------------------------------------+----------
+     Total |     2,000      3,559      4,901      2,846      1,304 |    14,610 
+
+. recode mode_im  8/9 = .
+(mode_im: 9 changes made)
+
+. tab mode_im year, miss
+
+           |             gss year for this respondent 
+   mode_im |      2006       2008       2010       2012       2014 |     Total
+-----------+-------------------------------------------------------+----------
+         1 |     1,867      3,029      4,036      2,335      1,051 |    12,318 
+         2 |       133        530        851        506        253 |     2,273 
+         . |         0          0          9          0          0 |         9 
+        .d |         0          0          0          1          0 |         1 
+        .n |         0          0          5          4          0 |         9 
+-----------+-------------------------------------------------------+----------
+     Total |     2,000      3,559      4,901      2,846      1,304 |    14,610 
+
+. 
+. ********************************************************************************
+. *** Select variables for final imputation in R; reocde missing values
+. ********************************************************************************
+.                                                         
+. *** keep only the variables to impute
+. keep $id_type_vars *_im
+
+. 
+. *** replace all missing to soft missing
+. preserve
+
+. keep *_im
+
+. quietly ds
+
+. local all_im  `r(varlist)'
+
+. restore
+
+.         
+. foreach var in `all_im' {
+  2. 
+.         replace `var' = . if `var' >=. | `var' < 0
+  3. 
+.         }       
+(80 real changes made, 80 to missing)
+(205 real changes made, 205 to missing)
+(338 real changes made, 338 to missing)
+(80 real changes made, 80 to missing)
+(9 real changes made, 9 to missing)
+(40 real changes made, 40 to missing)
+(42 real changes made, 42 to missing)
+(0 real changes made)
+(0 real changes made)
+(10 real changes made, 10 to missing)
+(64 real changes made, 64 to missing)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(11 real changes made, 11 to missing)
+(0 real changes made)
+(0 real changes made)
+(58 real changes made, 58 to missing)
+(8 real changes made, 8 to missing)
+(0 real changes made)
+(0 real changes made)
+(70 real changes made, 70 to missing)
+(89 real changes made, 89 to missing)
+(7,688 real changes made, 7,688 to missing)
+(1,097 real changes made, 1,097 to missing)
+(3,151 real changes made, 3,151 to missing)
+(12 real changes made, 12 to missing)
+(2 real changes made, 2 to missing)
+(13,238 real changes made, 13,238 to missing)
+(0 real changes made)
+(0 real changes made)
+(3 real changes made, 3 to missing)
+(4,958 real changes made, 4,958 to missing)
+(4,460 real changes made, 4,460 to missing)
+(3 real changes made, 3 to missing)
+(3 real changes made, 3 to missing)
+(15 real changes made, 15 to missing)
+(0 real changes made)
+(0 real changes made)
+
+.         
+. sum *   
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+        year |     14,610    2009.712     2.29984       2006       2014
+          id |     14,610    5377.581    3908.022          1      11551
+    samptype |     14,610    2008.012    1.630573       2006       2010
+     panelid |     14,610    1.28e+07     8940563      20069   2.01e+07
+   panelwave |     14,610    1.849966     .811189          1          3
+-------------+---------------------------------------------------------
+   intage_im |     14,530     53.9554    10.74722         22         84
+   intsex_im |     14,405    1.817216    .3865026          1          2
+  intethn_im |     14,272    1.485006    1.000413          1          5
+   intyrs_im |     14,530    3.283862    3.986002          0      25.64
+ lngthinv_im |     14,601    106.4248    34.93067         30        200
+-------------+---------------------------------------------------------
+     coop_im |     14,570    1.227728    .5041116          1          4
+ comprend_im |     14,568    1.183141    .4438221          1          3
+  daysint_im |     14,609    52.46971    37.87091          0        157
+  spaneng_im |     14,610    1.037166    .1891757          1          2
+     mode_im |     14,591    1.155781      .36266          1          2
+-------------+---------------------------------------------------------
+  feeused_im |     14,546    1.689605    .9458915          1          3
+ egp10_11_im |     14,360    5.026671    3.205378          1         12
+spegp10_11~m |      7,554    5.080222    3.275177          1         12
+paegp10_11~m |     12,699    6.534058    3.353345          1         12
+maegp10_11~m |     10,993    5.201219    3.119131          1         12
+-------------+---------------------------------------------------------
+  parborn_im |     14,599    1.232071    2.804027          0          8
+ family16_im |     14,610    1.990554    1.829675          0          8
+    reg16_im |     14,610    4.425736    2.696072          0          9
+  incom16_im |     14,552    2.741273    .9197357          1          5
+      age_im |     14,595     49.2122    17.06472         18         89
+-------------+---------------------------------------------------------
+      sex_im |     14,610    1.563655    .4959485          1          2
+     born_im |     14,610    1.113552    .3172777          1          2
+    relig_im |     14,540    2.360867    2.272748          1         13
+    class_im |     14,521    2.412644    .6827992          1          4
+    spdeg_im |      6,922    1.727535    1.233247          0          4
+-------------+---------------------------------------------------------
+    madeg_im |     13,513    1.069045    1.077399          0          4
+    padeg_im |     11,459    1.147395    1.250102          0          4
+  wrkstat_im |     14,598    3.044801    2.367727          1          8
+   degree_im |     14,608    1.651219    1.224115          0          4
+  uscitzn_im |      1,372    1.524781    .6076088          1          4
+-------------+---------------------------------------------------------
+  realinc_im |     13,135    9.966141    1.107219   5.465948   11.95208
+ realrinc_im |      8,683    9.550634    1.175977   5.465948   13.08184
+   region_im |     14,607    5.127199    2.446129          1          9
+  wordsum_im |      9,652    6.151471    2.012924          0         10
+  dwelown_im |     10,150    1.349064    .5169571          1          3
+-------------+---------------------------------------------------------
+     size_im |     14,607    361.8173     1270.33          0       8008
+ xnorcsiz_im |     14,607    4.365167    2.867853          1         10
+  marital_im |     14,595    2.478794    1.650208          1          5
+racehisp5_im |     14,610    1.478371    .8670884          1          5
+evercitzn_im |     14,610    .9493498      .21929          0          1
+
+. rename *_im *
+
+. bys panelwave: sum *
+
+----------------------------------------------------------------------------------------------------
+-> panelwave = 1
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+        year |      6,067    2008.015    1.632929       2006       2010
+          id |      6,067    1418.354    1056.602          1       4510
+    samptype |      6,067    2008.015    1.632929       2006       2010
+     panelid |      6,067    1.27e+07     8965131      20069   2.01e+07
+   panelwave |      6,067           1           0          1          1
+-------------+---------------------------------------------------------
+      intage |      6,036    53.33582    10.71638         22         84
+      intsex |      5,911    1.816444    .3871545          1          2
+     intethn |      5,855    1.454483    .9131784          1          5
+      intyrs |      6,036    2.963297    3.836959        .12      25.64
+    lngthinv |      6,061    109.6467    36.84053         30        200
+-------------+---------------------------------------------------------
+        coop |      6,048    1.245701    .5291078          1          4
+    comprend |      6,047    1.191004    .4522138          1          3
+     daysint |      6,066    53.94296    38.18109          0        153
+     spaneng |      6,067    1.045492    .2083978          1          2
+        mode |      6,058    1.097227    .2962908          1          2
+-------------+---------------------------------------------------------
+     feeused |      6,044    1.828425    .9784266          1          3
+    egp10_11 |      5,916    5.138776    3.234458          1         12
+  spegp10_11 |      2,997    5.136803    3.281818          1         12
+  paegp10_11 |      5,206    6.634268    3.340712          1         12
+  maegp10_11 |      4,402     5.21104    3.109709          1         12
+-------------+---------------------------------------------------------
+     parborn |      6,057    1.333168     2.90224          0          8
+    family16 |      6,067    2.018131     1.85752          0          8
+       reg16 |      6,067    4.382232     2.73571          0          9
+     incom16 |      6,020    2.740365    .9288701          1          5
+         age |      6,059    47.63096    17.39012         18         89
+-------------+---------------------------------------------------------
+         sex |      6,067     1.55909     .496537          1          2
+        born |      6,067    1.128564    .3347447          1          2
+       relig |      6,034    2.351177    2.274574          1         13
+       class |      6,024    2.416003    .6832229          1          4
+       spdeg |      2,787    1.678149    1.229615          0          4
+-------------+---------------------------------------------------------
+       madeg |      5,538    1.050018    1.066774          0          4
+       padeg |      4,698    1.122393    1.236434          0          4
+     wrkstat |      6,060    3.022937     2.37414          1          8
+      degree |      6,066    1.587537    1.217082          0          4
+     uscitzn |        503    1.580517    .6095016          1          4
+-------------+---------------------------------------------------------
+     realinc |      5,295    9.930787    1.129536   5.556828   11.89241
+    realrinc |      3,544    9.528131    1.182313   5.556828   13.08184
+      region |      6,067    5.157739    2.454265          1          9
+     wordsum |      3,505    6.024251    2.016693          0         10
+     dwelown |      4,058    1.369394    .5195888          1          3
+-------------+---------------------------------------------------------
+        size |      6,067    358.5416    1255.316          0       8008
+    xnorcsiz |      6,067    4.289929    2.842062          1         10
+     marital |      6,060     2.55066    1.680419          1          5
+   racehisp5 |      6,067    1.502884    .8819825          1          5
+   evercitzn |      6,067    .9340696    .2481809          0          1
+
+----------------------------------------------------------------------------------------------------
+-> panelwave = 2
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+        year |      4,668    2010.006    1.626582       2008       2012
+          id |      4,668    7797.893    2971.042       3001      11551
+    samptype |      4,668    2008.006    1.626582       2006       2010
+     panelid |      4,668    1.29e+07     8927090      20069   2.01e+07
+   panelwave |      4,668           2           0          2          2
+-------------+---------------------------------------------------------
+      intage |      4,647     54.2266    10.77511         23         84
+      intsex |      4,647    1.819669    .3845046          1          2
+     intethn |      4,600    1.491522    1.025196          1          5
+      intyrs |      4,647    3.304565    4.092118          0      25.64
+    lngthinv |      4,665    109.9091    35.52928         30        200
+-------------+---------------------------------------------------------
+        coop |      4,655    1.221267    .4940763          1          4
+    comprend |      4,656    1.181916    .4428492          1          3
+     daysint |      4,668    52.30313    38.08551          0        157
+     spaneng |      4,668    1.034919    .1835933          1          2
+        mode |      4,663    1.200515    .4004284          1          2
+-------------+---------------------------------------------------------
+     feeused |      4,645    1.589451    .9088619          1          3
+    egp10_11 |      4,609    4.974832    3.187401          1         12
+  spegp10_11 |      2,465    5.010548    3.259833          1         12
+  paegp10_11 |      4,086    6.431229    3.364811          1         12
+  maegp10_11 |      3,567    5.201009    3.137299          1         12
+-------------+---------------------------------------------------------
+     parborn |      4,667    1.212985    2.782296          0          8
+    family16 |      4,668    1.978792    1.828922          0          8
+       reg16 |      4,668    4.435518    2.684367          0          9
+     incom16 |      4,659    2.734278    .9146764          1          5
+         age |      4,664    49.62286    17.00622         20         89
+-------------+---------------------------------------------------------
+         sex |      4,668    1.565767    .4957089          1          2
+        born |      4,668    1.109897    .3127951          1          2
+       relig |      4,652    2.337919    2.225842          1         13
+       class |      4,647    2.410803    .6838613          1          4
+       spdeg |      2,236    1.752236    1.240397          0          4
+-------------+---------------------------------------------------------
+       madeg |      4,322    1.080518    1.081709          0          4
+       padeg |      3,668    1.175027    1.265173          0          4
+     wrkstat |      4,666    3.080154    2.387895          1          8
+      degree |      4,667    1.668952    1.225666          0          4
+     uscitzn |        504    1.525794    .6140578          1          4
+-------------+---------------------------------------------------------
+     realinc |      4,269    9.997407     1.08148   5.501258   11.95208
+    realrinc |      2,814    9.563909    1.213057   5.501258   13.08184
+      region |      4,665    5.094319    2.439337          1          9
+     wordsum |      3,585    6.173501    2.021238          0         10
+     dwelown |      3,105    1.340097    .5161247          1          3
+-------------+---------------------------------------------------------
+        size |      4,665    360.4673    1273.248          0       8008
+    xnorcsiz |      4,665    4.418006    2.890619          1         10
+     marital |      4,664    2.451544    1.639571          1          5
+   racehisp5 |      4,668    1.473008    .8703874          1          5
+   evercitzn |      4,668    .9554413    .2063549          0          1
+
+----------------------------------------------------------------------------------------------------
+-> panelwave = 3
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+        year |      3,875    2012.014    1.632086       2010       2014
+          id |      3,875    8660.838    1679.721       6001      11304
+    samptype |      3,875    2008.014    1.632086       2006       2010
+     panelid |      3,875    1.29e+07     8918116      20069   2.01e+07
+   panelwave |      3,875           3           0          3          3
+-------------+---------------------------------------------------------
+      intage |      3,847    54.59995    10.71305         23         81
+      intsex |      3,847    1.815441    .3879902          1          2
+     intethn |      3,817    1.523972    1.092673          1          5
+      intyrs |      3,847    3.761823    4.037353          0         25
+    lngthinv |      3,875    97.19071    28.97296         30        200
+-------------+---------------------------------------------------------
+        coop |      3,867    1.207396    .4742922          1          4
+    comprend |      3,865    1.172316    .4314373          1          3
+     daysint |      3,875    50.36413    37.02043          0        156
+     spaneng |      3,875    1.026839    .1616327          1          2
+        mode |      3,870     1.19354    .3951236          1          2
+-------------+---------------------------------------------------------
+     feeused |      3,857    1.592689    .9099943          1          3
+    egp10_11 |      3,835    4.916037    3.177129          1         12
+  spegp10_11 |      2,092    5.081262     3.28367          1         12
+  paegp10_11 |      3,407    6.504256     3.35551          1         12
+  maegp10_11 |      3,024    5.187169    3.112302          1         12
+-------------+---------------------------------------------------------
+     parborn |      3,875    1.097032    2.664976          0          8
+    family16 |      3,875    1.961548       1.786          0          8
+       reg16 |      3,875    4.482065    2.646703          0          9
+     incom16 |      3,873    2.751097    .9116523          1          5
+         age |      3,872    51.19189    16.37601         21         89
+-------------+---------------------------------------------------------
+         sex |      3,875    1.568258    .4953828          1          2
+        born |      3,875    1.094452    .2924937          1          2
+       relig |      3,854    2.403736     2.32533          1         13
+       class |      3,850     2.40961    .6810054          1          4
+       spdeg |      1,899    1.770932    1.228258          0          4
+-------------+---------------------------------------------------------
+       madeg |      3,653    1.084314    1.088126          0          4
+       padeg |      3,093    1.152603     1.25242          0          4
+     wrkstat |      3,872    3.036415    2.333135          1          8
+      degree |      3,875    1.729548    1.228277          0          4
+     uscitzn |        365    1.446575    .5888343          1          4
+-------------+---------------------------------------------------------
+     realinc |      3,571    9.981186     1.10304   5.465948   11.95208
+    realrinc |      2,325    9.568869    1.119279   5.465948   12.74161
+      region |      3,875    5.118968    2.441582          1          9
+     wordsum |      2,562    6.294692    1.985943          0         10
+     dwelown |      2,987    1.330767    .5134502          1          3
+-------------+---------------------------------------------------------
+        size |      3,875    368.5714     1290.33          0       8008
+    xnorcsiz |      3,875    4.419355    2.878612          1         10
+     marital |      3,871    2.399122    1.610556          1          5
+   racehisp5 |      3,875    1.446452    .8381764          1          5
+   evercitzn |      3,875    .9659355    .1814184          0          1
+
+
+. bys year: sum *
+
+----------------------------------------------------------------------------------------------------
+-> year = 2006
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+        year |      2,000        2006           0       2006       2006
+          id |      2,000    2233.943    1301.449          9       4510
+    samptype |      2,000        2006           0       2006       2006
+     panelid |      2,000    1.59e+07     7658279      20069   2.01e+07
+   panelwave |      2,000           1           0          1          1
+-------------+---------------------------------------------------------
+      intage |      2,000      54.383    9.412418         22         79
+      intsex |      1,875    1.796267    .4028804          1          2
+     intethn |      1,875    1.371733      .75347          1          4
+      intyrs |      2,000     3.81425    3.802605         .3       19.6
+    lngthinv |      1,996    105.9509    33.52628         30        200
+-------------+---------------------------------------------------------
+        coop |      1,996    1.234469    .5261429          1          4
+    comprend |      1,996    1.147295    .3996837          1          3
+     daysint |      2,000     57.0245    40.01179          0        153
+     spaneng |      2,000       1.061    .2393902          1          2
+        mode |      2,000      1.0665    .2492164          1          2
+-------------+---------------------------------------------------------
+     feeused |      1,996    2.011022    .9891029          1          3
+    egp10_11 |      1,957    5.118549    3.239305          1         12
+  spegp10_11 |        996    5.171687    3.270646          1         12
+  paegp10_11 |      1,740    6.620115    3.310108          1         12
+  maegp10_11 |      1,409    5.388928    3.203654          1         12
+-------------+---------------------------------------------------------
+     parborn |      1,999    1.352176    2.910929          0          8
+    family16 |      2,000      1.9395    1.785058          0          8
+       reg16 |      2,000      4.3945    2.744929          0          9
+     incom16 |      1,985    2.723426    .9122709          1          5
+         age |      1,994    47.18806     17.1586         18         89
+-------------+---------------------------------------------------------
+         sex |      2,000       1.573     .494766          1          2
+        born |      2,000      1.1335    .3401994          1          2
+       relig |      1,989    2.160382    1.929314          1         13
+       class |      1,988    2.447686    .6645678          1          4
+       spdeg |        932    1.619099    1.234911          0          4
+-------------+---------------------------------------------------------
+       madeg |      1,812    1.049669    1.081323          0          4
+       padeg |      1,571    1.093571    1.240312          0          4
+     wrkstat |      1,998    2.985986    2.381241          1          8
+      degree |      2,000       1.576    1.197473          0          4
+     uscitzn |          0
+-------------+---------------------------------------------------------
+     realinc |      1,716    9.987517    1.074815   5.649854   11.88105
+    realrinc |      1,153    9.580335     1.11483   5.649854    11.9785
+      region |      2,000      5.2395    2.451764          1          9
+     wordsum |        958    6.134656     1.93511          0         10
+     dwelown |      1,307    1.354246    .5198833          1          3
+-------------+---------------------------------------------------------
+        size |      2,000    328.5675    1188.449          0       8008
+    xnorcsiz |      2,000       4.311    2.833777          1         10
+     marital |      1,999    2.510255    1.664795          1          5
+   racehisp5 |      2,000       1.498    .8650839          1          5
+   evercitzn |      2,000       .9145    .2796942          0          1
+
+----------------------------------------------------------------------------------------------------
+-> year = 2008
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+        year |      3,559        2008           0       2008       2008
+          id |      3,559    2201.656    1464.007          1       4536
+    samptype |      3,559    2007.137    .9907329       2006       2008
+     panelid |      3,559    1.33e+07     8822830      20069   2.01e+07
+   panelwave |      3,559    1.431582    .4953664          1          2
+-------------+---------------------------------------------------------
+      intage |      3,549    52.98168    10.75587         23         84
+      intsex |      3,549     1.84869    .3584015          1          2
+     intethn |      3,549    1.426317    .8635781          1          5
+      intyrs |      3,549    4.152604     4.77419        .12      25.64
+    lngthinv |      3,554    113.0247    43.42432         30        200
+-------------+---------------------------------------------------------
+        coop |      3,552    1.230011    .5059713          1          4
+    comprend |      3,553    1.182381      .44387          1          3
+     daysint |      3,559    51.21607    35.72019          0        152
+     spaneng |      3,559    1.041304    .1990198          1          2
+        mode |      3,559    1.148918    .3560579          1          2
+-------------+---------------------------------------------------------
+     feeused |      3,551    1.736694    .9610453          1          3
+    egp10_11 |      3,495    5.068097    3.221271          1         12
+  spegp10_11 |      1,884    5.042463    3.246192          1         12
+  paegp10_11 |      3,093    6.546718    3.336773          1         12
+  maegp10_11 |      2,621    5.249523    3.117472          1         12
+-------------+---------------------------------------------------------
+     parborn |      3,557    1.329772    2.900689          0          8
+    family16 |      3,559    1.987075    1.835828          0          8
+       reg16 |      3,559     4.40798     2.72527          0          9
+     incom16 |      3,540    2.729661    .9189053          1          5
+         age |      3,555     48.4256    17.23298         18         89
+-------------+---------------------------------------------------------
+         sex |      3,559    1.558865    .4965926          1          2
+        born |      3,559    1.124754    .3304864          1          2
+       relig |      3,548    2.330609    2.257412          1         13
+       class |      3,538    2.421425    .6860326          1          4
+       spdeg |      1,736    1.698157    1.225529          0          4
+-------------+---------------------------------------------------------
+       madeg |      3,276    1.053114    1.060427          0          4
+       padeg |      2,762    1.152064    1.244784          0          4
+     wrkstat |      3,556    3.008999    2.390306          1          8
+      degree |      3,557    1.621872    1.217885          0          4
+     uscitzn |        434    1.585253    .6399798          1          4
+-------------+---------------------------------------------------------
+     realinc |      3,182    10.01393    1.095056   5.590054   11.89241
+    realrinc |      2,135    9.601331     1.23567   5.590054   13.08184
+      region |      3,558    5.129848    2.456939          1          9
+     wordsum |      2,673    6.045642    2.032523          0         10
+     dwelown |      2,330    1.336481    .5059539          1          3
+-------------+---------------------------------------------------------
+        size |      3,556    357.7621    1265.816          0       8008
+    xnorcsiz |      3,556    4.420135    2.896252          1         10
+     marital |      3,552    2.446227    1.653251          1          5
+   racehisp5 |      3,559    1.486654    .8815637          1          5
+   evercitzn |      3,559    .9429615    .2319487          0          1
+
+----------------------------------------------------------------------------------------------------
+-> year = 2010
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+        year |      4,901        2010           0       2010       2010
+          id |      4,901    4990.673    3490.455          1       9581
+    samptype |      4,901    2008.313    1.616156       2006       2010
+     panelid |      4,901    1.25e+07     9002180      20069   2.01e+07
+   panelwave |      4,901    1.843297    .8080781          1          3
+-------------+---------------------------------------------------------
+      intage |      4,832    52.89942    11.37015         23         77
+      intsex |      4,832      1.8125    .3903528          1          2
+     intethn |      4,711    1.590321    1.120672          1          5
+      intyrs |      4,832     1.06714    1.571478         .5          9
+    lngthinv |      4,901    108.0522    31.37762         30        200
+-------------+---------------------------------------------------------
+        coop |      4,881    1.229871    .5069365          1          4
+    comprend |      4,878    1.206027    .4701338          1          3
+     daysint |      4,900    49.28857    37.49192          0        150
+     spaneng |      4,901    1.034075    .1814396          1          2
+        mode |      4,887    1.174135    .3792647          1          2
+-------------+---------------------------------------------------------
+     feeused |      4,872     1.60899    .9170175          1          3
+    egp10_11 |      4,800      5.0375    3.195226          1         12
+  spegp10_11 |      2,514    5.085521    3.250064          1         12
+  paegp10_11 |      4,241    6.477482    3.341848          1         12
+  maegp10_11 |      3,699    5.131387    3.076725          1         12
+-------------+---------------------------------------------------------
+     parborn |      4,894    1.219861    2.794239          0          8
+    family16 |      4,901    2.001224    1.847336          0          8
+       reg16 |      4,901    4.431341    2.686176          0          9
+     incom16 |      4,882    2.741704    .9242226          1          5
+         age |      4,897    49.24137     17.1902         18         89
+-------------+---------------------------------------------------------
+         sex |      4,901    1.565191    .4957825          1          2
+        born |      4,901     1.11263    .3161723          1          2
+       relig |      4,867    2.413396      2.3785          1         13
+       class |      4,871    2.407103    .6763403          1          4
+       spdeg |      2,297    1.706138    1.230889          0          4
+-------------+---------------------------------------------------------
+       madeg |      4,512    1.066268    1.087727          0          4
+       padeg |      3,837    1.152202    1.256175          0          4
+     wrkstat |      4,895    3.119101    2.385231          1          8
+      degree |      4,901    1.644154     1.23184          0          4
+     uscitzn |        543    1.519337    .5913693          1          4
+-------------+---------------------------------------------------------
+     realinc |      4,397    9.915385    1.116993   5.556828   11.69196
+    realrinc |      2,899    9.512018    1.151104   5.556828   11.60391
+      region |      4,900    5.120612    2.438955          1          9
+     wordsum |      3,215    6.120995     2.04446          0         10
+     dwelown |      3,287    1.356252    .5232946          1          3
+-------------+---------------------------------------------------------
+        size |      4,901    366.6778    1277.526          0       8008
+    xnorcsiz |      4,901      4.3283    2.854669          1         10
+     marital |      4,897    2.500102    1.657096          1          5
+   racehisp5 |      4,901    1.488064     .879999          1          5
+   evercitzn |      4,901     .953887    .2097513          0          1
+
+----------------------------------------------------------------------------------------------------
+-> year = 2012
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+        year |      2,846        2012           0       2012       2012
+          id |      2,846    9807.708    1138.522       8001      11551
+    samptype |      2,846     2009.09    .9961212       2008       2010
+     panelid |      2,846    1.13e+07     9136174      20082   2.01e+07
+   panelwave |      2,846    2.455025    .4980606          2          3
+-------------+---------------------------------------------------------
+      intage |      2,845     55.3283    10.58103         25         81
+      intsex |      2,845    1.801054    .3992771          1          2
+     intethn |      2,833    1.492764    1.107579          1          5
+      intyrs |      2,845    4.500527    4.119063          0         23
+    lngthinv |      2,846     101.584    29.94541         30        200
+-------------+---------------------------------------------------------
+        coop |      2,838    1.227977    .4965509          1          4
+    comprend |      2,838    1.184989    .4434462          1          3
+     daysint |      2,846    53.87456    37.49675          0        157
+     spaneng |      2,846    1.029164    .1682949          1          2
+        mode |      2,841    1.178106    .3826696          1          2
+-------------+---------------------------------------------------------
+     feeused |      2,825    1.576637    .9020079          1          3
+    egp10_11 |      2,815     4.99929    3.227018          1         12
+  spegp10_11 |      1,490    5.133557    3.371195          1         12
+  paegp10_11 |      2,491    6.567644    3.433906          1         12
+  maegp10_11 |      2,224    5.238309    3.182957          1         12
+-------------+---------------------------------------------------------
+     parborn |      2,845    1.128998    2.693409          0          8
+    family16 |      2,846    2.008082     1.82973          0          8
+       reg16 |      2,846    4.481377    2.678595          0          9
+     incom16 |      2,842    2.754398    .9088268          1          5
+         age |      2,845    50.56907    16.74937         20         89
+-------------+---------------------------------------------------------
+         sex |      2,846    1.562193    .4962042          1          2
+        born |      2,846    1.099086    .2988305          1          2
+       relig |      2,836    2.380113    2.263914          1         13
+       class |      2,825    2.389735    .6964861          1          4
+       spdeg |      1,349     1.81023    1.233622          0          4
+-------------+---------------------------------------------------------
+       madeg |      2,676    1.086323    1.080163          0          4
+       padeg |      2,255    1.156098    1.249144          0          4
+     wrkstat |      2,845    3.017223    2.318985          1          8
+      degree |      2,846    1.700281    1.228733          0          4
+     uscitzn |        281    1.494662    .5677084          1          4
+-------------+---------------------------------------------------------
+     realinc |      2,616     9.97061    1.119008   5.501258   11.95208
+    realrinc |      1,686    9.529029    1.215015   5.501258   12.74161
+      region |      2,845     5.08471    2.443208          1          9
+     wordsum |      1,908    6.269392    2.002821          0         10
+     dwelown |      1,925    1.353247    .5247473          1          3
+-------------+---------------------------------------------------------
+        size |      2,846    368.9603    1286.907          0       8008
+    xnorcsiz |      2,846    4.390372    2.879251          1         10
+     marital |      2,844    2.469761    1.641058          1          5
+   racehisp5 |      2,846     1.45397    .8408444          1          5
+   evercitzn |      2,846    .9627547    .1893955          0          1
+
+----------------------------------------------------------------------------------------------------
+-> year = 2014
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+        year |      1,304        2014           0       2014       2014
+          id |      1,304     10652.5    376.5767      10001      11304
+    samptype |      1,304        2010           0       2010       2010
+     panelid |      1,304    1.14e+07     9151228      20101   2.01e+07
+   panelwave |      1,304           3           0          3          3
+-------------+---------------------------------------------------------
+      intage |      1,304    56.86733    9.679279         25         81
+      intsex |      1,304    1.814417    .3889188          1          2
+     intethn |      1,304    1.410276    .9135722          1          5
+      intyrs |      1,304    5.665644    4.135857          0         25
+    lngthinv |      1,304     93.6112    28.35313         30        200
+-------------+---------------------------------------------------------
+        coop |      1,303    1.202609    .4690998          1          4
+    comprend |      1,303    1.150422    .4001893          1          3
+     daysint |      1,304    57.79294    40.95231          0        156
+     spaneng |      1,304    1.018405     .134462          1          2
+        mode |      1,304    1.194018    .3955948          1          2
+-------------+---------------------------------------------------------
+     feeused |      1,302    1.615207    .9196041          1          3
+    egp10_11 |      1,293     4.79505    3.092572          1         12
+  spegp10_11 |        670     4.91194    3.242055          1         12
+  paegp10_11 |      1,134    6.505291    3.329966          1         12
+  maegp10_11 |      1,040    4.994231    3.004322          1         12
+-------------+---------------------------------------------------------
+     parborn |      1,304    1.052147    2.621778          0          8
+    family16 |      1,304           2    1.814921          0          8
+       reg16 |      1,304    4.379601    2.616304          0          9
+     incom16 |      1,303    2.769762    .9401967          1          5
+         age |      1,304     51.3819    16.18257         21         89
+-------------+---------------------------------------------------------
+         sex |      1,304    1.559816    .4965996          1          2
+        born |      1,304    1.087423    .2825627          1          2
+       relig |      1,300    2.511538    2.393027          1         11
+       class |      1,299    2.405697     .694019          1          4
+       spdeg |        608       1.875    1.240781          0          4
+-------------+---------------------------------------------------------
+       madeg |      1,237    1.112369    1.072373          0          4
+       padeg |      1,034    1.179884    1.258674          0          4
+     wrkstat |      1,304    3.013804    2.320742          1          8
+      degree |      1,304    1.766104     1.23198          0          4
+     uscitzn |        114    1.394737    .6327132          1          4
+-------------+---------------------------------------------------------
+     realinc |      1,224    9.984726    1.117265   5.465948   11.81168
+    realrinc |        810    9.557908    1.099089   5.465948   11.79168
+      region |      1,304    5.065184    2.439358          1          9
+     wordsum |        898    6.342984    1.919901          0         10
+     dwelown |      1,301    1.342045    .5059569          1          3
+-------------+---------------------------------------------------------
+        size |      1,304    390.0153     1339.61          0       8008
+    xnorcsiz |      1,304    4.381902    2.867476          1         10
+     marital |      1,303    2.458941    1.613488          1          5
+   racehisp5 |      1,304    1.442485    .8364703          1          5
+   evercitzn |      1,304    .9739264    .1594154          0          1
+
+
+. save data/gss-panel-vars-to-impute.dta, replace
+file data/gss-panel-vars-to-impute.dta saved
+
+. 
+. outsheet using data/gss-panel-vars-to-impute.csv, comma nolabel replace
+
+. 
+. log close
+      name:  <unnamed>
+       log:  /Users/smorgan/Documents/GitHub/gss-panel-weights/log/variables-to-impute.log
+  log type:  text
+ closed on:  21 Jan 2020, 14:23:30
+----------------------------------------------------------------------------------------------------

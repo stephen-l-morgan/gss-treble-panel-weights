@@ -1,0 +1,545 @@
+----------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  /Users/smorgan/Documents/GitHub/gss-panel-weights/log/append-and-merge-imputed-datasets
+> .log
+  log type:  text
+ opened on:  28 Jan 2020, 17:42:05
+
+. 
+. ********************************************************************************
+. *** Define tempfiles and list of variables for analysis
+. ********************************************************************************
+. 
+. tempfile indicvars unimputed
+
+. 
+. local vars_to_keep ///
+>         age sex racehisp5 degree realinc marital evercitzn region ///
+>         wordsum intage intsex intethn intyrs lngthinv daysint mode feeused coop ///
+>         comprend spaneng dwelown
+
+.         
+. ********************************************************************************
+. *** Combine the original unimputed data with the imputed data records from R
+. ********************************************************************************
+. 
+. *** import id, weight, and follow-up status from merged file
+. 
+. use data/gss-2006-2014-fill-in-and-recoded-panel-merged.dta, clear
+
+. 
+. keep if panelr==1
+(7,022 observations deleted)
+
+. 
+. sort panelid panelwave
+
+. order panelid panelwave
+
+. 
+. egen w1 = total(panelwave==1) if !missing(panelid), by(panelid)
+
+. egen w2 = total(panelwave==2) if !missing(panelid), by(panelid)
+
+. egen w3 = total(panelwave==3) if !missing(panelid), by(panelid)
+
+. 
+. keep samptype panelid panstat_2 panstat_3 w2 w3 panelwave wt*
+
+. 
+. save `indicvars'        
+file /var/folders/m_/l1vkbxx13h37fq0k94zqcym80000gp/T//S_61652.000001 saved
+
+. 
+. *** data generated prior to imputation
+. 
+. use data/gss-panel-vars-to-impute.dta, clear
+
+. 
+. gen m = 0
+
+. 
+. save `unimputed'
+file /var/folders/m_/l1vkbxx13h37fq0k94zqcym80000gp/T//S_61652.000002 saved
+
+. 
+. *** merge id, weight and follow-up status
+. 
+. use data/gss-panel-vars-imputed-rf.dta, clear
+(Written by R.              )
+
+. rename flag m
+
+.         
+. append using `unimputed'
+(note: variable m was long, now double to accommodate using data's values)
+
+. merge m:m samptype panelid panelwave using `indicvars' 
+
+    Result                           # of obs.
+    -----------------------------------------
+    not matched                        87,660
+        from master                    87,660  (_merge==1)
+        from using                          0  (_merge==2)
+
+    matched                            14,610  (_merge==3)
+    -----------------------------------------
+
+. drop _merge
+
+. 
+. *** append the unimputed dataset
+. 
+. replace panelwave = panelwave_x if panelwave == .
+(87,660 real changes made)
+
+. drop panelwave_x panelwave_y
+
+. mi import flong, m(m) id(panelid panelwave) imputed(`vars_to_keep') clear
+(6909 m=0 obs. now marked as incomplete)
+(78810 values of imputed variable realinc in m>0 updated to match values in m=0)
+(55254 values of imputed variable intyrs in m>0 updated to match values in m=0)
+(9558 values of imputed variable lngthinv in m>0 updated to match values in m=0)
+
+. mi describe
+
+  Style:  flong
+          last mi update 28jan2020 17:42:08, 0 seconds ago
+
+  Obs.:   complete        7,701
+          incomplete      6,909  (M = 6 imputations)
+          ---------------------
+          total          14,610
+
+  Vars.:  imputed:  21; age(15) sex(0) racehisp5(0) degree(2) realinc(1475) marital(15)
+                    evercitzn(0) region(3) wordsum(4958) intage(80) intsex(205) intethn(338)
+                    intyrs(80) lngthinv(9) daysint(1) mode(19) feeused(64) coop(40) comprend(42)
+                    spaneng(0) dwelown(4460)
+
+          passive:  0
+
+          regular:  0
+
+          system:   3; _mi_m _mi_id _mi_miss
+
+         (there are 79 unregistered variables)
+
+. 
+. ********************************************************************************
+. *** Generate attrition outcome indicators and recode predictors for models
+. ********************************************************************************
+. 
+. * broadcast panstat and attrition variables across imputed datasets
+. 
+. bys samptype: summ panelid panstat_2 panstat_3 w2 w3
+
+----------------------------------------------------------------------------------------------------
+-> samptype = 2006
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     panelid |     33,684    1.61e+07     7515654      20069   2.01e+07
+   panstat_2 |      4,812    1.472776    3.488599          1         33
+   panstat_3 |      4,348    1.808648    4.682238          1         33
+          w2 |      4,812    .9035744    .2952047          0          1
+          w3 |      4,812    .7955112    .4033695          0          1
+
+----------------------------------------------------------------------------------------------------
+-> samptype = 2008
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     panelid |     34,293    1.11e+07     9130940      20081   2.01e+07
+   panstat_2 |      4,899    1.480302    3.533103          1         33
+   panstat_3 |      4,457    1.704061    4.287593          1         33
+          w2 |      4,899    .9097775    .2865295          0          1
+          w3 |      4,899     .793019    .4051832          0          1
+
+----------------------------------------------------------------------------------------------------
+-> samptype = 2010
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     panelid |     34,293    1.13e+07     9143931      20101   2.01e+07
+   panstat_2 |      4,899    1.556848    3.807455          1         33
+   panstat_3 |      4,406    1.759419    4.526551          1         33
+          w2 |      4,899    .8993672    .3008726          0          1
+          w3 |      4,899    .7985303     .401139          0          1
+
+
+. 
+. bysort panelid (panstat_2): replace panstat_2 = panstat_2[1]
+(87,660 real changes made)
+
+. bysort panelid (panstat_3): replace panstat_3 = panstat_3[1] 
+(80,201 real changes made, 935 to missing)
+
+. bysort panelid (w2): replace w2 = w2[1]
+(87,660 real changes made)
+
+. bysort panelid (w3): replace w3 = w3[1] 
+(87,660 real changes made)
+
+. 
+. bys samptype: summ panelid panstat_2 panstat_3 w2 w3
+
+----------------------------------------------------------------------------------------------------
+-> samptype = 2006
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     panelid |     33,684    1.61e+07     7515654      20069   2.01e+07
+   panstat_2 |     33,684    1.472776    3.488289          1         33
+   panstat_3 |     30,436    1.808648    4.681776          1         33
+          w2 |     33,684    .9035744    .2951784          0          1
+          w3 |     33,684    .7955112    .4033335          0          1
+
+----------------------------------------------------------------------------------------------------
+-> samptype = 2008
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     panelid |     34,293    1.11e+07     9130940      20081   2.01e+07
+   panstat_2 |     34,293    1.480302    3.532794          1         33
+   panstat_3 |     31,199    1.704061     4.28718          1         33
+          w2 |     34,293    .9097775    .2865044          0          1
+          w3 |     34,293     .793019    .4051477          0          1
+
+----------------------------------------------------------------------------------------------------
+-> samptype = 2010
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     panelid |     34,293    1.13e+07     9143931      20101   2.01e+07
+   panstat_2 |     34,293    1.556848    3.807122          1         33
+   panstat_3 |     30,842    1.759419    4.526111          1         33
+          w2 |     34,293    .8993672    .3008462          0          1
+          w3 |     34,293    .7985303    .4011039          0          1
+
+
+. 
+. sort panelid panelwave
+
+. 
+. *** make indicator for attriters by 2nd or 3rd wave
+. 
+. gen attr_w23 = (w2==0 | w3==0) // Attriton either by 2nd or 3rd wave
+
+. 
+. *** define panel out-of-scope status
+. 
+. /* Note: 1 repondendent was "selected, but not eligible and not reinterviewd,"
+>                  and we consider this respondent to be out-of-scope */
+. 
+. gen outsc_w2 = ((panstat_2 >= 31 & panstat_2 <= 33) | panstat_2==3) ///
+>                                                                                                   
+>       if !missing(panstat_2) 
+
+. gen outsc_w3 = ((panstat_3 >= 31 & panstat_3 <= 33)) ///
+>                                                                                                   
+>       if !missing(panstat_3) 
+(9,793 missing values generated)
+
+. gen outsc_w23 = (outsc_w2 == 1 | outsc_w3 == 1) 
+
+. 
+. bys outsc_w23: tab panstat_2 panstat_3 if m > 0, m nol
+
+----------------------------------------------------------------------------------------------------
+-> outsc_w23 = 0
+
+     panel |
+ selection |      panel selection status
+    status |         1          2          . |     Total
+-----------+---------------------------------+----------
+         1 |    69,750      7,860          0 |    77,610 
+         2 |         0          0      7,212 |     7,212 
+-----------+---------------------------------+----------
+     Total |    69,750      7,860      7,212 |    84,822 
+
+----------------------------------------------------------------------------------------------------
+-> outsc_w23 = 1
+
+     panel |
+ selection |           panel selection status
+    status |        31         32         33          . |     Total
+-----------+--------------------------------------------+----------
+         1 |       240        372      1,044          0 |     1,656 
+         3 |         0          0          0          6 |         6 
+        31 |         0          0          0        216 |       216 
+        32 |         0          0          0        288 |       288 
+        33 |         0          0          0        672 |       672 
+-----------+--------------------------------------------+----------
+     Total |       240        372      1,044      1,182 |     2,838 
+
+
+. 
+. *** recoding of age and citizenship status
+. 
+. orthpoly age, gen(age_o*) deg(3) // orthogonal polynominal of age
+
+. 
+. gen borncitz = .
+(102,270 missing values generated)
+
+. replace borncitz= 1 if born == 1
+(90,657 real changes made)
+
+. replace borncitz= 2 if born == 2 & evercitzn == 1
+(6,433 real changes made)
+
+. replace borncitz= 3 if born == 2 & evercitzn == 0
+(5,180 real changes made)
+
+. tab borncitz, m
+
+   borncitz |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          1 |     90,657       88.64       88.64
+          2 |      6,433        6.29       94.93
+          3 |      5,180        5.07      100.00
+------------+-----------------------------------
+      Total |    102,270      100.00
+
+. 
+. *** assign variable and value labels
+. 
+. do code/variable-and-value-labels.do
+
+. *** VARIABLE AND VALUE LABELS
+. 
+. la var attr_w23 "Panel Attrition Indicator"
+
+. la var outsc_w2 "Out of scope by second wave"
+
+. la var outsc_w3 "Out of scope by second or third wave"
+
+. la var outsc_w23 "Out of scope by second or third wave"
+
+. la var age_o1 "Age: first polynomial"
+
+. la var age_o2 "Age: second polynomial"
+
+. la var age_o3 "Age: thir polynomial"
+
+. la var sex "Sex"
+
+. la var racehisp5 "Race/ethnicity"
+
+. la var degree "Education"
+
+. la var realinc "Real household income"
+
+. la var marital "Marital status"
+
+. la var borncitz "Citizenship status"
+
+. la var region "Region"
+
+. la var wordsum "Vocabulary knowledge"
+
+. la var intage "Interviewer's age"
+
+. la var intsex "Interviewer's sex"
+
+. la var intethn "Interviewer's race/ethnicity"
+
+. la var lngthinv "Length of interview"
+
+. la var daysint "Date of interview"
+
+. la var mode "Interview mode"
+
+. la var feeused "Fee used to interview"
+
+. la var coop "Rs Attitude toward the interview"
+
+. la var comprend "Rs understanding of the questions"
+
+. la var spaneng "Language of interview"
+
+. la var dwelown "R owns or rents home"
+
+. 
+. la def YESNO 0 "No" 1 "Yes"
+
+. la def SEX 1 "Male" 2 "Female"
+
+. la def RACEHISP5 1 "White" 2 "Black" 3 "Hispanic" 4 "Asian" 5 "Other"
+
+. la def DEGREE 0 "Less than HS" 1 "HS" 2 "Junior college" 3 "BA" 4 "Graduate"
+
+. la def MARITAL 1 "Married" 2 "Widowed" 3 "Divorced" 4 "Separated" ///
+>                            5 "Never married"
+
+. la def BORNCITZ 1 "Born in the US" 2 "Born outside but ever-citizen" ///
+>                                 3 "Never-citizen"
+
+. la def REGION 1 "New England" 2 "Middle Atlantic" 3 "East North Central" ///
+>                 4 "West North Central" 5 "South Atlantic"  6 "East South Central" ///
+>                 7 "West South Central" 8 "Mountain"  9 "Pacific"
+
+. la def INTSEX 1 "Male" 2 "Female"
+
+. la def INTETHN 1 "White" 2 "Black" 3 "Hispanic" 4 "Asian" 5 "Two or more races"
+
+. la def MODE 1 "In person" 2 "Over the phone"
+
+. la def FEEUSED 1 "Money" 2 "Non-monetary" 3 " No"
+
+. la def COOP 1 "Friendly/interested" 2 "Cooperative" 3 "Restless/impatient" 4 "Hostile"
+
+. la def COMPREND 1 "Good" 2 "Fair" 3 "Poor"
+
+. la def SPANENG 1 "English" 2 "Spanish"
+
+. la def DWELOWN 1 "Own or is buying" 2 "Pays rent" 3 "Other"
+
+. 
+. la val attr_w23 outsc_w2 outsc_w3 outsc_w23 YESNO
+
+.  
+. foreach var in sex racehisp5 degree marital borncitz region intsex intethn ///
+>                 mode feeused coop comprend spaneng dwelown {
+  2.                                 local varlable=upper("`var'")
+  3.                                 la val `var' `varlable'
+  4.                 }
+
+. 
+end of do-file
+
+. 
+. order panelid _mi_id panelwave id year samptype m wtss-w3 attr_w23-borncitz
+
+. sort panelid panelwave m 
+
+. 
+. * recode missing and broadcast weights across imputed datasets
+. 
+. foreach var in wtss wtssnr wtpan12 wtpan123 wtpannr12 wtpannr123 {
+  2.         replace `var' = . if `var' >= .
+  3.         bysort panelid panelwave (`var'): replace `var' = `var'[1]
+  4. }
+(5,686 real changes made, 5,686 to missing)
+(36,402 real changes made)
+(5,686 real changes made, 5,686 to missing)
+(36,402 real changes made)
+(1,399 real changes made, 1,399 to missing)
+(79,266 real changes made)
+(2,985 real changes made, 2,985 to missing)
+(69,750 real changes made)
+(1,399 real changes made, 1,399 to missing)
+(79,266 real changes made)
+(2,985 real changes made, 2,985 to missing)
+(69,750 real changes made)
+
+. 
+. sort panelid panelwave m
+
+. 
+. ********************************************************************************
+. *** Save data file with unimputed and imputed data records
+. ********************************************************************************
+. 
+. compress
+  variable panelwave was float now byte
+  variable w2 was float now byte
+  variable w3 was float now byte
+  variable attr_w23 was float now byte
+  variable outsc_w2 was float now byte
+  variable outsc_w3 was float now byte
+  variable outsc_w23 was float now byte
+  variable borncitz was float now byte
+  variable _mi_m was int now byte
+  variable id was double now int
+  variable year was double now int
+  variable samptype was double now int
+  variable m was double now byte
+  variable intsex was double now byte
+  variable intethn was double now byte
+  variable coop was double now byte
+  variable comprend was double now byte
+  variable spaneng was double now byte
+  variable mode was double now byte
+  variable feeused was double now byte
+  variable egp10_11 was double now byte
+  variable spegp10_11 was double now byte
+  variable paegp10_11 was double now byte
+  variable maegp10_11 was double now byte
+  variable parborn was double now byte
+  variable family16 was double now byte
+  variable reg16 was double now byte
+  variable incom16 was double now byte
+  variable sex was double now byte
+  variable born was double now byte
+  variable relig was double now byte
+  variable class was double now byte
+  variable spdeg was double now byte
+  variable madeg was double now byte
+  variable padeg was double now byte
+  variable wrkstat was double now byte
+  variable degree was double now byte
+  variable uscitzn was double now byte
+  variable region was double now byte
+  variable dwelown was double now byte
+  variable xnorcsiz was double now byte
+  variable marital was double now byte
+  variable racehisp5 was double now byte
+  variable evercitzn was double now byte
+  variable m_id was double now byte
+  variable m_samptype was double now byte
+  variable m_panelid was double now byte
+  variable m_panelwave was double now byte
+  variable m_intage was double now byte
+  variable m_intsex was double now byte
+  variable m_intethn was double now byte
+  variable m_intyrs was double now byte
+  variable m_lngthinv was double now byte
+  variable m_coop was double now byte
+  variable m_comprend was double now byte
+  variable m_daysint was double now byte
+  variable m_spaneng was double now byte
+  variable m_mode was double now byte
+  variable m_feeused was double now byte
+  variable m_egp10_11 was double now byte
+  variable m_spegp10_11 was double now byte
+  variable m_paegp10_11 was double now byte
+  variable m_maegp10_11 was double now byte
+  variable m_parborn was double now byte
+  variable m_family16 was double now byte
+  variable m_reg16 was double now byte
+  variable m_incom16 was double now byte
+  variable m_age was double now byte
+  variable m_sex was double now byte
+  variable m_born was double now byte
+  variable m_relig was double now byte
+  variable m_class was double now byte
+  variable m_spdeg was double now byte
+  variable m_madeg was double now byte
+  variable m_padeg was double now byte
+  variable m_wrkstat was double now byte
+  variable m_degree was double now byte
+  variable m_uscitzn was double now byte
+  variable m_realinc was double now byte
+  variable m_realrinc was double now byte
+  variable m_region was double now byte
+  variable m_wordsum was double now byte
+  variable m_dwelown was double now byte
+  variable m_size was double now byte
+  variable m_xnorcsiz was double now byte
+  variable m_marital was double now byte
+  variable m_racehisp5 was double now byte
+  variable m_evercitzn was double now byte
+  (58,805,250 bytes saved)
+
+. save data/gss-panel-2006-2014-imputed-recoded.dta, replace
+file data/gss-panel-2006-2014-imputed-recoded.dta saved
+
+. 
+. log close
+      name:  <unnamed>
+       log:  /Users/smorgan/Documents/GitHub/gss-panel-weights/log/append-and-merge-imputed-datasets
+> .log
+  log type:  text
+ closed on:  28 Jan 2020, 17:42:12
+----------------------------------------------------------------------------------------------------
