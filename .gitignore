@@ -1,9 +1,6 @@
 
-.DS_Store
+*.DS_Store
+*.Rhistory
 
 tmp/*.*
-!tmp/do-not-ignore-this-file.txt
-
-.Rhistory
-
-.DS_Store
+!tmp/.gitkeep
